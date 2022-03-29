@@ -1,0 +1,32 @@
+name: 'Create Github Release'
+description: "Create a new Github Release with auto-generated notes"
+inputs:
+  sha:
+    description: 'The target release SHA hash'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    # Creates a Github release (and tag) with the current date and time
+    # Gets all the commits other than merge commits in the branch from the last tag
+    - name: 'Get Release Info'
+      id: release-info
+      run: |
+        RELEASE_NOTES="$(git log --pretty='%ci - %s (%an)' $(git describe --tags --abbrev=0)...@ | grep -vE '^.{25} - Merge.*'||:)"
+        RELEASE_NOTES="${RELEASE_NOTES//'%'/'%25'}"
+        RELEASE_NOTES="${RELEASE_NOTES//$'\n'/'%0A'}"
+        RELEASE_NOTES="${RELEASE_NOTES//$'\r'/'%0D'}"
+        echo "::set-output name=notes::${RELEASE_NOTES}"
+        echo "::set-output name=tag::$(TZ=America/Los_Angeles date +'%Y-%m-%dTH%H-M%M')"
+
+          # Create a github release
+    - name: 'Create a Release'
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.release-info.outputs.tag }}
+        release_name: ${{ steps.release-info.outputs.tag }}
+        body: ${{ steps.release-info.outputs.notes }}
+        commitish: ${{ inputs.sha }}

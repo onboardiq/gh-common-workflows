@@ -1,0 +1,76 @@
+name: 'Deploy to Tenant'
+description: "Deploy via Helm to a Tenant"
+inputs:
+  region:
+    required: true
+  cloud:
+    required: true
+  eks-suffix: 
+    required: true
+  tenant-name:
+    required: true
+  namespace:
+    required: true
+  stage:
+    required: true
+  dry-run:
+    required: true
+  aws-access-key-id:
+    required: true
+  aws-secret-access-key:
+    required: true
+  
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Install Kubectl'
+      id: install-kubectl
+      uses: azure/setup-kubectl@v1
+      with:
+        version: v1.19.0
+
+    # GITHUB_RUN_ID is the unique identifier (id) within a repo
+    - name: 'Set the KUBECONFIG'
+      run: |
+        echo KUBECONFIG=${RUNNER_TEMP}/kubeconfig_${GITHUB_RUN_ID} >> $GITHUB_ENV
+
+    - name: 'Get the kubeconfig'
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
+        AWS_DEFAULT_REGION: ${{ inputs.region }}
+      run: |
+        aws eks update-kubeconfig \
+          --name eng-${{ inputs.region }}-${{ inputs.stage }}-application-cluster${{ inputs.eks-suffix }} \
+          --alias aws-${{ inputs.region }}-${{ inputs.stage }} \
+          --kubeconfig ${KUBECONFIG} \
+          --region ${{ inputs.region }}
+
+    - id: version
+      uses: ./actions/version
+          
+    - name: 'Deployment Dry Run'
+      if: ${{ inputs.dry-run }}
+      env:
+        CLOUD: ${{ inputs.cloud }}
+        REGION: ${{ inputs.region }}
+        TENANT: ${{ inputs.tenant-name }}
+        NAMESPACE: ${{ inputs.namespace }}
+        CHART_VERSION: ${{ steps.version.outputs.chart_version }}
+        IMAGE_TAG: ${{ steps.version.outputs.image_tag }}
+      run: |
+        kubectl config use-context aws-${{ inputs.region }}-${{ inputs.stage }}
+        make -C helm test
+
+    - name: 'Deployment'
+      if: ${{ inputs.dry-run }}
+      env:
+        CLOUD: ${{ inputs.cloud }}
+        REGION: ${{ inputs.region }}
+        TENANT: ${{ inputs.tenant-name }}
+        NAMESPACE: ${{ inputs.namespace }}
+        CHART_VERSION: ${{ inputs.chart-version }}
+        IMAGE_TAG: ${{ inputs.image-tag }}
+      run: |
+        kubectl config use-context aws-${{ inputs.region }}-${{ inputs.stage }}
+        make -C helm install

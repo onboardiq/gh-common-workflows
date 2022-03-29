@@ -1,0 +1,96 @@
+name: CD
+
+on:
+  workflow_call:
+    inputs:
+      project-name:
+        description: 'The name of the project'
+        required: true
+      env:
+        description: 'The environment to deploy to, one of "all", "prod", "dev", "uat"'
+        required: true
+      ref:
+        description: "The branch or tag name or SHA to check out"
+      dry-run:
+        description: "When true, only does a dry run of deployment"
+        required: true
+    secrets:
+      aws
+jobs:
+  tenant-data:
+    runs-on: ubuntu-latest
+    outputs:
+      tenants: ${{ steps.cd-data.outputs.tenants }}
+    steps:
+      - id: cd-data
+        uses: onboardiq/gh-action-tenant-data/cd-data@main
+        with:
+          projects: ${{ inputs.project-name }}
+          env: ${{ inputs.env }}
+
+  deploy-env:
+    needs:
+      - tenant-data
+    runs-on: ubuntu-latest
+    outputs:
+      notes:
+        value: ${{ steps.release_info.outputs.notes }}
+      tag:
+        value: ${{ steps.release_info.outputs.tag }}
+      commit-sha:
+        value: ${{ steps.commit-sha.outputs.sha }}
+    steps:
+      - uses: actions/checkout@master
+        with:
+        ref: ${{ inputs.ref }}
+        fetch-depth: 0
+
+      - name: 'Get the commit sha'
+        id: commit-sha
+        run: echo "::set-output name=sha::$(git rev-parse HEAD)"
+    
+  deploy:
+    needs:
+      - deploy-env
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include: ${{ fromJSON(needs.outputs.tenants) }}
+    concurrency: deploy-${{ github.ref }}
+    steps:
+      - uses: ./actions/deploy-to-tenant
+        with:
+          region: ${{ matrix.cluster.region }}
+          cloud: ${{ matrix.cluster.cloud }}
+          eks-suffix: ${{ matrix.cluster.eks_suffix }}
+          tenant-name: ${{ matrix.tenant }}
+          namespace: ${{ matrix.namespace }}
+          stage: ${{ matrix.stage }}
+          dry-run: ${{ inputs.dry-run }}
+          aws-access-key-id: ${{ secrets.aws-access-key-id }}
+          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
+
+  release:
+    needs:
+      - deploy
+      - deploy-env
+    runs-on: ubuntu-latest
+    if: ${{ inputs.env == 'prod' && success() }}
+    steps:
+      - uses: ./actions/create-github-release
+        with:
+          sha: ${{ needs.deploy-env.outputs.commit-sha }}
+      - uses: ./actions/merge-stable-to-master
+        with:
+          sha: ${{ needs.deploy-env.outputs.commit-sha }}
+          github-automation-token: ${{ secrets.github-automation-token }}
+
+  post-deploy:
+    needs:
+      - deploy
+      - release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./actions/notify-slack-pipeline-status
+        with:
+          slack-bot-token: ${{ secrets.slack-bot-token }}
