@@ -19,7 +19,6 @@ runs:
         echo "::set-output name=notes::${RELEASE_NOTES}"
         echo "::set-output name=tag::$(TZ=America/Los_Angeles date +'%Y-%m-%dTH%H-M%M')"
 
-          # Create a github release
     - name: 'Create a Release'
       id: create_release
       uses: actions/create-release@v1

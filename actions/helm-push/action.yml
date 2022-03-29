@@ -57,8 +57,8 @@ runs:
         REGION: ${{ inputs.region }}
         CLUSTER_SUFFIX: ${{ inputs.cluster-suffix }}
         CHART_VERSION: ${{ steps.version.outputs.chart-version }}
-        APP_VERSION: ${{ steps.version.outputs.image_tag }}
-        IMAGE_TAG: ${{ steps.version.outputs.image_tag }}
+        APP_VERSION: ${{ steps.version.outputs.image-tag }}
+        IMAGE_TAG: ${{ steps.version.outputs.image-tag }}
         HELM_REPO_USERNAME: ${{ inputs.repo-username }}
         HELM_REPO_PASSWORD: ${{ inputs.repo-password }}
       run: make -C helm artifact

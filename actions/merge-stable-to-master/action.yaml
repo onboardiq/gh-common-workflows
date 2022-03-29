@@ -2,8 +2,10 @@ name: 'Merge stable to master'
 description: 'Create a PR and automerge stable into master'
 inputs:
   github-automation-token:
+    description: "A Github oauth token with sufficent permissions to make, approve, and merge PRs"
     required: true
   sha:
+    description: "The target SHA to merge into master"
     required: true
 runs:
   using: 'composite'

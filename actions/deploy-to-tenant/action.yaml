@@ -2,27 +2,41 @@ name: 'Deploy to Tenant'
 description: "Deploy via Helm to a Tenant"
 inputs:
   region:
+    description: "The region the tenant is in"
     required: true
   cloud:
+    description: "The cloud service the tenant is in"
     required: true
-  eks-suffix: 
+  eks-suffix:
+    description: "A suffix to differentiate tenants in the same region"
     required: true
   tenant-name:
+    description: "The name of the tenant"
     required: true
   namespace:
+    description: "The kubernetest namespace the tenant is in"
     required: true
   stage:
+    description: "One of 'stage' or 'prod'"
     required: true
   dry-run:
+    description: "When true, only does a dry run of the deployment"
     required: true
   aws-access-key-id:
+    description: "An AWS Access Key ID with sufficient permissions to read from EKS clusters"
     required: true
   aws-secret-access-key:
+    description: "An AWS Secret Access Key matching the given access key id"
     required: true
   
 runs:
   using: 'composite'
   steps:
+    - name: 'Add masks'
+      run: |
+        echo "::add-mask::${{ inputs.aws-access-key-id }}"
+        echo "::add-mask::${{ inputs.aws-secret-access-key }}"
+    
     - name: 'Install Kubectl'
       id: install-kubectl
       uses: azure/setup-kubectl@v1
@@ -56,6 +70,7 @@ runs:
         REGION: ${{ inputs.region }}
         TENANT: ${{ inputs.tenant-name }}
         NAMESPACE: ${{ inputs.namespace }}
+        CLUSTER_SUFFIX: ${{ inputs.eks-suffix }}
         CHART_VERSION: ${{ steps.version.outputs.chart_version }}
         IMAGE_TAG: ${{ steps.version.outputs.image_tag }}
       run: |
@@ -68,6 +83,7 @@ runs:
         CLOUD: ${{ inputs.cloud }}
         REGION: ${{ inputs.region }}
         TENANT: ${{ inputs.tenant-name }}
+        CLUSTER_SUFFIX: ${{ inputs.eks-suffix }}
         NAMESPACE: ${{ inputs.namespace }}
         CHART_VERSION: ${{ inputs.chart-version }}
         IMAGE_TAG: ${{ inputs.image-tag }}
