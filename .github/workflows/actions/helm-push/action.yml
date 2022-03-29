@@ -1,0 +1,62 @@
+name: 'Helm Push'
+description: 'Push Helm Chart to a given region'
+inputs:
+  image-name:
+    description: 'The name of the image to use in the Helm chart'
+    required: true
+  helm-version:
+    description: 'The version of Helm to use'
+    required: true
+  chart-version:
+    description: 'The version of the helm chart'
+    required: true
+  repo-username:
+    description: 'A username with sufficient permissions to push to the helm repo'
+    required: true
+  repo-password:
+    description: 'A password matching the given repo username'
+    required: true
+  github-token:
+    description: 'An authorized github token'
+    required: true
+  cloud:
+    description: 'One of "aws" or "azure"'
+    required: true
+  region:
+    description: 'An AWS or Azure region name'
+    required: true
+  cluster-suffix:
+    description: 'A string to differentiate between helm repos in the same region'
+    default: ''
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Add masks'
+      run: |
+        echo "::add-mask::${{ inputs.github-token }}"
+        echo "::add-mask::${{ inputs.repo-username }}"
+        echo "::add-mask::${{ inputs.repo-password }}"
+
+    - name: 'Checkout Github Action'
+      uses: actions/checkout@v2
+
+    - id: version
+      uses: ./.github/workflows/actions/version
+
+    - name: 'Install and Setup Helm'
+      uses: Azure/setup-helm@v1.1
+      with:
+        version: ${{ inputs.helm-version }}
+        token: ${{ inputs.github-token }}
+
+    - name: 'Push Helm chart'
+      env:
+        CLOUD: ${{ inputs.cloud }}
+        REGION: ${{ inputs.region }}
+        CLUSTER_SUFFIX: ${{ inputs.cluster-suffix }}
+        CHART_VERSION: ${{ steps.version.outputs.chart-version }}
+        APP_VERSION: ${{ steps.version.outputs.image-tag }}
+        IMAGE_TAG: ${{ steps.version.outputs.image-tag }}
+        HELM_REPO_USERNAME: ${{ inputs.repo-username }}
+        HELM_REPO_PASSWORD: ${{ inputs.repo-password }}
+      run: make -C helm artifact

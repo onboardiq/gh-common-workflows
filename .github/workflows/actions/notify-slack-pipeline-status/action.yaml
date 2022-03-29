@@ -1,0 +1,33 @@
+name: 'Notify Slack of pipeline status'
+description: 'Sends the configured channel a message when the pipeline has completed'
+inputs:
+  slack-channel:
+    description: 'The Slack channel ID to post messages to.'
+    required: true
+  slack-bot-token:
+    description: 'A slack oauth token with sufficient permissions to post to the configured channel'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Add masks'
+      run: |
+        echo "::add-mask::${{ inputs.slack-bot-token }}"
+    - name: 'Emoji on success'
+      run: "echo STATUS_EMOJI=:large_green_circle: >> $GITHUB_ENV"
+      if: ${{ success() }}
+
+    - name: 'Emoji on failure'
+      run: "echo STATUS_EMOJI=:red_circle: >> $GITHUB_ENV"
+      if: ${{ failure() }}
+
+    - name: 'Emoji on cancellation'
+      run: "echo STATUS_EMOJI=:large_orange_circle: >> $GITHUB_ENV"
+      if: ${{ cancelled() }}
+
+    - name: 'Post the result to Slack'
+      env:
+        SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
+      uses: pullreminders/slack-action@master
+      with:
+        args: '{\"channel\":\"${{ inputs.slack-channel }}\", \"blocks\": [{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"${{ env.STATUS_EMOJI }} A job in workflow ${{ github.workflow }} has reached status ${{ job.status }}\"},\"accessory\": {\"type\": \"button\",\"text\": {\"type\": \"plain_text\",\"text\": \"Workflow Run\",\"emoji\": true},\"value\": \"click_me_123\",\"url\": \"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}\",\"action_id\": \"button-action\"}},{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"*Repository*: ${{ github.repository }}\"}},{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"*Branch*: ${{ github.ref }}\"}}]}'

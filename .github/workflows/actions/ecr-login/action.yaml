@@ -1,0 +1,142 @@
+name: 'Container Repository Login'
+description: "Log into ECR and ACR repos by region"
+inputs:
+  image-name:
+    description: "The name of the project"
+    required: true
+  regions:
+    description: 'A JSON string representing a list of region names to log into'
+    required: true
+  aws-access-key-id:
+    description: 'An AWS Access Key ID with sufficient permissions to push to ECR repos'
+    required: true
+  aws-secret-access-key:
+    description: 'An AWS Secret Access Key matching the given Access Key ID'
+    required: true
+  azure-registry:
+    description: 'A FQDN pointint to the target ACR'
+    required: true
+  azure-registry-username:
+    description: 'A username with sufficent permissions to push to ACR'
+    required: true
+  azure-registry-password:
+    description: 'A password that matches the given Azure registry username'
+    required: true
+outputs:
+  image-repos:
+    description: "JSON string of a list of full paths to the repositories to logged-in registries"
+    value: ${{ steps.repos.outputs.result}}
+  image-cache-repo:
+    description: "The full path to the image cache repo for the project"
+    value: ${{ steps.cache-repo.outputs.repo }}
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Add masks'
+      run: |
+        echo "::add-mask::${{ inputs.aws-access-key-id }}"
+        echo "::add-mask::${{ inputs.aws-secret-access-key }}"
+        echo "::add-mask::${{ inputs.azure-registry-username }}"
+        echo "::add-mask::${{ inputs.azure-registry-password }}"
+
+    - name: 'Configure AWS Credentials - USE'
+      uses: aws-actions/configure-aws-credentials@v1
+      if: ${{ contains(fromJSON(inputs.regions), 'us-east-1') }}
+      with:
+        aws-access-key-id: ${{ inputs.aws-access-key-id }}
+        aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
+        aws-region: us-east-1
+
+    - name: 'Login to Amazon ECR'
+      if: ${{ contains(fromJSON(inputs.regions), 'us-east-1') }}
+      id: login-ecr-use
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - id: cache-repo
+      if: ${{ contains(fromJSON(inputs.regions), 'us-east-1') }}
+      run: |
+        echo "::set-output name=repo::${{ steps.login-ecr-use.outputs.registry }}/cache/${{ inputs.image-name }}"
+
+    - name: 'Configure AWS Credentials - EUC'
+      uses: aws-actions/configure-aws-credentials@v1
+      if: ${{ contains(fromJSON(inputs.regions), 'eu-central-1') }}
+      with:
+        aws-access-key-id: ${{ inputs.aws-access-key-id }}
+        aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
+        aws-region: eu-central-1
+
+    - name: 'Login to Amazon ECR'
+      if: ${{ contains(fromJSON(inputs.regions), 'eu-central-1') }}
+      id: login-ecr-euc
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: 'Configure AWS credentials - EUW-1'
+      uses: aws-actions/configure-aws-credentials@v1
+      if: ${{ contains(fromJSON(inputs.regions), 'eu-west-1') }}
+      with:
+        aws-access-key-id: ${{ inputs.aws-access-key-id }}
+        aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
+        aws-region: eu-west-1
+
+    - name: 'Login to Amazon ECR'
+      if: ${{ contains(fromJSON(inputs.regions), 'eu-west-1') }}
+      id: login-ecr-euw-1
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: 'Configure AWS credentials - EUW-3'
+      uses: aws-actions/configure-aws-credentials@v1
+      if: ${{ contains(fromJSON(inputs.regions), 'eu-west-3') }}
+      with:
+        aws-access-key-id: ${{ inputs.aws-access-key-id }}
+        aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
+        aws-region: eu-west-3
+
+    - name: 'Login to Amazon ECR'
+      id: login-ecr-euw-3
+      if: ${{ contains(fromJSON(inputs.regions), 'eu-west-3') }}
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: 'Configure AWS credentials - APS'
+      uses: aws-actions/configure-aws-credentials@v1
+      if: ${{ contains(fromJSON(inputs.regions), 'ap-south-1') }}
+      with:
+        aws-access-key-id: ${{ inputs.aws-access-key-id }}
+        aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
+        aws-region: ap-south-1
+
+    - name: 'Login to Amazon ECR'
+      id: login-ecr-aps
+      if: ${{ contains(fromJSON(inputs.regions), 'ap-south-1') }}
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: 'Login to Azure'
+      uses: docker/login-action@v1
+      if: ${{ contains(fromJSON(inputs.regions), 'east-us') }}
+      with:
+        registry: ${{ inputs.azure-registry }}
+        username: ${{ inputs.azure-registry-username }}
+        password: ${{ inputs.azur-registry-password }}
+
+    - id: login-acr-eus
+      if: ${{ contains(fromJSON(inputs.regions), 'east-us') }}
+      run: |
+        echo "::set-output name=registry::${{ inputs.azure-registry }}/fountain/"
+
+    - id: repos
+      env:
+        IMAGE_NAME: ${{ input.image-name }}
+        REGISTRIES: |
+          ${{ steps.login-ecr-use.outputs.registry }} \
+          ${{ steps.login-ecr-euc.outputs.registry }} \
+          ${{ steps.login-ecr-euw-1.outputs.registry }} \
+          ${{ steps.login-ecr-aps.outputs.registry }} \
+          ${{ steps.login-ecr-euw-3.outputs.registry }} \
+          ${{ steps.login-acr-eus.outputs.registry }}
+      run: |
+        json="[";
+        for registry in $REGISTRIES; do
+          repo="${registry}/${IMAGE_NAME}"
+          json="${json}"'"'"${registry}"'",'; 
+        done;
+        json="${json%?}]"
+        echo "::set-output name=result::${json}"

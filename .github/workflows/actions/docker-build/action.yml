@@ -1,0 +1,118 @@
+name: 'Docker Build'
+description: 'Build and push docker images to selected repositories'
+inputs:
+  image-name:
+    description: 'The base image name'
+    required: true
+  aws-access-key-id:
+    description: 'An AWS Access Key ID with sufficient permissions to push to ECR repos'
+    required: true
+  aws-secret-access-key:
+    description: 'An AWS Secret Access Key matching the given Access Key ID'
+    required: true
+  azure-registry-username:
+    description: 'A username with sufficent permissions to push to ACR'
+    required: true
+  azure-registry-password:
+    description: 'A password that matches the given Azure registry username'
+    required: true
+  use-precompiled-assets:
+    description: 'A boolean telling the docker build whether to build assets or use a precompiled set (already in the workspace)'
+    default: false
+  regions:
+    description: 'A JSON string with regions to push to'
+    default: '[]'
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Add masks'
+      run: |
+        echo "::add-mask::${{ inputs.aws-access-key-id }}"
+        echo "::add-mask::${{ inputs.aws-secret-access-key }}"
+        echo "::add-mask::${{ inputs.azure-registry-username }}"
+        echo "::add-mask::${{ inputs.azure-registry-password }}"
+
+    - name: 'Checkout Github Action'
+      uses: actions/checkout@v2
+
+    - id: version
+      uses: ./.github/workflows/actions/version
+
+    - name: 'Set up Docker Buildx'
+      uses: docker/setup-buildx-action@v1
+
+    - name: 'Cache Docker layers'
+      uses: actions/cache@v2
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: ${{ runner.os }}-buildx-
+
+    - name: 'Log into repos'
+      id: repos
+      uses: ./.github/workflows/actions/ecr-login
+      with:
+        image-name: ${{ inputs.image-name }}
+        regions: ${{ inputs.regions }}
+        aws-access-key-id: ${{ inputs.aws-access-key-id }}
+        aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
+        azure-registry-username: ${{ inputs.azure-registry-username }}
+        azure-registry-password: ${{ inputs.azure-registry-password }}
+
+    - name: 'Docker meta - build-env'
+      id: meta-build-env
+      uses: docker/metadata-action@v3
+      with:
+        images: |
+          ${{ steps.repos.outputs.image-cache-repo }}
+        tags: |
+          type=raw,value=${{ steps.version.outputs.image-tag }}
+
+    - name: 'Build Docker Image - buildenv'
+      uses: docker/build-push-action@v2
+      with:
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
+        context: ./
+        pull: true
+        push: true
+        tags: ${{ steps.meta-build-env.outputs.tags }}
+        target: build-env
+        
+    - name: 'Docker meta - production'
+      id: meta
+      uses: docker/metadata-action@v3
+      with:
+        images: ${{ join(fromJSON(steps.repos.outputs.image-repos), ' ') }}
+        tags: |
+          type=raw,value=${{ steps.version.outputs.image-tag }}
+
+    - name: 'Build Docker Image - production'
+      uses: docker/build-push-action@v2
+      with:
+        build-args: |
+          "BUILD_ENV_IMAGE=${{ steps.meta-build-env.outputs.tags }}"
+          PRECOMPILED_ASSETS=${{ inputs.use-precomplied-assets }}
+        context: ./
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        target: production
+
+    - name: 'Docker meta - web-exec'
+      id: meta-web-exec
+      uses: docker/metadata-action@v3
+      with:
+        images: ${{ join(fromJSON(steps.repos.outputs.image-repos), ' ') }}
+        tags: |
+          type=raw,value=${{ steps.version.outputs.image-tag }}-web-exec
+
+    - name: 'Build Docker Image - web-exec'
+      uses: docker/build-push-action@v2
+      with:
+        build-args: |
+          "BUILD_ENV_IMAGE=${{ steps.meta-build-env.outputs.tags }}"
+          PRECOMPILED_ASSETS=${{ inputs.use-precompiled-assets }}
+        context: ./
+        push: true
+        tags: ${{ steps.meta-web-exec.outputs.tags }}
+        target: web-exec

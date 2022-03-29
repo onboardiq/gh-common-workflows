@@ -1,0 +1,28 @@
+name: 'Version'
+description: 'Determine the image tag and chart version given a specific git reference'
+outputs:
+  image-tag:
+    description: "A string suitable for use as a Docker image"
+    value: ${{ steps.image-tag.outputs.image-tag }}
+  chart-version:
+    description: "A string suitable for use as a Helm Chart version string"
+    value: ${{ steps.chart-version.outputs.chart-version }}
+runs:
+  using: 'composite'
+  steps:
+    - id: image-tag
+      run: |
+        REF=${{ github.ref }}
+        SHA=${{ github.sha }}
+        echo "::set-output name=image-tag::${REF##*/}-${SHA::7}"
+
+    - id: chart-version
+      run: |
+        REF=${{ github.ref }}
+        SHA=${{ github.sha }}
+        if [[ ${REF} == "refs/heads/stable" ]]; then
+          echo "::set-output name=chart-version::${HELM_CHART_VERSION}-${SHA::7}"
+        else
+          FILTERED_REF=$( echo "${REF##*/}" | tr '_' '-' )
+          echo "::set-output name=chart-version::${HELM_CHART_VERSION}-${SHA::7}-${FILTERED_REF}"
+        fi

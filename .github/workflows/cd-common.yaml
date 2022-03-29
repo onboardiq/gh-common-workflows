@@ -1,0 +1,106 @@
+name: CD
+
+on:
+  workflow_call:
+    inputs:
+      project-name:
+        description: 'The name of the project'
+        required: true
+      env:
+        description: 'The environment to deploy to, one of "all", "prod", "dev", "uat"'
+        required: true
+      ref:
+        description: "The branch or tag name or SHA to check out"
+        required: true
+      dry-run:
+        description: "When true, only does a dry run of deployment"
+        required: true
+      tenants:
+        description: "A JSON string representing a list of tenant data"
+        required: true
+    secrets:
+      aws-access-key-id:
+        description: "An AWS Access Key ID with sufficient access to push to ECR repos"
+        required: true
+      aws-secret-access-key:
+        description: "An AWS Secret Access Key matching the given AWS Access Key ID"
+        required: true
+      helm-repo-username:
+        description: "A username with sufficient permissions to push to helm repositories (usually in chartmuseum)"
+        required: true
+      helm-repo-password:
+        description: "A password matching the given helm repo username"
+        required: true
+      github-automation-token:
+        description: "A github user token with sufficent permissions to create, approve, and merge PRs"
+        required: true
+      slack-bot-token:
+        description: "A slack bot token allowed to post to the Fountain slack"
+        required: true
+
+jobs:
+  deploy-env:
+    needs:
+    runs-on: ubuntu-latest
+    outputs:
+      notes:
+        value: ${{ steps.release_info.outputs.notes }}
+      tag:
+        value: ${{ steps.release_info.outputs.tag }}
+      commit-sha:
+        value: ${{ steps.commit-sha.outputs.sha }}
+    steps:
+      - uses: actions/checkout@master
+        with:
+        ref: ${{ inputs.ref }}
+        fetch-depth: 0
+
+      - name: 'Get the commit sha'
+        id: commit-sha
+        run: echo "::set-output name=sha::$(git rev-parse HEAD)"
+    
+  deploy:
+    needs:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include: ${{ fromJSON(inputs.tenants) }}
+    concurrency: deploy-${{ github.ref }}
+    steps:
+      - uses: ./.github/workflows/actions/deploy-to-tenant
+        with:
+          helm-version: ${{ inputs.helm-version }}
+          region: ${{ matrix.cluster.region }}
+          cloud: ${{ matrix.cluster.cloud }}
+          eks-suffix: ${{ matrix.cluster.eks_suffix }}
+          tenant-name: ${{ matrix.tenant }}
+          namespace: ${{ matrix.namespace }}
+          stage: ${{ matrix.stage }}
+          dry-run: ${{ inputs.dry-run }}
+          aws-access-key-id: ${{ secrets.aws-access-key-id }}
+          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
+
+  release:
+    needs:
+      - deploy
+      - deploy-env
+    runs-on: ubuntu-latest
+    if: ${{ inputs.env == 'prod' && success() }}
+    steps:
+      - uses: ./.github/workflows/actions/create-github-release
+        with:
+          sha: ${{ needs.deploy-env.outputs.commit-sha }}
+      - uses: ./.github/workflows/actions/merge-stable-to-master
+        with:
+          sha: ${{ needs.deploy-env.outputs.commit-sha }}
+          github-automation-token: ${{ secrets.github-automation-token }}
+
+  post-deploy:
+    needs:
+      - deploy
+      - release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/workflows/actions/notify-slack-pipeline-status
+        with:
+          slack-bot-token: ${{ secrets.slack-bot-token }}
