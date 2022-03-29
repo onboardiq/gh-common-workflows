@@ -68,7 +68,7 @@ jobs:
           azure-registry-username: ${{ secrets.azure-registry-username }}
           azure-registry-password: ${{ secrets.azure-registry-password }}
           use-precompiled-assets: ${{ inputs.build-assets }}
-          regions: ${{ fromJSON(needs.cluster-data.outputs.clusters).*.region }}
+          regions: ${{ toJSON(fromJSON(needs.cluster-data.outputs.clusters).*.region) }}
 
   matrix-setup:
     runs-on: ubuntu-latest

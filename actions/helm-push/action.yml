@@ -56,7 +56,7 @@ runs:
         CLOUD: ${{ inputs.cloud }}
         REGION: ${{ inputs.region }}
         CLUSTER_SUFFIX: ${{ inputs.cluster-suffix }}
-        CHART_VERSION: ${{ steps.version.outputs.chart_version }}
+        CHART_VERSION: ${{ steps.version.outputs.chart-version }}
         APP_VERSION: ${{ steps.version.outputs.image_tag }}
         IMAGE_TAG: ${{ steps.version.outputs.image_tag }}
         HELM_REPO_USERNAME: ${{ inputs.repo-username }}
