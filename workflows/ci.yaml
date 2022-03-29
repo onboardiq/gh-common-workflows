@@ -1,0 +1,116 @@
+name: 'CI'
+
+on:
+  workflow_call:
+    inputs:
+      project-name:
+        description: "The name of the project"
+        required: true
+      build-assets:
+        description: "Whether to build Rails assets, defaults to false"
+        default: false
+      helm-chart-version:
+        description: "The version to give the Helm chart"
+        required: true
+      helm-version:
+        description: "The version of Helm to use"
+        default: 3.4.1
+      slack-channel:
+        description: "The slack channel to post to on success"
+        required: false
+    secrets:
+      aws-access-key-id:
+        description: "An AWS Access Key ID with sufficient access to push to ECR repos"
+        required: true
+      aws-secret-access-key:
+        description: "An AWS Secret Access Key matching the given AWS Access Key ID"
+        required: true
+      azure-registry-username:
+        description: "A username with sufficient access to push to ACR"
+        required: true
+      azure-registry-password:
+        description: "A password matching the given Azure registry username"
+        required: true
+      helm-repo-username:
+        description: "A username with sufficient permissions to push to helm repositories (usually in chartmuseum)"
+        required: true
+      helm-repo-password:
+        description: "A password matching the given helm repo username"
+        required: true
+      slack-bot-token:
+        description: "A slack bot token allowed to post to the Fountain slack"
+        required: true
+
+jobs:
+  cluster-data:
+    runs-on: ubuntu-latest
+    outputs:
+      clusters: ${{ steps.ci-data.outputs.clusters }}
+    steps:
+      - id: ci-data
+        uses: onboardiq/gh-action-tenant-data/ci-data@main
+        with:
+          projects: ${{ inputs.project-name }}
+
+  docker:
+    needs:
+      - cluster-data
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./actions/build-assets
+        if: ${{ inputs.build-assets }}
+      - uses: ./actions/docker-build
+        with:
+          image-name: ${{ inputs.project-name }}
+          aws-access-key-id: ${{ secrets.aws-access-key-id }}
+          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
+          azure-registry-username: ${{ secrets.azure-registry-username }}
+          azure-registry-password: ${{ secrets.azure-registry-password }}
+          use-precompiled-assets: ${{ inputs.build-assets }}
+          regions: ${{ fromJSON(needs.cluster-data.outputs.clusters).*.region }}
+
+  matrix-setup:
+    runs-on: ubuntu-latest
+    outputs:
+      clusters: ${{ steps.ci-data.outputs.clusters }}
+    steps:
+      - id: ci-data
+        uses: onboardiq/gh-action-tenant-data/ci-data@main
+        with:
+          projects: ${{ inputs.project-name }}
+  
+  helm:
+    needs:
+      - docker
+      - cluster-data
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include: ${{ fromJSON(needs.cluster-data.outputs.clusters }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./actions/helm-push
+        with:
+          image-name: ${{ inputs.project-name }}
+          helm-version: ${{ inputs.helm-version }}
+          chart-version: ${{ inputs.helm-chart-version }}
+          repo-username: ${{ secrets.helm-repo-username }}
+          repo-password: ${{ secrets.helm-repo-password}}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          cloud: ${{ matrix.cloud }}
+          region: ${{ matrix.region }}
+          cluster-suffix: ${{ matrix.cluster-suffix }}
+
+  slack:
+    if: ${{ always() }}
+    needs:
+      - docker
+      - helm
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./actions/notify-slack-pipeline-status
+        with:
+          slack-channel: ${{ inputs.slack-channel }}
+          slack-bot-token: ${{ secrets.slack-bot-token }}
+      

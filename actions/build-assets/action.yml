@@ -1,0 +1,61 @@
+name: 'Build Assets'
+description: 'Build monolith assets'
+runs:
+  using: 'composite'
+  steps:
+    - uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+    - uses: actions/setup-node@v2
+      with:
+        node-version-file: '.node-version'
+        cache: 'npm'
+        cache-dependency-path: '**/package-lock.json'
+    - env:
+        NODE_ENV: production
+      run: npm install
+
+    - env:
+        NODE_ENV: production
+      run: npm install --only=dev
+
+    - name: 'Cache Asset Pipeline'
+      uses: actions/cache@v2
+      with:
+        path: |
+          tmp/cache/assets
+          public/assets
+          public/front
+        key: ${{ runner.os }}-assets-${{ hashFiles('app/assets/**') }}
+        restore-keys: ${{ runner.os }}-assets-
+
+    - name: 'Cache UglifyJs cache'
+      uses: actions/cache@v2
+      with:
+        path: .cache/uglifyjs-webpack-plugin
+        key: ${{ runner.os }}-uglifyjs-cache-${{ hashFiles('app/assets/**') }}
+        restore-keys: ${{ runner.os }}-uglifyjs-cache-
+
+    - env:
+        RAILS_ENV: production
+        RUNNING_ASSET_COMPILATION: true
+      run: bundle exec rake assets:precompile
+
+    - env:
+        RAILS_ENV: production
+        RUNNING_ASSET_COMPILATION: true
+      run: bundle exec rake assets:clean
+
+    - env:
+        RAILS_ENV: production
+        NODE_ENV: production
+        RUNNING_ASSET_COMPILATION: true
+      run: npm run webpack:production
+
+    - uses: actions/upload-artifact@v2
+      with:
+        if-no-files-found: 'error'
+        name: public-assets-front
+        path: |
+          public/assets/
+          public/front/
