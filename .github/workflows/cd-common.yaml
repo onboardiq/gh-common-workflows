@@ -6,6 +6,9 @@ on:
       project-name:
         description: 'The name of the project'
         required: true
+      helm-chart-version:
+        description: 'The base version of the chart to deploy, in the format X.Y.Z'
+        required: true
       env:
         description: 'The environment to deploy to, one of "all", "prod", "dev", "uat"'
         required: true
@@ -43,10 +46,8 @@ jobs:
     needs:
     runs-on: ubuntu-latest
     outputs:
-      notes:
-        value: ${{ steps.release_info.outputs.notes }}
-      tag:
-        value: ${{ steps.release_info.outputs.tag }}
+      notes: ${{ steps.release_info.outputs.notes }}
+      tag: ${{ steps.release_info.outputs.tag }}
       commit-sha:
         value: ${{ steps.commit-sha.outputs.sha }}
     steps:
@@ -70,6 +71,7 @@ jobs:
       - uses: ./.github/workflows/actions/deploy-to-tenant
         with:
           helm-version: ${{ inputs.helm-version }}
+          chart-version: ${{ inputs.helm-chart-version }}
           region: ${{ matrix.cluster.region }}
           cloud: ${{ matrix.cluster.cloud }}
           eks-suffix: ${{ matrix.cluster.eks_suffix }}

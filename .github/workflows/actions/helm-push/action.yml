@@ -42,6 +42,8 @@ runs:
 
     - id: version
       uses: ./.github/workflows/actions/version
+      with:
+        base-chart-version: ${{ inputs.chart-version }}
 
     - name: 'Install and Setup Helm'
       uses: Azure/setup-helm@v1.1

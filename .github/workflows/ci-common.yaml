@@ -73,7 +73,7 @@ jobs:
         with:
           image-name: ${{ inputs.project-name }}
           helm-version: ${{ inputs.helm-version }}
-          chart-version: ${{ inputs.helm-chart-version }}
+          helm-chart-version: ${{ inputs.helm-chart-version }}
           repo-username: ${{ secrets.helm-repo-username }}
           repo-password: ${{ secrets.helm-repo-password}}
           cloud: ${{ matrix.cloud }}

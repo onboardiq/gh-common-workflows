@@ -4,6 +4,9 @@ inputs:
   image-name:
     description: 'The base image name'
     required: true
+  chart-version:
+    description: 'The base version of the helm chart in the format X.Y.Z'
+    required: true
   aws-access-key-id:
     description: 'An AWS Access Key ID with sufficient permissions to push to ECR repos'
     required: true
@@ -37,6 +40,8 @@ runs:
 
     - id: version
       uses: ./.github/workflows/actions/version
+      with:
+        base-chart-version: ${{ inputs.chart-version }}
 
     - name: 'Set up Docker Buildx'
       uses: docker/setup-buildx-action@v1

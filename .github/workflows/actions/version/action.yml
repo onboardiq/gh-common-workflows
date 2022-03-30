@@ -1,5 +1,9 @@
 name: 'Version'
 description: 'Determine the image tag and chart version given a specific git reference'
+inputs:
+  base-chart-version:
+    description: "The base version of the form X.Y.Z for the helm chart"
+    required: true
 outputs:
   image-tag:
     description: "A string suitable for use as a Docker image"
@@ -21,8 +25,8 @@ runs:
         REF=${{ github.ref }}
         SHA=${{ github.sha }}
         if [[ ${REF} == "refs/heads/stable" ]]; then
-          echo "::set-output name=chart-version::${HELM_CHART_VERSION}-${SHA::7}"
+          echo "::set-output name=chart-version::${INPUT_BASE_CHART_VERSION}-${SHA::7}"
         else
           FILTERED_REF=$( echo "${REF##*/}" | tr '_' '-' )
-          echo "::set-output name=chart-version::${HELM_CHART_VERSION}-${SHA::7}-${FILTERED_REF}"
+          echo "::set-output name=chart-version::${INPUT_BASE_CHART_VERSION}-${SHA::7}-${FILTERED_REF}"
         fi

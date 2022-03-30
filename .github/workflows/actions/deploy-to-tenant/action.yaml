@@ -4,6 +4,9 @@ inputs:
   helm-version:
     description: 'The version of Helm to use'
     required: true
+  chart-version:
+    description: 'The base version of the chart with the format X.Y.Z'
+    required: true
   region:
     description: "The region the tenant is in"
     required: true
@@ -71,7 +74,9 @@ runs:
 
     - id: version
       uses: ./.github/workflows/actions/version
-          
+      with:
+        base-charts-version: ${{ inputs.chart-version }}
+
     - name: 'Deployment Dry Run'
       if: ${{ inputs.dry-run }}
       env:
