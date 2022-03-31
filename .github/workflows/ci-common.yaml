@@ -6,21 +6,27 @@ on:
       project-name:
         description: "The name of the project"
         required: true
+        type: string
       build-assets:
         description: "Whether to build Rails assets, defaults to false"
         default: false
+        type: boolean
       helm-chart-version:
         description: "The version to give the Helm chart"
         required: true
+        type: string
       helm-version:
         description: "The version of Helm to use"
-        default: 3.4.1
+        default: '3.4.1'
+        type: string
       slack-channel:
         description: "The slack channel to post to on success"
         required: false
+        type: string
       clusters:
         description: "A JSON string representing a list of clusters to push docker containers to"
         required: true
+        type: string
     secrets:
       aws-access-key-id:
         description: "An AWS Access Key ID with sufficient access to push to ECR repos"

@@ -6,21 +6,27 @@ on:
       project-name:
         description: 'The name of the project'
         required: true
+        type: string
       helm-chart-version:
         description: 'The base version of the chart to deploy, in the format X.Y.Z'
         required: true
+        type: string
       env:
         description: 'The environment to deploy to, one of "all", "prod", "dev", "uat"'
         required: true
+        type: string
       ref:
         description: "The branch or tag name or SHA to check out"
         required: true
+        type: string
       dry-run:
         description: "When true, only does a dry run of deployment"
         required: true
+        type: boolean
       tenants:
         description: "A JSON string representing a list of tenant data"
         required: true
+        type: string
     secrets:
       aws-access-key-id:
         description: "An AWS Access Key ID with sufficient access to push to ECR repos"
