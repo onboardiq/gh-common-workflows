@@ -55,6 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
         with:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
@@ -79,6 +80,7 @@ jobs:
       matrix:
         include: ${{ fromJSON(inputs.clusters) }}
     steps:
+      - uses: actions/checkout@v2
       - uses: actions/checkout@v2
         with:
           repository: onboardiq/gh-common-workflows
