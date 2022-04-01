@@ -55,9 +55,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/workflows/actions/build-assets
+        with:
+          repository: onboardiq/gh-common-workflows
+          path: ./common-workflows
+          
+      - uses: ./common-workflows/.github/workflows/actions/build-assets
         if: ${{ inputs.build-assets }}
-      - uses: ./.github/workflows/actions/docker-build
+        
+      - uses: ./common-workflows/.github/workflows/actions/docker-build
         with:
           image-name: ${{ inputs.project-name }}
           aws-access-key-id: ${{ secrets.aws-access-key-id }}
@@ -75,7 +80,11 @@ jobs:
         include: ${{ fromJSON(inputs.clusters) }}
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/workflows/actions/helm-push
+        with:
+          repository: onboardiq/gh-common-workflows
+          path: ./common-workflows
+
+      - uses: ./common-workflows/.github/workflows/actions/helm-push
         with:
           image-name: ${{ inputs.project-name }}
           helm-version: ${{ inputs.helm-version }}
@@ -93,7 +102,12 @@ jobs:
       - helm
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/workflows/actions/notify-slack-pipeline-status
+      - uses: actions/checkout@v2
+        with:
+          repository: onboardiq/gh-common-workflows
+          path: ./common-workflows
+
+      - uses: ./common-workflows/.github/workflows/actions/notify-slack-pipeline-status
         with:
           slack-channel: ${{ inputs.slack-channel }}
           slack-bot-token: ${{ secrets.slack-bot-token }}

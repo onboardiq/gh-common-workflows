@@ -74,7 +74,12 @@ jobs:
         include: ${{ fromJSON(inputs.tenants) }}
     concurrency: deploy-${{ github.ref }}
     steps:
-      - uses: ./.github/workflows/actions/deploy-to-tenant
+      - uses: actions/checkout@v2
+        with:
+          repository: onboardiq/gh-common-workflows
+          path: ./common-workflows
+
+      - uses: ./common-workflows/.github/workflows/actions/deploy-to-tenant
         with:
           helm-version: ${{ inputs.helm-version }}
           chart-version: ${{ inputs.helm-chart-version }}
@@ -95,10 +100,16 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ inputs.env == 'prod' && success() }}
     steps:
-      - uses: ./.github/workflows/actions/create-github-release
+      - uses: actions/checkout@v2
+        with:
+          repository: onboardiq/gh-common-workflows
+          path: ./common-workflows
+
+      - uses: ./common-workflows/.github/workflows/actions/create-github-release
         with:
           sha: ${{ needs.deploy-env.outputs.commit-sha }}
-      - uses: ./.github/workflows/actions/merge-stable-to-master
+          
+      - uses: ./common-workflows/.github/workflows/actions/merge-stable-to-master
         with:
           sha: ${{ needs.deploy-env.outputs.commit-sha }}
           github-automation-token: ${{ secrets.github-automation-token }}
@@ -109,6 +120,11 @@ jobs:
       - release
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/workflows/actions/notify-slack-pipeline-status
+      - uses: actions/checkout@v2
+        with:
+          repository: onboardiq/gh-common-workflows
+          path: ./common-workflows
+
+      - uses: ./common-workflows/.github/workflows/actions/notify-slack-pipeline-status
         with:
           slack-bot-token: ${{ secrets.slack-bot-token }}

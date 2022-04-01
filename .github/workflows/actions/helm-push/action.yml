@@ -39,9 +39,12 @@ runs:
 
     - name: 'Checkout Github Action'
       uses: actions/checkout@v2
+      with:
+        repository: onboardiq/gh-common-workflows
+        path: ./common-workflows
 
     - id: version
-      uses: ./.github/workflows/actions/version
+      uses: ./common-workflows/.github/workflows/actions/version
       with:
         base-chart-version: ${{ inputs.chart-version }}
 

@@ -42,7 +42,12 @@ runs:
       run: |
         echo "::add-mask::${{ inputs.aws-access-key-id }}"
         echo "::add-mask::${{ inputs.aws-secret-access-key }}"
-    
+
+    - uses: actions/checkout@v2
+      with:
+        repository: onboardiq/gh-common-workflows
+        path: ./common-workflows
+        
     - name: 'Install Kubectl'
       id: install-kubectl
       uses: azure/setup-kubectl@v1
@@ -73,7 +78,7 @@ runs:
           --region ${{ inputs.region }}
 
     - id: version
-      uses: ./.github/workflows/actions/version
+      uses: ./common-workflows/.github/workflows/actions/version
       with:
         base-charts-version: ${{ inputs.chart-version }}
 
