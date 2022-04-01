@@ -32,6 +32,7 @@ runs:
   using: 'composite'
   steps:
     - name: 'Add masks'
+      shell: bash
       run: |
         echo "::add-mask::${{ inputs.github-token }}"
         echo "::add-mask::${{ inputs.repo-username }}"
@@ -64,4 +65,5 @@ runs:
         IMAGE_TAG: ${{ steps.version.outputs.image-tag }}
         HELM_REPO_USERNAME: ${{ inputs.repo-username }}
         HELM_REPO_PASSWORD: ${{ inputs.repo-password }}
+      shell: bash
       run: make -C helm artifact

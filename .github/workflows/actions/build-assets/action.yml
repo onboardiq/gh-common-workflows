@@ -13,10 +13,12 @@ runs:
         cache-dependency-path: '**/package-lock.json'
     - env:
         NODE_ENV: production
+      shell: bash
       run: npm install
 
     - env:
         NODE_ENV: production
+      shell: bash
       run: npm install --only=dev
 
     - name: 'Cache Asset Pipeline'
@@ -39,17 +41,20 @@ runs:
     - env:
         RAILS_ENV: production
         RUNNING_ASSET_COMPILATION: true
+      shell: bash
       run: bundle exec rake assets:precompile
 
     - env:
         RAILS_ENV: production
         RUNNING_ASSET_COMPILATION: true
+      shell: bash
       run: bundle exec rake assets:clean
 
     - env:
         RAILS_ENV: production
         NODE_ENV: production
         RUNNING_ASSET_COMPILATION: true
+      shell: bash
       run: npm run webpack:production
 
     - uses: actions/upload-artifact@v2

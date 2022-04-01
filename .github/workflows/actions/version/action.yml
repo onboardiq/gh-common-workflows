@@ -15,12 +15,14 @@ runs:
   using: 'composite'
   steps:
     - id: image-tag
+      shell: bash
       run: |
         REF=${{ github.ref }}
         SHA=${{ github.sha }}
         echo "::set-output name=image-tag::${REF##*/}-${SHA::7}"
 
     - id: chart-version
+      shell: bash
       run: |
         REF=${{ github.ref }}
         SHA=${{ github.sha }}

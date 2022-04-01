@@ -11,11 +11,13 @@ runs:
   using: 'composite'
   steps:
     - name: 'Add masks'
+      shell: bash
       run: |
         echo "::add-mask::${{ inputs.github-automation-token }}"
 
     - name: "Get current date"
       id: date
+      shell: bash
       run: echo "::set-output name=now::$(TZ=America/Los_Angeles date +'%Y-%m-%d')"
 
     - name: "Create merge stable with master branch"

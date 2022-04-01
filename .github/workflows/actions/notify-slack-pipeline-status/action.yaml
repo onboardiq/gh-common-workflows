@@ -11,17 +11,21 @@ runs:
   using: 'composite'
   steps:
     - name: 'Add masks'
+      shell: bash
       run: |
         echo "::add-mask::${{ inputs.slack-bot-token }}"
     - name: 'Emoji on success'
+      shell: bash
       run: "echo STATUS_EMOJI=:large_green_circle: >> $GITHUB_ENV"
       if: ${{ success() }}
 
     - name: 'Emoji on failure'
+      shell: bash
       run: "echo STATUS_EMOJI=:red_circle: >> $GITHUB_ENV"
       if: ${{ failure() }}
 
     - name: 'Emoji on cancellation'
+      shell: bash
       run: "echo STATUS_EMOJI=:large_orange_circle: >> $GITHUB_ENV"
       if: ${{ cancelled() }}
 

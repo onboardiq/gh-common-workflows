@@ -29,6 +29,7 @@ runs:
   using: 'composite'
   steps:
     - name: 'Add masks'
+      shell: bash
       run: |
         echo "::add-mask::${{ inputs.aws-access-key-id }}"
         echo "::add-mask::${{ inputs.aws-secret-access-key }}"

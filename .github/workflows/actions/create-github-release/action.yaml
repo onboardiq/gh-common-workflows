@@ -11,6 +11,7 @@ runs:
     # Gets all the commits other than merge commits in the branch from the last tag
     - name: 'Get Release Info'
       id: release-info
+      shell: bash
       run: |
         RELEASE_NOTES="$(git log --pretty='%ci - %s (%an)' $(git describe --tags --abbrev=0)...@ | grep -vE '^.{25} - Merge.*'||:)"
         RELEASE_NOTES="${RELEASE_NOTES//'%'/'%25'}"

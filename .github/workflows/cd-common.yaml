@@ -64,6 +64,7 @@ jobs:
 
       - name: 'Get the commit sha'
         id: commit-sha
+        shell: bash
         run: echo "::set-output name=sha::$(git rev-parse HEAD)"
     
   deploy:

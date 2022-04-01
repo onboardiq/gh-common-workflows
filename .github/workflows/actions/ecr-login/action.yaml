@@ -33,6 +33,7 @@ runs:
   using: 'composite'
   steps:
     - name: 'Add masks'
+      shell: bash
       run: |
         echo "::add-mask::${{ inputs.aws-access-key-id }}"
         echo "::add-mask::${{ inputs.aws-secret-access-key }}"
@@ -54,6 +55,7 @@ runs:
 
     - id: cache-repo
       if: ${{ contains(fromJSON(inputs.regions), 'us-east-1') }}
+      shell: bash
       run: |
         echo "::set-output name=repo::${{ steps.login-ecr-use.outputs.registry }}/cache/${{ inputs.image-name }}"
 
@@ -119,6 +121,7 @@ runs:
 
     - id: login-acr-eus
       if: ${{ contains(fromJSON(inputs.regions), 'east-us') }}
+      shell: bash
       run: |
         echo "::set-output name=registry::${{ inputs.azure-registry }}/fountain/"
 
@@ -132,6 +135,7 @@ runs:
           ${{ steps.login-ecr-aps.outputs.registry }} \
           ${{ steps.login-ecr-euw-3.outputs.registry }} \
           ${{ steps.login-acr-eus.outputs.registry }}
+      shell: bash
       run: |
         json="[";
         for registry in $REGISTRIES; do

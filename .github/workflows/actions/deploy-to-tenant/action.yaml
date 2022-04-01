@@ -39,6 +39,7 @@ runs:
   using: 'composite'
   steps:
     - name: 'Add masks'
+      shell: bash
       run: |
         echo "::add-mask::${{ inputs.aws-access-key-id }}"
         echo "::add-mask::${{ inputs.aws-secret-access-key }}"
@@ -62,6 +63,7 @@ runs:
         
     # GITHUB_RUN_ID is the unique identifier (id) within a repo
     - name: 'Set the KUBECONFIG'
+      shell: bash
       run: |
         echo KUBECONFIG=${RUNNER_TEMP}/kubeconfig_${GITHUB_RUN_ID} >> $GITHUB_ENV
 
@@ -70,6 +72,7 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
         AWS_DEFAULT_REGION: ${{ inputs.region }}
+      shell: bash
       run: |
         aws eks update-kubeconfig \
           --name eng-${{ inputs.region }}-${{ inputs.stage }}-application-cluster${{ inputs.eks-suffix }} \
@@ -92,6 +95,7 @@ runs:
         CLUSTER_SUFFIX: ${{ inputs.eks-suffix }}
         CHART_VERSION: ${{ steps.version.outputs.chart_version }}
         IMAGE_TAG: ${{ steps.version.outputs.image_tag }}
+      shell: bash
       run: |
         kubectl config use-context aws-${{ inputs.region }}-${{ inputs.stage }}
         make -C helm test
@@ -106,6 +110,7 @@ runs:
         NAMESPACE: ${{ inputs.namespace }}
         CHART_VERSION: ${{ inputs.chart-version }}
         IMAGE_TAG: ${{ inputs.image-tag }}
+      shell: bash
       run: |
         kubectl config use-context aws-${{ inputs.region }}-${{ inputs.stage }}
         make -C helm install
