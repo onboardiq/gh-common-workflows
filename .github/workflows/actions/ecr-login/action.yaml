@@ -127,7 +127,7 @@ runs:
 
     - id: repos
       env:
-        IMAGE_NAME: ${{ input.image-name }}
+        IMAGE_NAME: ${{ inputs.image-name }}
         REGISTRIES: |
           ${{ steps.login-ecr-use.outputs.registry }} \
           ${{ steps.login-ecr-euc.outputs.registry }} \
