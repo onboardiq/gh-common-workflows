@@ -72,8 +72,7 @@ runs:
       id: meta-build-env
       uses: docker/metadata-action@v3
       with:
-        images: |
-          ${{ steps.repos.outputs.image-cache-repo }}
+        images: ${{ steps.repos.outputs.image-cache-repo }}
         tags: |
           type=raw,value=${{ steps.version.outputs.image-tag }}
 

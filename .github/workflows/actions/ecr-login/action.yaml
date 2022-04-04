@@ -143,4 +143,5 @@ runs:
           json="${json}"'"'"${registry}"'",'; 
         done;
         json="${json%?}]"
+        echo "::debug::${json}"
         echo "::set-output name=result::${json}"
