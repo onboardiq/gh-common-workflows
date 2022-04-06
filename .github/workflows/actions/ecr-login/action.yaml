@@ -123,7 +123,7 @@ runs:
       if: ${{ contains(fromJSON(inputs.regions), 'east-us') }}
       shell: bash
       run: |
-        echo "::set-output name=registry::${{ inputs.azure-registry }}/fountain/"
+        echo "::set-output name=registry::${{ inputs.azure-registry }}/fountain"
 
     - id: repos
       uses: actions/github-script@v6

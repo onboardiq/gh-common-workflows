@@ -86,12 +86,27 @@ runs:
         push: true
         tags: ${{ steps.meta-build-env.outputs.tags }}
         target: build-env
+
+    - id: images
+      uses: actions/github-script@v6
+      env:
+        REPOS: ${{ steps.repos.outputs.image-repos }}
+      with:
+        script: |
+          const { REPOS } = process.env;
+          try {
+            const repos = JSON.parse(REPOS);
+            return repos.join("\n");
+          } catch (error) {
+            throw new Error(`Error while parsing repos JSON body - ${REPOS}: ${error}`);
+          }
         
     - name: 'Docker meta - production'
       id: meta
       uses: docker/metadata-action@v3
       with:
-        images: ${{ join(fromJSON(steps.repos.outputs.image-repos), ' ') }}
+        images: |
+          ${{ steps.images.outputs.result }}
         tags: |
           type=raw,value=${{ steps.version.outputs.image-tag }}
 
