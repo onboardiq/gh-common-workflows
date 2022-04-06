@@ -141,8 +141,8 @@ runs:
           const { IMAGE_NAME, REGISTRIES } = process.env;
           try {
             const registries = JSON.parse(REGISTRIES);
-            return JSON.stringify(registries.map((r) => `${r}/${IMAGE_NAME}`));
+            return JSON.stringify(registries.filter(Boolean).map((r) => `${r}/${IMAGE_NAME}`));
           } catch (error) {
-            throw new Error(`Error while parsing registries JSON body: ${REGISTRIES}`);
+            throw new Error(`Error while parsing registries JSON body - ${REGISTRIES}: ${error}`);
           }
         result-encoding: string
