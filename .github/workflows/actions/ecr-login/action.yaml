@@ -139,6 +139,10 @@ runs:
       with:
         script: |
           const { IMAGE_NAME, REGISTRIES } = process.env;
-          const registries = JSON.parse(REGISTRIES);
-          return JSON.stringify(registries.map((r) => `${r}/${IMAGE_NAME}`));
+          try {
+            const registries = JSON.parse(REGISTRIES);
+            return JSON.stringify(registries.map((r) => `${r}/${IMAGE_NAME}`));
+          } catch (error) {
+            throw new Error(`Error while parsing registries JSON body: ${REGISTRIES}`);
+          }
         result-encoding: string
