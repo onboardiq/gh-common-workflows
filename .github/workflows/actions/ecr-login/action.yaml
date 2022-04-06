@@ -139,6 +139,7 @@ runs:
       with:
         script: |
           const { IMAGE_NAME, REGISTRIES } = process.env;
-          const registries = JSON.parse(REGISTRIES.replace(/\\/g, "", ));
+          console.log(REGISTRIES.replace(/\\/g, ""));
+          const registries = JSON.parse(REGISTRIES.replace(/\\/g, ""));
           return JSON.stringify(registries.map((r) => `${r}/${IMAGE_NAME}`));
         result-encoding: string
