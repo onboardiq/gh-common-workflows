@@ -16,9 +16,6 @@ inputs:
   repo-password:
     description: 'A password matching the given repo username'
     required: true
-  github-token:
-    description: 'An authorized github token'
-    required: true
   cloud:
     description: 'One of "aws" or "azure"'
     required: true
@@ -34,7 +31,6 @@ runs:
     - name: 'Add masks'
       shell: bash
       run: |
-        echo "::add-mask::${{ inputs.github-token }}"
         echo "::add-mask::${{ inputs.repo-username }}"
         echo "::add-mask::${{ inputs.repo-password }}"
 
@@ -50,10 +46,9 @@ runs:
         base-chart-version: ${{ inputs.chart-version }}
 
     - name: 'Install and Setup Helm'
-      uses: Azure/setup-helm@v1.1
+      uses: Azure/setup-helm@v2
       with:
         version: ${{ inputs.helm-version }}
-        token: ${{ inputs.github-token }}
 
     - name: 'Push Helm chart'
       env:
