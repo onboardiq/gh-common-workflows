@@ -17,7 +17,7 @@ on:
         type: string
       helm-version:
         description: "The version of Helm to use"
-        default: '3.4.1'
+        default: 'v3.4.1'
         type: string
       slack-channel:
         description: "The slack channel to post to on success"

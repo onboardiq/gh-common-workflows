@@ -56,10 +56,9 @@ runs:
         version: v1.19.0
 
     - name: 'Install and Setup Helm'
-      uses: Azure/setup-helm@v1.1
+      uses: Azure/setup-helm@v2.0
       with:
         version: ${{ inputs.helm-version }}
-        token: ${{ secrets.GITHUB_TOKEN }}
         
     # GITHUB_RUN_ID is the unique identifier (id) within a repo
     - name: 'Set the KUBECONFIG'
