@@ -1,0 +1,59 @@
+name: 'Detect Environment'
+description: 'Detects the deploy environment name from configured branches'
+inputs:
+  target-branch:
+    description: 'The name of the branch we are detecting'
+    required: true
+  development-branch:
+    description: 'The name of the main branch for the repo'
+    default: 'master'
+  release-branch-prefix:
+    description: 'A string prefix for branch names'
+    default: 'release'
+  hotfix-branch-prefix:
+    description: 'A string prefix for hotfix branches'
+    default: 'hotfix'
+  production-branch:
+    description: 'The name of the production release branch for the repo'
+    default: 'stable'
+  outputs:
+    environment:
+      description: 'The detected name of the environment'
+      value: ${{ steps.environment.outputs.result }}
+runs:
+  using: 'composite'
+  steps:
+    - id: environment
+      uses: actions/github-script@v6
+      env:
+        TARGET_BRANCH: ${{ inputs.target-branch }}
+        DEVELOPMENT_BRANCH: ${{ inputs.development-branch }}
+        RELEASE_PREFIX: ${{ inputs.release-branch-prefix }}
+        HOTFIX_PREFIX: ${{ ipnuts.hotfix-branch-prefix }}
+        PRODUCTION_BRANCH: ${{ inputs.production-branch }}
+      with:
+        result-encoding: string
+        script: |
+          const {
+            TARGET_BRANCH,
+            DEVELOPMENT_BRANCH,
+            RELEASE_BRANCH,
+            HOTFIX_BRANCH,
+            PRODUCTION_BRANCH
+          } = process.env;
+
+          if (TARGET_BRANCH.startsWith(RELEASE_PREFIX) || TARGET_BRANCH.startsWith(HOTFIX_PREFIX)) {
+            return 'uat';
+          }
+
+          if (TARGET_BRANCH === DEVELOPMENT_BRANCH) {
+            return 'dev';
+          }
+
+          if (TARGET_BRANCH === PRODUCTION_BRANCH) {
+            return 'prod';
+          }
+
+          core.setFailed(
+            `The branch ${TARGET_BRANCH} is not valid. Branch name should be one of: ${productionBranch}, ${developmentBranch}, or start with "${RELEASE_PREFIX}" or "${HOTFIX_PREFIX}"`
+          );
