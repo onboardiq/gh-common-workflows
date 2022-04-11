@@ -27,8 +27,8 @@ runs:
         REF=${{ github.ref }}
         SHA=${{ github.sha }}
         if [[ ${REF} == "refs/heads/stable" ]]; then
-          echo "::set-output name=chart-version::${INPUT_BASE_CHART_VERSION}-${SHA::7}"
+          echo "::set-output name=chart-version::${{ inputs.base-chart-version }}-${SHA::7}"
         else
           FILTERED_REF=$( echo "${REF##*/}" | tr '_' '-' )
-          echo "::set-output name=chart-version::${INPUT_BASE_CHART_VERSION}-${SHA::7}-${FILTERED_REF}"
+          echo "::set-output name=chart-version::${{ inputs.base-chart-version }}-${SHA::7}-${FILTERED_REF}"
         fi
