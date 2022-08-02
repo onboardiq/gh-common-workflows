@@ -35,11 +35,11 @@ runs:
         result-encoding: string
         script: |
           const {
-            TARGET_BRANCH,
             DEVELOPMENT_BRANCH,
-            RELEASE_BRANCH,
             HOTFIX_BRANCH,
             PRODUCTION_BRANCH
+            RELEASE_BRANCH,
+            TARGET_BRANCH,
           } = process.env;
 
           if (TARGET_BRANCH.startsWith(RELEASE_PREFIX) || TARGET_BRANCH.startsWith(HOTFIX_PREFIX)) {
