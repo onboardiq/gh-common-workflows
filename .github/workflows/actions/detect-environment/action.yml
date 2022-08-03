@@ -26,11 +26,11 @@ runs:
     - id: environment
       uses: actions/github-script@v6
       env:
-        TARGET_BRANCH: ${{ inputs.target-branch }}
         DEVELOPMENT_BRANCH: ${{ inputs.development-branch }}
-        RELEASE_PREFIX: ${{ inputs.release-branch-prefix }}
         HOTFIX_PREFIX: ${{ ipnuts.hotfix-branch-prefix }}
         PRODUCTION_BRANCH: ${{ inputs.production-branch }}
+        RELEASE_PREFIX: ${{ inputs.release-branch-prefix }}
+        TARGET_BRANCH: ${{ inputs.target-branch }}
       with:
         result-encoding: string
         script: |
@@ -55,5 +55,5 @@ runs:
           }
 
           core.setFailed(
-            `The branch ${TARGET_BRANCH} is not valid. Branch name should be one of: ${productionBranch}, ${developmentBranch}, or start with "${RELEASE_PREFIX}" or "${HOTFIX_PREFIX}"`
+            `The branch ${TARGET_BRANCH} is not valid. Branch name should be one of: ${PRODUCTION_BRANCH}, ${DEVELOPMENT_BRANCH}, or start with "${RELEASE_PREFIX}" or "${HOTFIX_PREFIX}"`
           );
