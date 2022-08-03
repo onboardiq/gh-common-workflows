@@ -57,8 +57,7 @@ jobs:
       commit-sha:
         value: ${{ steps.commit-sha.outputs.sha }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
         ref: ${{ inputs.ref }}
         fetch-depth: 0
@@ -75,8 +74,7 @@ jobs:
       matrix:
         include: ${{ fromJSON(inputs.tenants) }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
@@ -112,8 +110,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ inputs.env == 'prod' && success() }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
@@ -133,7 +130,7 @@ jobs:
       - release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
