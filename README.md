@@ -39,9 +39,6 @@ jobs:
         # the default is probably what you should use
         helm-version: 3.4.1
 
-        # A slack channel ID to report pipeline status to, the default is #cicd-github-action
-        # slack-channel: CJDAJ0010DJS
-
       secrets:
         # AWS credentials with sufficient permissions to push to ECR
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -54,9 +51,6 @@ jobs:
         # Helm Repo Credentials
         helm-repo-username: ${{ secrets.HELM_REPO_USERNAME }}
         helm-repo-password: ${{ secrets.HELM_REPO_PASSWORD }}
-
-        # A slack bot token allowed to post to the given slack channel
-        slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
 ```
 
 ### CD
@@ -101,9 +95,6 @@ jobs:
       # Helm Repo Credentials
       helm-repo-username: ${{ secrets.HELM_REPO_USERNAME }}
       helm-repo-password: ${{ secrets.HELM_REPO_PASSWORD }}
-
-      # A slack bot token allowed to post to the given slack channel
-      slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
 
       # A Github user oauth token that can create, approve, and merge PRs
       github-automation-token: ${{ secrets.GH_AUTOMATION_TOKEN }}
