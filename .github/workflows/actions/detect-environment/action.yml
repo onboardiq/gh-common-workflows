@@ -39,7 +39,7 @@ runs:
           const {
             DEVELOPMENT_BRANCH,
             HOTFIX_BRANCH,
-            PRODUCTION_BRANCH
+            PRODUCTION_BRANCH,
             RELEASE_BRANCH,
             TARGET_BRANCH,
           } = process.env;
