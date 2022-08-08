@@ -29,7 +29,7 @@ runs:
       uses: actions/github-script@v6
       env:
         DEVELOPMENT_BRANCH: ${{ inputs.development-branch }}
-        HOTFIX_PREFIX: ${{ ipnuts.hotfix-branch-prefix }}
+        HOTFIX_PREFIX: ${{ inputs.hotfix-branch-prefix }}
         PRODUCTION_BRANCH: ${{ inputs.production-branch }}
         RELEASE_PREFIX: ${{ inputs.release-branch-prefix }}
         TARGET_BRANCH: ${{ inputs.target-branch }}
