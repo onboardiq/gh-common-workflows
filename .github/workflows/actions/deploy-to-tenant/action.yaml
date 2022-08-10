@@ -49,6 +49,9 @@ runs:
         repository: onboardiq/gh-common-workflows
         path: ./common-workflows
         
+    - name: "Install Doppler CLI"
+      uses: dopplerhq/cli-action@v1
+
     - name: 'Install Kubectl'
       id: install-kubectl
       uses: azure/setup-kubectl@v1
@@ -56,7 +59,7 @@ runs:
         version: v1.19.0
 
     - name: 'Install and Setup Helm'
-      uses: Azure/setup-helm@v2.0
+      uses: Azure/setup-helm@v3.3
       with:
         version: ${{ inputs.helm-version }}
         
@@ -100,7 +103,7 @@ runs:
         make -C helm test
 
     - name: 'Deployment'
-      if: ${{ inputs.dry-run }}
+      if: ${{ inputs.dry-run == 'false' }}
       env:
         CLOUD: ${{ inputs.cloud }}
         REGION: ${{ inputs.region }}
