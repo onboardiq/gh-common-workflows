@@ -133,7 +133,7 @@ jobs:
         with:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
-
+      #TODO this is an old workflow that's not using our new notification process
       - uses: ./common-workflows/.github/workflows/actions/notify-slack-pipeline-status
         with:
           slack-bot-token: ${{ secrets.slack-bot-token }}
