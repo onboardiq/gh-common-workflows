@@ -4,7 +4,7 @@ inputs:
   slack_webhook_url: 
     description: 'The URL of the Slack Webhook to post the message to'
     required: true
-  gh_action_token:
+  gh_automation_token:
     description: 'The gh actions token'
     required: true
   environment:
@@ -26,7 +26,7 @@ runs:
       uses: actions/checkout@v3
       with:
         repository: onboardiq/gh-action-post-message-to-slack
-        token: ${{ inputs.gh_action_token }}
+        token: ${{ inputs.gh_automationn_token }}
         path: ./action
     - name: run the action
       uses: ./action

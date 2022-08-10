@@ -27,6 +27,10 @@ on:
         description: "A JSON string representing a list of tenant data"
         required: true
         type: string
+      message_for_slack:
+        description: "The message to post on successful deployment"
+        required: true
+
     secrets:
       aws-access-key-id:
         description: "An AWS Access Key ID with sufficient access to push to ECR repos"
@@ -43,8 +47,8 @@ on:
       github-automation-token:
         description: "A github user token with sufficent permissions to create, approve, and merge PRs"
         required: true
-      slack-bot-token:
-        description: "A slack bot token allowed to post to the Fountain slack"
+      slack-webhook-url:
+        description: 'The URL of the Slack Webhook to post the message to'
         required: true
 
 jobs:
@@ -133,7 +137,10 @@ jobs:
         with:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
-      #TODO this is an old workflow that's not using our new notification process
       - uses: ./common-workflows/.github/workflows/actions/notify-slack-pipeline-status
         with:
-          slack-bot-token: ${{ secrets.slack-bot-token }}
+          slack_webhook_url: ${{ secrets.slack_webhook_url }}
+          gh_automation_token: ${{ secrets.github-automation-token }}
+          environment: ${{ inputs.env }}
+          messsage: ${{ inputs.message_for_slack }}
+
