@@ -133,14 +133,19 @@ jobs:
       - release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: "Checkout common workflows and actions"
+        uses: actions/checkout@v3
         with:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
-      - uses: ./common-workflows/.github/workflows/actions/notify-slack-pipeline-status
+      - name: "Post messae to Slack"
+        uses: ./common-workflows/.github/workflows/actions/notify-slack-pipeline-status
         with:
           slack_webhook_url: ${{ secrets.slack_webhook_url }}
           gh_automation_token: ${{ secrets.github-automation-token }}
           environment: ${{ inputs.env }}
           messsage: ${{ inputs.message_for_slack }}
+      - name: "Post data row to Notion"
+        uses: ./common-workflows/.github/workflows/actions/notify-notion
+        with: 
 
