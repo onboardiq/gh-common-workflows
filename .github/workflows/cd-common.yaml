@@ -29,6 +29,7 @@ on:
         type: string
       message_for_slack:
         description: "The message to post on successful deployment"
+        type: string
         required: true
 
     secrets:
