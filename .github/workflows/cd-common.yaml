@@ -60,13 +60,11 @@ on:
 
 jobs:
   deploy-env:
-    needs:
     runs-on: ubuntu-latest
     outputs:
       notes: ${{ steps.release_info.outputs.notes }}
       tag: ${{ steps.release_info.outputs.tag }}
-      commit-sha:
-        value: ${{ steps.commit-sha.outputs.sha }}
+      commit-sha: ${{ steps.commit-sha.outputs.sha }}
     steps:
       - uses: actions/checkout@v3
         with:
