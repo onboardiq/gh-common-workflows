@@ -50,3 +50,4 @@ runs:
         repo: ${{ inputs.repo }}
         sha: ${{ inputs.sha }}
         status: ${{ inputs.status }}
+        body: ${{ inputs.body }}

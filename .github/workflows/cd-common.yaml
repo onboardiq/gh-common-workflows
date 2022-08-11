@@ -50,6 +50,12 @@ on:
       slack-webhook-url:
         description: 'The URL of the Slack Webhook to post the message to'
         required: true
+      notion-database-id:
+        description: 'The ID of the notion database to post update to'
+        required: true
+      notion-secret:
+        description: 'Secret token allowing working with notion'
+        required: true
 
 jobs:
   deploy-env:
@@ -70,12 +76,13 @@ jobs:
         id: commit-sha
         shell: bash
         run: echo "::set-output name=sha::$(git rev-parse HEAD)"
+
   deploy:
     needs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        include: ${{ fromJSON(inputs.tenants) }}
+       include: ${{ fromJSON(inputs.tenants) }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -130,6 +137,7 @@ jobs:
   post-deploy:
     needs:
       - deploy
+      - deploy-env
       - release
     runs-on: ubuntu-latest
     steps:
@@ -138,7 +146,7 @@ jobs:
         with:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
-      - name: "Post messae to Slack"
+      - name: "Post message to Slack"
         uses: ./common-workflows/.github/workflows/actions/notify-slack-pipeline-status
         with:
           slack_webhook_url: ${{ secrets.slack_webhook_url }}
@@ -148,4 +156,9 @@ jobs:
       - name: "Post data row to Notion"
         uses: ./common-workflows/.github/workflows/actions/notify-notion
         with: 
-
+          database-id: ${{ secrets.notion-database-id }}
+          notion-secret: ${{ secerts.notion-secret }}
+          repo: ${{ inputs.project-name }}
+          sha: ${{ needs.deploy-env.outputs.commit-sha }}
+          status: "${{ inputs.project-name }} deployed to ${{ inputs.env }}"
+          gh_automation_token: ${{ secrets.github-automation-token }}
