@@ -38,7 +38,7 @@ runs:
         script: |
           const {
             DEVELOPMENT_BRANCH,
-            HOTFIX_BRANCH,
+            HOTFIX_PREFIX,
             PRODUCTION_BRANCH,
             RELEASE_PREFIX,
             TARGET_BRANCH,
