@@ -76,6 +76,14 @@ jobs:
         shell: bash
         run: echo "::set-output name=sha::$(git rev-parse HEAD)"
 
+  not-a-dry-run:
+    if: ${{ inputs.dry-run == 'false' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Fail if Dry Run is set"
+        if: ${{ inputs.dry-run == 'true' }}
+        run: exit 1
+
   deploy:
     needs:
     runs-on: ubuntu-latest
@@ -102,14 +110,6 @@ jobs:
           dry-run: ${{ inputs.dry-run }}
           aws-access-key-id: ${{ secrets.aws-access-key-id }}
           aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
-
-  not-a-dry-run:
-    if: ${{ inputs.dry-run == 'false' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Fail if Dry Run is set"
-        if: ${{ inputs.dry-run == 'true' }}
-        run: exit 1
   
   release:
     needs:
@@ -156,7 +156,7 @@ jobs:
         uses: ./common-workflows/.github/workflows/actions/notify-notion
         with: 
           database-id: ${{ secrets.notion-database-id }}
-          notion-secret: ${{ secerts.notion-secret }}
+          notion-secret: ${{ secrets.notion-secret }}
           repo: ${{ inputs.project-name }}
           sha: ${{ needs.deploy-env.outputs.commit-sha }}
           status: "${{ inputs.project-name }} deployed to ${{ inputs.env }}"
