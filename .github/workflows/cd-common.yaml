@@ -85,11 +85,10 @@ jobs:
         run: exit 1
 
   deploy:
-    needs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-       include: ${{ fromJSON(inputs.tenants) }}
+        include: ${{ fromJSON(inputs.tenants) }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -110,7 +109,6 @@ jobs:
           dry-run: ${{ inputs.dry-run }}
           aws-access-key-id: ${{ secrets.aws-access-key-id }}
           aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
-  
   release:
     needs:
       - deploy
@@ -127,7 +125,6 @@ jobs:
       - uses: ./common-workflows/.github/workflows/actions/create-github-release
         with:
           sha: ${{ needs.deploy-env.outputs.commit-sha }}
-          
       - uses: ./common-workflows/.github/workflows/actions/merge-stable-to-master
         with:
           sha: ${{ needs.deploy-env.outputs.commit-sha }}
@@ -154,7 +151,7 @@ jobs:
           messsage: ${{ inputs.message_for_slack }}
       - name: "Post data row to Notion"
         uses: ./common-workflows/.github/workflows/actions/notify-notion
-        with: 
+        with:
           database-id: ${{ secrets.notion-database-id }}
           notion-secret: ${{ secrets.notion-secret }}
           repo: ${{ inputs.project-name }}
