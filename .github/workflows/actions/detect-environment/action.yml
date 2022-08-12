@@ -40,7 +40,7 @@ runs:
             DEVELOPMENT_BRANCH,
             HOTFIX_BRANCH,
             PRODUCTION_BRANCH,
-            RELEASE_BRANCH,
+            RELEASE_PREFIX,
             TARGET_BRANCH,
           } = process.env;
 
