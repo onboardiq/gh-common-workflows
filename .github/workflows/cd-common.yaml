@@ -59,12 +59,6 @@ on:
         required: true
 
 jobs:
-  echo-tenants:
-    runs-on: ubuntu-latest
-    steps:
-      - name: 'echo tenants'
-        run: echo "::debug::${{ inputs }}"
-
   deploy-env:
     runs-on: ubuntu-latest
     outputs:
@@ -82,17 +76,8 @@ jobs:
         shell: bash
         run: echo "::set-output name=sha::$(git rev-parse HEAD)"
 
-  not-a-dry-run:
-    if: ${{ inputs.dry-run == 'false' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Fail if Dry Run is set"
-        if: ${{ inputs.dry-run == 'true' }}
-        run: exit 1
-
   deploy:
     needs:
-      - not-a-dry-run
       - deploy-env
     runs-on: ubuntu-latest
     strategy:
@@ -107,23 +92,22 @@ jobs:
       - name: Deploy job for ${{ matrix.title }}
         uses: ./common-workflows/.github/workflows/actions/deploy-to-tenant
         with:
-          helm-version: ${{ inputs.helm-version }}
-          chart-version: ${{ inputs.helm-chart-version }}
-          region: ${{ matrix.cluster.region }}
-          cloud: ${{ matrix.cluster.cloud }}
-          eks-suffix: ${{ matrix.cluster.eks_suffix }}
-          tenant-name: ${{ matrix.tenant }}
-          namespace: ${{ matrix.namespace }}
-          stage: ${{ matrix.stage }}
-          dry-run: ${{ inputs.dry-run }}
           aws-access-key-id: ${{ secrets.aws-access-key-id }}
           aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
+          chart-version: ${{ inputs.helm-chart-version }}
+          cloud: ${{ matrix.cluster.cloud }}
+          dry-run: ${{ inputs.dry-run }}
+          eks-suffix: ${{ matrix.cluster.eks_suffix }}
+          helm-version: ${{ inputs.helm-version }}
+          namespace: ${{ matrix.namespace }}
+          region: ${{ matrix.cluster.region }}
+          stage: ${{ matrix.stage }}
+          tenant-name: ${{ matrix.tenant }}
 
   release:
     needs:
       - deploy
       - deploy-env
-      - not-a-dry-run
     runs-on: ubuntu-latest
     if: ${{ inputs.env == 'prod' && success() }}
     steps:

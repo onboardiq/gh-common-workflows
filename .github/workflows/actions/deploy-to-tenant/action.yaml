@@ -34,7 +34,7 @@ inputs:
   aws-secret-access-key:
     description: "An AWS Secret Access Key matching the given access key id"
     required: true
-  
+
 runs:
   using: 'composite'
   steps:
@@ -48,7 +48,7 @@ runs:
       with:
         repository: onboardiq/gh-common-workflows
         path: ./common-workflows
-        
+
     - name: "Install Doppler CLI"
       uses: dopplerhq/cli-action@v1
 
@@ -95,7 +95,7 @@ runs:
         aws-region: ${{ inputs.region }}
 
     - name: 'Deployment Dry Run'
-      if: ${{ inputs.dry-run }}
+      if: ${{ inputs.dry-run == 'true' }}
       env:
         CLOUD: ${{ inputs.cloud }}
         REGION: ${{ inputs.region }}
