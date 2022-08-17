@@ -64,8 +64,9 @@ on:
 jobs:
   echo-tenants:
     runs-on: ubuntu-latest
-    run: |
-      echo ${{ fromJSON(inputs.tenants) }}
+    steps:
+      run: |
+        echo ${{ fromJSON(inputs.tenants) }}
 
   deploy-env:
     runs-on: ubuntu-latest
