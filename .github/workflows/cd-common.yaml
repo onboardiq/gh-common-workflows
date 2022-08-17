@@ -63,8 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'echo tenants'
-        run: |
-          echo ${{ fromJSON(inputs.tenants) }}
+        run: echo ${{ fromJSON(inputs.tenants) }}
 
   deploy-env:
     runs-on: ubuntu-latest
