@@ -65,6 +65,7 @@ jobs:
   echo-tenants:
     runs-on: ubuntu-latest
     steps:
+      name: 'echo tenants'
       run: |
         echo ${{ fromJSON(inputs.tenants) }}
 
