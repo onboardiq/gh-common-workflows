@@ -57,8 +57,16 @@ on:
       notion-secret:
         description: 'Secret token allowing working with notion'
         required: true
+      tenants:
+        description: 'A JSON map of tenants'
+        required: true
 
 jobs:
+  echo-tenants:
+    runs-on: ubuntu-latest
+    run: |
+      echo ${{ fromJSON(inputs.tenants) }}
+
   deploy-env:
     runs-on: ubuntu-latest
     outputs:
