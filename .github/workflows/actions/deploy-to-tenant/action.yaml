@@ -64,7 +64,7 @@ runs:
     - name: 'Install and Setup Helm'
       uses: Azure/setup-helm@v3.3
       with:
-        version: ${{ inputs.helm-version }}
+        version: ${{ inputs.helm-chart-version }}
 
     # GITHUB_RUN_ID is the unique identifier (id) within a repo
     - name: 'Set the KUBECONFIG'
@@ -112,7 +112,7 @@ runs:
         kubectl config use-context aws-${{ inputs.region }}-${{ inputs.stage }}
         make -C helm test
 
-    - name: 'Deployment'
+    - name: 'Deployment - LIVE'
       if: ${{ inputs.dry-run == 'false' }}
       env:
         CLOUD: ${{ inputs.cloud }}
