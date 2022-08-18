@@ -34,6 +34,9 @@ inputs:
   aws-secret-access-key:
     description: "An AWS Secret Access Key matching the given access key id"
     required: true
+  include_faut_reset_cronjob:
+    description: "Pass 1 to include a faut reset cronjob"
+    required: false
 
 runs:
   using: 'composite'

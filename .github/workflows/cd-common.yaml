@@ -89,20 +89,21 @@ jobs:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
 
-      - name: Deploy job for ${{ matrix.title }}
+      - name: Deploy job for ${{ matrix.name }}
         uses: ./common-workflows/.github/workflows/actions/deploy-to-tenant
         with:
           aws-access-key-id: ${{ secrets.aws-access-key-id }}
           aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
           chart-version: ${{ inputs.helm-chart-version }}
-          cloud: ${{ matrix.cluster.cloud }}
+          cloud: ${{ matrix.cloud }}
           dry-run: ${{ inputs.dry-run }}
-          eks-suffix: ${{ matrix.cluster.eks_suffix }}
+          eks-suffix: ${{ matrix.cluster_suffix }}
           helm-version: ${{ inputs.helm-version }}
           namespace: ${{ matrix.namespace }}
-          region: ${{ matrix.cluster.region }}
-          stage: ${{ matrix.stage }}
+          region: ${{ matrix.region }}
+          context: ${{ matrix.context }}
           tenant-name: ${{ matrix.tenant }}
+          include_faut_reset_cronjob: ${{ matrix.include_faut_reset_cronjob }}
 
   release:
     needs:
