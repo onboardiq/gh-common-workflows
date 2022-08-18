@@ -109,8 +109,8 @@ runs:
         TENANT: ${{ inputs.tenant-name }}
         NAMESPACE: ${{ inputs.namespace }}
         CLUSTER_SUFFIX: ${{ inputs.eks-suffix }}
-        CHART_VERSION: ${{ steps.version.outputs.chart_version }}
-        IMAGE_TAG: ${{ steps.version.outputs.image_tag }}
+        CHART_VERSION: ${{ steps.version.outputs.chart-version }}
+        IMAGE_TAG: ${{ steps.version.outputs.image-tag }}
       shell: bash
       run: |
         kubectl config use-context aws-${{ inputs.region }}-${{ inputs.context }}
