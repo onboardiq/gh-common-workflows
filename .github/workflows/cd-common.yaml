@@ -7,6 +7,10 @@ on:
         description: 'The name of the project'
         required: true
         type: string
+      helm-version:
+        description: "The version of Helm to use"
+        required: true
+        type: string
       helm-chart-version:
         description: 'The base version of the chart to deploy, in the format X.Y.Z'
         required: true
@@ -98,7 +102,7 @@ jobs:
           cloud: ${{ matrix.cloud }}
           dry-run: ${{ inputs.dry-run }}
           eks-suffix: ${{ matrix.cluster_suffix }}
-          helm-chart-version: ${{ inputs.helm-chart-version }}
+          helm-version: ${{ inputs.helm-version }}
           namespace: ${{ matrix.namespace }}
           region: ${{ matrix.region }}
           context: ${{ matrix.context }}

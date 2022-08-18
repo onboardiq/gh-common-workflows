@@ -1,7 +1,7 @@
 name: 'Deploy to Tenant'
 description: "Deploy via Helm to a Tenant"
 inputs:
-  helm-chart-version:
+  helm-version:
     description: 'The version of Helm to use'
     required: true
   chart-version:
@@ -64,7 +64,7 @@ runs:
     - name: 'Install and Setup Helm'
       uses: Azure/setup-helm@v3.3
       with:
-        version: ${{ inputs.helm-chart-version }}
+        version: ${{ inputs.chart-version }}
 
     # GITHUB_RUN_ID is the unique identifier (id) within a repo
     - name: 'Set the KUBECONFIG'
