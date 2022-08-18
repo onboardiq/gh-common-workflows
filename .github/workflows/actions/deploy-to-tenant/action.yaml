@@ -22,8 +22,8 @@ inputs:
   namespace:
     description: "The kubernetes namespace the tenant is in"
     required: true
-  stage:
-    description: "One of 'stage' or 'prod'"
+  context:
+    description: "One of contexts: 'stage' or 'prod'"
     required: true
   dry-run:
     description: "When true, only does a dry run of the deployment"
