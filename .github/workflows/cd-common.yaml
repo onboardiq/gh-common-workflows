@@ -98,7 +98,7 @@ jobs:
           cloud: ${{ matrix.cloud }}
           dry-run: ${{ inputs.dry-run }}
           eks-suffix: ${{ matrix.cluster_suffix }}
-          helm-version: ${{ inputs.helm-version }}
+          helm-chart-version: ${{ inputs.helm-chart-version }}
           namespace: ${{ matrix.namespace }}
           region: ${{ matrix.region }}
           context: ${{ matrix.context }}

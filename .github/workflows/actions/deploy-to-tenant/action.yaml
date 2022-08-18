@@ -1,7 +1,7 @@
 name: 'Deploy to Tenant'
 description: "Deploy via Helm to a Tenant"
 inputs:
-  helm-version:
+  helm-chart-version:
     description: 'The version of Helm to use'
     required: true
   chart-version:
