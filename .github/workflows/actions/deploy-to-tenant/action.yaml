@@ -80,8 +80,8 @@ runs:
       shell: bash
       run: |
         aws eks update-kubeconfig \
-          --name eng-${{ inputs.region }}-${{ inputs.stage }}-application-cluster${{ inputs.eks-suffix }} \
-          --alias aws-${{ inputs.region }}-${{ inputs.stage }} \
+          --name eng-${{ inputs.region }}-${{ inputs.context }}-application-cluster${{ inputs.eks-suffix }} \
+          --alias aws-${{ inputs.region }}-${{ inputs.context }} \
           --kubeconfig ${KUBECONFIG} \
           --region ${{ inputs.region }}
 
@@ -98,7 +98,7 @@ runs:
         aws-region: ${{ inputs.region }}
 
     - name: 'Deployment Dry Run'
-      if: ${{ inputs.dry-run == 'true' }}
+      if: ${{ inputs.dry-run == 'true' || inputs.dry-run == true }}
       env:
         CLOUD: ${{ inputs.cloud }}
         REGION: ${{ inputs.region }}
@@ -109,11 +109,11 @@ runs:
         IMAGE_TAG: ${{ steps.version.outputs.image_tag }}
       shell: bash
       run: |
-        kubectl config use-context aws-${{ inputs.region }}-${{ inputs.stage }}
+        kubectl config use-context aws-${{ inputs.region }}-${{ inputs.context }}
         make -C helm test
 
     - name: 'Deployment - LIVE'
-      if: ${{ inputs.dry-run == 'false' }}
+      if: ${{ inputs.dry-run == 'false' || inputs.dry-run == false }}
       env:
         CLOUD: ${{ inputs.cloud }}
         REGION: ${{ inputs.region }}
@@ -124,5 +124,5 @@ runs:
         IMAGE_TAG: ${{ inputs.image-tag }}
       shell: bash
       run: |
-        kubectl config use-context aws-${{ inputs.region }}-${{ inputs.stage }}
+        kubectl config use-context aws-${{ inputs.region }}-${{ inputs.context }}
         make -C helm install
