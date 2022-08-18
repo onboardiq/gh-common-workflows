@@ -49,6 +49,10 @@ runs:
 
     - uses: actions/checkout@v3
       with:
+        repository: onboardiq/monolith
+
+    - uses: actions/checkout@v3
+      with:
         repository: onboardiq/gh-common-workflows
         path: ./common-workflows
 
