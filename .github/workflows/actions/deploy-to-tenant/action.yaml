@@ -40,6 +40,12 @@ inputs:
   gh_pat:
     description: "A GitHub personal access token"
     required: true
+  helm_repo_username:
+    description: "Helm repo username"
+    required: true
+  helm_repo_password:
+    description: "Helm repo password"
+    required: true
 
 runs:
   using: 'composite'
@@ -49,7 +55,8 @@ runs:
       run: |
         echo "::add-mask::${{ inputs.aws-access-key-id }}"
         echo "::add-mask::${{ inputs.aws-secret-access-key }}"
-        echo "::add-mask::${{ inputs.gh_pat }}"
+        echo "::add-mask::${{ inputs.helm_repo_username }}"
+        echo "::add-mask::${{ inputs.helm_repo_password }}"
 
     - uses: actions/checkout@v3
       with:
@@ -116,6 +123,8 @@ runs:
         CLUSTER_SUFFIX: ${{ inputs.eks-suffix }}
         CHART_VERSION: ${{ steps.version.outputs.chart-version }}
         IMAGE_TAG: ${{ steps.version.outputs.image-tag }}
+        HELM_REPO_USERNAME: ${{ inputs.helm_repo_username }}
+        HELM_REPO_PASSWORD: ${{ inputs.helm_repo_password }}
       shell: bash
       run: |
         kubectl config use-context aws-${{ inputs.region }}-${{ inputs.context }}
@@ -131,6 +140,8 @@ runs:
         NAMESPACE: ${{ inputs.namespace }}
         CHART_VERSION: ${{ inputs.chart-version }}
         IMAGE_TAG: ${{ inputs.image-tag }}
+        HELM_REPO_USERNAME: ${{ inputs.helm_repo_username }}
+        HELM_REPO_PASSWORD: ${{ inputs.helm_repo_password }}
       shell: bash
       run: |
         kubectl config use-context aws-${{ inputs.region }}-${{ inputs.context }}
