@@ -109,8 +109,8 @@ jobs:
           tenant-name: ${{ matrix.tenant }}
           include_faut_reset_cronjob: ${{ matrix.include_faut_reset_cronjob }}
           gh_pat: ${{ secrets.github-automation-token }}
-          helm_repo_username: ${{ secrets.helm_repo_username }}
-          helm_repo_password: ${{ secrets.helm_repo_password }}
+          helm_repo_username: ${{ secrets.helm-repo-username }}
+          helm_repo_password: ${{ secrets.helm-repo-password }}
 
   release:
     needs:
