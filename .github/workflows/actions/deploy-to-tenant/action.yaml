@@ -136,10 +136,10 @@ runs:
         CLOUD: ${{ inputs.cloud }}
         REGION: ${{ inputs.region }}
         TENANT: ${{ inputs.tenant-name }}
-        CLUSTER_SUFFIX: ${{ inputs.eks-suffix }}
         NAMESPACE: ${{ inputs.namespace }}
-        CHART_VERSION: ${{ inputs.chart-version }}
-        IMAGE_TAG: ${{ inputs.image-tag }}
+        CLUSTER_SUFFIX: ${{ inputs.eks-suffix }}
+        CHART_VERSION: ${{ steps.version.outputs.chart-version }}
+        IMAGE_TAG: ${{ steps.version.outputs.image-tag }}
         HELM_REPO_USERNAME: ${{ inputs.helm_repo_username }}
         HELM_REPO_PASSWORD: ${{ inputs.helm_repo_password }}
       shell: bash
