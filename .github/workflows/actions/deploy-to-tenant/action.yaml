@@ -37,6 +37,9 @@ inputs:
   include_faut_reset_cronjob:
     description: "Pass 1 to include a faut reset cronjob"
     required: false
+  gh_pat:
+    description: "A GitHub personal access token"
+    required: true
 
 runs:
   using: 'composite'
@@ -46,6 +49,7 @@ runs:
       run: |
         echo "::add-mask::${{ inputs.aws-access-key-id }}"
         echo "::add-mask::${{ inputs.aws-secret-access-key }}"
+        echo "::add-mask::${{ inputs.gh_pat }}"
 
     - uses: actions/checkout@v3
       with:
@@ -69,6 +73,7 @@ runs:
       uses: Azure/setup-helm@v3.3
       with:
         version: ${{ inputs.helm-version }}
+        token: ${{ inputs.gh_pat }}
 
     # GITHUB_RUN_ID is the unique identifier (id) within a repo
     - name: 'Set the KUBECONFIG'
