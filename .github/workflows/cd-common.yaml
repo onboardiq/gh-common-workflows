@@ -98,6 +98,7 @@ jobs:
         if: >-
           inputs.env == matrix.context
           || (inputs.env == 'uat' && matrix.context == 'stage')
+          || (inputs.env == 'dev' && matrix.content == 'stage')
         with:
           aws-access-key-id: ${{ secrets.aws-access-key-id }}
           aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
