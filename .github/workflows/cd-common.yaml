@@ -95,6 +95,7 @@ jobs:
 
       - name: Deploy job for ${{ matrix.name }}
         uses: ./common-workflows/.github/workflows/actions/deploy-to-tenant
+        if: inputs.env === matrix.context
         with:
           aws-access-key-id: ${{ secrets.aws-access-key-id }}
           aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
