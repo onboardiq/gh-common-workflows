@@ -34,6 +34,9 @@ inputs:
   aws-secret-access-key:
     description: "An AWS Secret Access Key matching the given access key id"
     required: true
+  aws-account-id:
+    description: "An AWS Account ID to form ECR URLs from"
+    required: true
   include_faut_reset_cronjob:
     description: "Pass 1 to include a faut reset cronjob"
     required: false
@@ -55,6 +58,7 @@ runs:
       run: |
         echo "::add-mask::${{ inputs.aws-access-key-id }}"
         echo "::add-mask::${{ inputs.aws-secret-access-key }}"
+        echo "::add-mask::${{ inputs.aws-account-id }}"
         echo "::add-mask::${{ inputs.helm_repo_username }}"
         echo "::add-mask::${{ inputs.helm_repo_password }}"
 
@@ -116,15 +120,16 @@ runs:
     - name: 'Deployment Dry Run'
       if: ${{ inputs.dry-run == 'true' || inputs.dry-run == true }}
       env:
+        AWS_ACCOUNT_ID: ${{ inputs.aws-account-id }}
+        CHART_VERSION: ${{ steps.version.outputs.chart-version }}
         CLOUD: ${{ inputs.cloud }}
+        CLUSTER_SUFFIX: ${{ inputs.eks-suffix }}
+        HELM_REPO_PASSWORD: ${{ inputs.helm_repo_password }}
+        HELM_REPO_USERNAME: ${{ inputs.helm_repo_username }}
+        IMAGE_TAG: ${{ steps.version.outputs.image-tag }}
+        NAMESPACE: ${{ inputs.namespace }}
         REGION: ${{ inputs.region }}
         TENANT: ${{ inputs.tenant-name }}
-        NAMESPACE: ${{ inputs.namespace }}
-        CLUSTER_SUFFIX: ${{ inputs.eks-suffix }}
-        CHART_VERSION: ${{ steps.version.outputs.chart-version }}
-        IMAGE_TAG: ${{ steps.version.outputs.image-tag }}
-        HELM_REPO_USERNAME: ${{ inputs.helm_repo_username }}
-        HELM_REPO_PASSWORD: ${{ inputs.helm_repo_password }}
       shell: bash
       run: |
         kubectl config use-context aws-${{ inputs.region }}-${{ inputs.context }}
@@ -133,15 +138,16 @@ runs:
     - name: 'Deployment - LIVE'
       if: ${{ inputs.dry-run == 'false' || inputs.dry-run == false }}
       env:
+        AWS_ACCOUNT_ID: ${{ inputs.aws-account-id }}
+        CHART_VERSION: ${{ steps.version.outputs.chart-version }}
         CLOUD: ${{ inputs.cloud }}
+        CLUSTER_SUFFIX: ${{ inputs.eks-suffix }}
+        HELM_REPO_PASSWORD: ${{ inputs.helm_repo_password }}
+        HELM_REPO_USERNAME: ${{ inputs.helm_repo_username }}
+        IMAGE_TAG: ${{ steps.version.outputs.image-tag }}
+        NAMESPACE: ${{ inputs.namespace }}
         REGION: ${{ inputs.region }}
         TENANT: ${{ inputs.tenant-name }}
-        NAMESPACE: ${{ inputs.namespace }}
-        CLUSTER_SUFFIX: ${{ inputs.eks-suffix }}
-        CHART_VERSION: ${{ steps.version.outputs.chart-version }}
-        IMAGE_TAG: ${{ steps.version.outputs.image-tag }}
-        HELM_REPO_USERNAME: ${{ inputs.helm_repo_username }}
-        HELM_REPO_PASSWORD: ${{ inputs.helm_repo_password }}
       shell: bash
       run: |
         kubectl config use-context aws-${{ inputs.region }}-${{ inputs.context }}

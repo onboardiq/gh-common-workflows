@@ -43,6 +43,9 @@ on:
       aws-secret-access-key:
         description: "An AWS Secret Access Key matching the given AWS Access Key ID"
         required: true
+      aws-account-id:
+        description: "An AWS Account ID to form ECR URLs from"
+        required: true
       helm-repo-username:
         description: "A username with sufficient permissions to push to helm repositories (usually in chartmuseum)"
         required: true
@@ -102,6 +105,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.aws-access-key-id }}
           aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
+          aws-account-id: ${{ secrets.aws-account-id }}
           chart-version: ${{ inputs.helm-chart-version }}
           cloud: ${{ matrix.cloud }}
           dry-run: ${{ inputs.dry-run }}
