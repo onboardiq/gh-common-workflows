@@ -27,6 +27,30 @@ on:
         description: "When true, only does a dry run of deployment"
         required: true
         type: boolean
+      # expected JSON structure:
+      # type Tenants = Tenant[];
+      # interface Tenant {
+      #   name: string;
+      #   title: string;
+      #   namespace: string;
+      #   cluster: Cluster;
+      #   envs: Environment[];
+      #   projects: Project[];
+      #   include_faut_reset_cronjob?: number;
+      # }
+      # 
+      # interface Cluster {
+      #   region: string;
+      #   cloud: string;
+      #   eks_suffix: string;
+      #   stage: Stage;
+      # }
+      # 
+      # type Stage = 'prod' | 'stage';
+      # 
+      # type Environment = 'prod' | 'uat' | 'dev';
+      # 
+      # type Project = 'monolith'
       tenants:
         description: "A JSON string representing a list of tenant data"
         required: true
@@ -98,23 +122,19 @@ jobs:
 
       - name: Deploy job for ${{ matrix.name }}
         uses: ./common-workflows/.github/workflows/actions/deploy-to-tenant
-        if: >-
-          inputs.env == matrix.context
-          || (inputs.env == 'uat' && matrix.context == 'stage')
-          || (inputs.env == 'dev' && matrix.content == 'stage')
         with:
           aws-access-key-id: ${{ secrets.aws-access-key-id }}
           aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
           aws-account-id: ${{ secrets.aws-account-id }}
           chart-version: ${{ inputs.helm-chart-version }}
-          cloud: ${{ matrix.cloud }}
+          cloud: ${{ matrix.cluster.cloud }}
           dry-run: ${{ inputs.dry-run }}
-          eks-suffix: ${{ matrix.cluster_suffix }}
+          eks-suffix: ${{ matrix.cluster.cluster-suffix }}
           helm-version: ${{ inputs.helm-version }}
           namespace: ${{ matrix.namespace }}
-          region: ${{ matrix.region }}
-          context: ${{ matrix.context }}
-          tenant-name: ${{ matrix.tenant }}
+          region: ${{ matrix.cluster.region }}
+          context: ${{ matrix.cluster.stage }}
+          tenant-name: ${{ matrix.name }}
           include_faut_reset_cronjob: ${{ matrix.include_faut_reset_cronjob }}
           gh_pat: ${{ secrets.github-automation-token }}
           helm_repo_username: ${{ secrets.helm-repo-username }}
