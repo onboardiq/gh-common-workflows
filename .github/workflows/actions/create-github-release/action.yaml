@@ -1,12 +1,20 @@
 name: 'Create Github Release'
 description: "Create a new Github Release with auto-generated notes"
 inputs:
+  github-automation-token:
+    description: "A Github oauth token with sufficent permissions to make, approve, and merge PRs"
+    required: true
   sha:
     description: 'The target release SHA hash'
     required: true
 runs:
   using: 'composite'
   steps:
+    - name: 'Add masks'
+      shell: bash
+      run: |
+        echo "::add-mask::${{ inputs.github-automation-token }}"
+
     # Creates a Github release (and tag) with the current date and time
     # Gets all the commits other than merge commits in the branch from the last tag
     - name: 'Get Release Info'
@@ -24,7 +32,7 @@ runs:
       id: create_release
       uses: actions/create-release@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.github-automation-token }}
       with:
         tag_name: ${{ steps.release-info.outputs.tag }}
         release_name: ${{ steps.release-info.outputs.tag }}

@@ -4,6 +4,9 @@ inputs:
   github-automation-token:
     description: "A Github oauth token with sufficent permissions to make, approve, and merge PRs"
     required: true
+  gh-token:
+    description: "A second authorized token"
+    required: true
   sha:
     description: "The target SHA to merge into master"
     required: true
@@ -14,7 +17,8 @@ runs:
       shell: bash
       run: |
         echo "::add-mask::${{ inputs.github-automation-token }}"
-
+        echo "::add-mask::${{ inputs.gh-token }}"
+        
     - name: "Get current date"
       id: date
       shell: bash
@@ -49,7 +53,7 @@ runs:
       uses: actions/github-script@v4
       if: ${{ steps.create-pr.outputs.pr_number != null }}
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+        github-token: ${{ inputs.gh-token }}
         script: |
           await github.pulls.createReview({
             owner: context.repo.owner,

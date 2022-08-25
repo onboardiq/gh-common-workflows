@@ -156,11 +156,13 @@ jobs:
 
       - uses: ./common-workflows/.github/workflows/actions/create-github-release
         with:
+          github-automation-token: ${{ secrets.github-automation-token }}
           sha: ${{ needs.deploy-env.outputs.commit-sha }}
       - uses: ./common-workflows/.github/workflows/actions/merge-stable-to-master
         with:
           sha: ${{ needs.deploy-env.outputs.commit-sha }}
           github-automation-token: ${{ secrets.github-automation-token }}
+          gh-token: ${{ secrets.GITHUB_TOKEN }}
 
   post-deploy:
     needs:
