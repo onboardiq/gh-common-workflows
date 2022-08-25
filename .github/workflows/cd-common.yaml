@@ -128,11 +128,13 @@ jobs:
           aws-account-id: ${{ secrets.aws-account-id }}
           chart-version: ${{ inputs.helm-chart-version }}
           cloud: ${{ matrix.cluster.cloud }}
+          commit-sha: ${{ needs.deploy-env.outputs.commit-sha }}
           dry-run: ${{ inputs.dry-run }}
           eks-suffix: ${{ matrix.cluster.cluster-suffix }}
           helm-version: ${{ inputs.helm-version }}
           namespace: ${{ matrix.namespace }}
           region: ${{ matrix.cluster.region }}
+          ref: ${{ inputs.ref }}
           context: ${{ matrix.cluster.stage }}
           tenant-name: ${{ matrix.name }}
           include_faut_reset_cronjob: ${{ matrix.include_faut_reset_cronjob }}

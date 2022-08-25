@@ -49,7 +49,15 @@ inputs:
   helm_repo_password:
     description: "Helm repo password"
     required: true
-
+  ref:
+    description: "The branch or tag name or SHA to check out"
+    required: true
+    type: string
+  commit-sha:
+    description: "The SHA corresponding to the above ref"
+    required: true
+    type: string
+    
 runs:
   using: 'composite'
   steps:
@@ -108,6 +116,8 @@ runs:
     - id: version
       uses: ./common-workflows/.github/workflows/actions/version
       with:
+        ref: ${{ inputs.ref }}
+        commit-sha: ${{ inputs.commit-sha }}
         base-chart-version: ${{ inputs.chart-version }}
 
     - name: "Configure AWS credentials"
