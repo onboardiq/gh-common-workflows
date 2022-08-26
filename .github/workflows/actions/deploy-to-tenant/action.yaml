@@ -137,6 +137,7 @@ runs:
         HELM_REPO_PASSWORD: ${{ inputs.helm_repo_password }}
         HELM_REPO_USERNAME: ${{ inputs.helm_repo_username }}
         IMAGE_TAG: ${{ steps.version.outputs.image-tag }}
+        INCLUDE_FAUT_RESET_CRONJOB: $ {{ inputs.include_faut_reset_cronjob }}
         NAMESPACE: ${{ inputs.namespace }}
         REGION: ${{ inputs.region }}
         TENANT: ${{ inputs.tenant-name }}
@@ -155,6 +156,7 @@ runs:
         HELM_REPO_PASSWORD: ${{ inputs.helm_repo_password }}
         HELM_REPO_USERNAME: ${{ inputs.helm_repo_username }}
         IMAGE_TAG: ${{ steps.version.outputs.image-tag }}
+        INCLUDE_FAUT_RESET_CRONJOB: $ {{ inputs.include_faut_reset_cronjob }}
         NAMESPACE: ${{ inputs.namespace }}
         REGION: ${{ inputs.region }}
         TENANT: ${{ inputs.tenant-name }}
