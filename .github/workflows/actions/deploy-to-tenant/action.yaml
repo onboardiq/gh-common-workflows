@@ -57,6 +57,10 @@ inputs:
     description: "The SHA corresponding to the above ref"
     required: true
     type: string
+  project-name:
+    description: 'The name of the project'
+    required: true
+    type: string
     
 runs:
   using: 'composite'
@@ -72,7 +76,7 @@ runs:
 
     - uses: actions/checkout@v3
       with:
-        repository: onboardiq/monolith
+        repository: onboardiq/${{ inputs.project-name }}
 
     - uses: actions/checkout@v3
       with:

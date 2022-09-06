@@ -141,6 +141,7 @@ jobs:
           gh_pat: ${{ secrets.github-automation-token }}
           helm_repo_username: ${{ secrets.helm-repo-username }}
           helm_repo_password: ${{ secrets.helm-repo-password }}
+          project-name: ${{ inputs.project-name }}
 
   release:
     needs:
