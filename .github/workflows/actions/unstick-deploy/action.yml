@@ -1,0 +1,115 @@
+name: 'Unstick deploys'
+description: 'Detect tenants stuck in "pending-update" and roll them back'
+inputs:
+  aws-access-key-id:
+    description: "An AWS Access Key ID with sufficient permissions to read from EKS clusters"
+    required: true
+  aws-secret-access-key:
+    description: "An AWS Secret Access Key matching the given access key id"
+    required: true
+  helm-version:
+    description: 'The version of Helm to use'
+    required: true
+  project-name:
+    description: 'The name of the project'
+    required: true
+  cloud:
+    description: 'One of "aws" or "azure"'
+    required: true
+  namespace:
+    description: 'Kubernetes namespace of the possibly stuck release'
+    required: true
+  region:
+    description: 'An AWS or Azure region name'
+    required: true
+  stage:
+    description: "One of contexts: 'stage' or 'prod'"
+    required: true
+  dry-run:
+    description: "When true, only does a dry run of rollback"
+    required: true
+  cluster-suffix:
+    description: 'A string to differentiate between helm repos in the same region'
+    default: ''
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Add masks'
+      shell: bash
+      run: |
+        echo "::add-mask::${{ inputs.aws-access-key-id }}"
+        echo "::add-mask::${{ inputs.aws-secret-access-key }}"
+        echo "::add-mask::${{ inputs.aws-account-id }}"
+
+    - name: 'Checkout Github Action'
+      uses: actions/checkout@v3
+      with:
+        repository: onboardiq/gh-common-workflows
+        path: ./common-workflows
+        
+    - name: 'Install and Setup Helm'
+      uses: Azure/setup-helm@v3.3
+      with:
+        version: ${{ inputs.helm-version }}
+        token: ${{ inputs.token }}
+
+    - name: 'Install jq'
+      uses: ./common-workflows/.github/workflows/actions/install-jq
+
+    - name: 'Setup Kubeconfig'
+      uses: ./common-workflows/.github/workflows/actions/setup-kubeconfig
+      with:
+        aws-access-key-id: ${{ inputs.aws-access-key-id }}
+        aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
+        region: ${{ inputs.region }}
+        cloud: ${{ inputs.cloud }}
+        stage: ${{ inputs.stage }}
+        cluster-suffix: ${{ inputs.cluster-suffix }}
+
+    - name: 'Determine if a rollback is necessary'
+      id: needs-rollback
+      env:
+        NAMESPACE: ${{ inputs.namespace }}
+        PROJECT: ${{ inputs.project-name }}
+      run: |
+        release_status=$(helm history ${PROJECT} --max 1 -o json 2>/dev/null);
+
+        if [[ $release_status = '' ]]; then
+          echo "**SKIPPED**: No status from helm for ${NAMESPACE}" >> $GITHUB_STEP_SUMMARY;
+          needs_rollback=false;
+        else
+          needs_rollback=$(echo $release_status | jq '.[0].status == "pending-upgrade"');
+        fi
+
+        echo "::set-output name=result::${needs_rollback}";
+
+    - name: 'Mark skipped if not pending'
+      if: ${{ steps.needs-rollback.outputs.result == 'false' }}
+      env:
+        NAMESPACE: ${{ inputs.namespace }}
+      run: |
+        echo "**SKIPPED**: Release not pending for ${NAMESPACE}" >> $GITHUB_STEP_SUMMARY;
+        
+    - name: 'Dry run rollback if pending'
+      if: >-
+        ${{
+             (steps.needs-rollback.outputs.result == 'true')
+          && (inputs.dry-run != 'false')
+        }}
+      env:
+        NAMESPACE: ${{ inputs.namespace }}
+      run: |
+        echo "**DRY ROLLBACK**: Would have rolled back pending release for ${NAMESPACE}";
+
+    - name: 'Rollback if pending'
+      if: >-
+        ${{
+             (steps.needs-rollback.outputs.result == 'true')
+          && (inputs.dry-run == 'false')
+        }}
+      env:
+        NAMESPACE: ${{ inputs.namespace }}
+      run: |
+        echo "**ROLLBACK**: Rolling back pending release for ${NAMESPACE}" >> $GITHUB_STEP_SUMMARY;
+
+        helm rollback monolith 0 -n ${NAMESPACE};

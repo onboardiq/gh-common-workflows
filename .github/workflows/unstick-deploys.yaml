@@ -1,0 +1,109 @@
+name: Unstick Deploys
+
+on:
+  workflow_call:
+    inputs:
+      project-name:
+        description: 'The name of the project'
+        required: true
+        type: string
+      environment:
+        description: "One of prod, uat, dev"
+        required: true
+        default: ""
+        type: string
+      dry-run:
+        description: "Set this to true to test the Rollback workflow without doing actual rollback"
+        required: true
+        default: false
+        type: boolean
+      tenants:
+        description: "A JSON string representing a list of tenant data"
+        required: true
+        type: string
+
+    secrets:
+      aws-access-key-id:
+        description: "An AWS Access Key ID with sufficient access to push to ECR repos"
+        required: true
+      aws-secret-access-key:
+        description: "An AWS Secret Access Key matching the given AWS Access Key ID"
+        required: true
+
+env:
+  # kubernetes has deprecated "client.authentication.k8s.io/v1alpha1" api versions
+  # and is now using "client.authentication.k8s.io/v1beta1". This has caused clients
+  # like `aws-iam-authenticator` and `aws eks token` to fail when authenticating with
+  # the cluster. In case the clients are trying to use `v1alpha1`,
+  # we can env use variable `KUBERNETES_EXEC_INFO` to hint cli to use `v1beta1` version.
+  KUBERNETES_EXEC_INFO: '{"kind":"ExecCredential","apiVersion":"client.authentication.k8s.io/v1beta1","spec":{"interactive":true}}'
+
+
+jobs:
+  check-inputs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Validate environment
+        uses: actions/github-script@v6
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+        with:
+          script: |
+            const { DEPLOY_ENVIRONMENT } = process.env;
+
+            switch (DEPLOY_ENVIRONMENT) {
+            case 'prod':
+              // fallthrough
+            case 'uat':
+              // fallthrough
+            case 'dev':
+              core.setOutput('success', true);
+              break;
+            default:
+              core.setFailed(`Supplied argument for deploy environment was expected to be one of 'prod', 'uat', or 'dev', got ${DEPLOY_ENVIRONMENT} instead`);
+            }
+
+      - name: "Validate ref against env"
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+        run: |
+          sha=$(git rev-parse HEAD);
+          if [[ $DEPLOY_ENVIRONMENT = "prod" ]]; then
+            expected_branch="stable";
+          elif [[ $DEPLOY_ENVIRONMENT = "uat" ]]; then
+            expected_branch="master";
+          elif [[ $DEPLOY_ENVIRONMENT = "dev" ]]; then
+            exit 0;
+          else
+            exit 1;
+          fi
+
+          git merge-base --is-ancestor $sha $expected_branch
+
+  unstick-deploys:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include: ${{ fromJSON(inputs.tenants) }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: onboardiq/gh-common-workflows
+          path: ./common-workflows
+
+      - uses: ./common-workflows/.github/workflows/actions/unstick-deploy
+        with:
+          aws-access-key-id: ${{ secrets.aws-access-key-id }}
+          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
+          helm-version: ${{ inputs.helm-version }}
+          project-name: ${{ inputs.project-name }}
+          cloud: ${{ matrix.cluster.cloud }}
+          namespace: ${{ matrix.namespace }}
+          region: ${{ matrix.cluster.region }}
+          cluster-suffix: ${{ matrix.cluster.suffix }}
+          stage: ${{ matrix.cluster.stage }}
+          dry-run: ${{ inputs.dry-run }}

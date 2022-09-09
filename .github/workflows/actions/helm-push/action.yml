@@ -22,9 +22,14 @@ inputs:
   region:
     description: 'An AWS or Azure region name'
     required: true
+  token:
+    description: 'A github token'
+    default: ''
+    required: true
   cluster-suffix:
     description: 'A string to differentiate between helm repos in the same region'
     default: ''
+    
 runs:
   using: 'composite'
   steps:
@@ -33,6 +38,7 @@ runs:
       run: |
         echo "::add-mask::${{ inputs.repo-username }}"
         echo "::add-mask::${{ inputs.repo-password }}"
+        echo "::add-mask::${{ inputs.token }}"
 
     - name: 'Checkout Github Action'
       uses: actions/checkout@v3
@@ -46,10 +52,11 @@ runs:
         base-chart-version: ${{ inputs.chart-version }}
 
     - name: 'Install and Setup Helm'
-      uses: Azure/setup-helm@v2.0
+      uses: Azure/setup-helm@v3.3
       with:
         version: ${{ inputs.helm-version }}
-
+        token: ${{ inputs.token }}
+        
     - name: 'Push Helm chart'
       env:
         CLOUD: ${{ inputs.cloud }}

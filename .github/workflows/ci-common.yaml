@@ -49,6 +49,9 @@ on:
       slack-bot-token:
         description: "A slack bot token allowed to post to the Fountain slack"
         required: true
+      github-token:
+        description: "A github token"
+        required: true
 
 jobs:
   docker:
@@ -95,6 +98,7 @@ jobs:
           repo-password: ${{ secrets.helm-repo-password}}
           cloud: ${{ matrix.cloud }}
           region: ${{ matrix.region }}
+          token: ${{ secrets.github-token }}
           cluster-suffix: ${{ matrix.cluster-suffix }}
 
   slack:
