@@ -1,0 +1,137 @@
+name: Changelog - Jira Tickets
+
+on:
+  workflow_call:
+    inputs:
+      project-name:
+        description: 'The name of the project'
+        required: true
+        type: string
+      previous_release:
+        description: 'Previous Release (do not prefix with "origin/")'
+        required: true
+        default: 'warning'
+        type: string
+      new_release:
+        description: 'New Release (do not prefix with "origin/")'
+        required: true
+        default: 'warning'
+        type: string
+      release-name:
+        description: "The name of the release branch"
+        required: true
+        type: string
+      compare-to:
+        description: "The branch or tag name or SHA to compare to"
+        required: true
+        type: string
+      jira-host:
+        description: 'Jira instance hostname'
+        required: true
+        type: string
+      jira-email:
+        description: 'Email address matching the given jira token secret'
+        required: true
+        type: string
+      jira-base-url:
+        description: 'Base URL of the jira instance for building links'
+        require: true
+        type: string
+        
+    secrets:
+      jira-token:
+        description: "A token with access to jira"
+        required: true
+      github-automation-token:
+        description: "A github user token with sufficent permissions to create, approve, and merge PRs"
+        required: true
+      slack-webhook-url:
+        description: 'The URL of the Slack Webhook to post the message to'
+        required: true
+      notion-database-id:
+        description: 'The ID of the notion database to post update to'
+        required: true
+      notion-secret:
+        description: 'Secret token allowing working with notion'
+        required: true
+
+jobs:
+  create-changelog:
+    runs-on: ubuntu-latest
+    name: Changelog
+    outputs:
+      release-sha: ${{ steps.release-sha.outputs.result }}
+      changelog: ${{ steps.changelog.outputs.changelog_message }}
+      release-link: ${{ inputs.jira-base-url }}/issues/?jql=fixVersion%20%3D%20%22${{ inputs.release-name }}%22
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: get new release sha
+        id: release-sha
+        env:
+          REF: ${{ inputs.release-name }}
+        run: |
+          echo "::set-output name=result::$(git rev-parse $REF)"
+
+      - name: List and Parse Commits
+        id: changelog
+        uses: connorsmallman/github-jira-changelog-action@1.2.0
+        with:
+          jira_host: ${{ inputs.jira-host }}
+          jira_email: ${{ inputs.jira-email }}
+          jira_token: ${{ secrets.jira-token }}
+          jira_base_url: ${{ inputs.jira-base-url }}
+          source_control_range_from: origin/${{ inputs.compare-to }}
+          source_control_range_to: origin/${{ inputs.release-name }}
+          jira_ticket_id_pattern: '/[A-Z]+\-[0-9]+/i'
+
+      - name: Changelog Output
+        run: echo '${{ steps.changelog.outputs.changelog_message }}'
+
+  post-status-to-notion:
+    name: Post changelog event status to Notion
+    runs-on: ubuntu-latest
+    needs: create-changelog
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: checkout the private repository
+        id: checkout_notion_action
+        uses: actions/checkout@v3
+        with:
+          repository: onboardiq/gh-action-post-release-status-to-notion
+          token: ${{ secrets.github-automation-token }}
+          path: ./action
+
+      - name: run the action
+        uses: ./action
+        with:
+          database-id: ${{ secrets.notion-db-id }}
+          notion-secret: ${{ secrets.notion-secret }}
+          repo: ${{ inputs.project-name }}
+          sha: ${{ needs.create-changelog.outputs.release-sha }}
+          status: new Jira release created
+          body: ${{ needs.create-changelog.outputs.changelog }}
+
+  post-release-creation-message-to-slack:
+    name: Post a success message to the release status slack channel.
+    runs-on: ubuntu-latest
+    needs:
+      - post-status-to-notion
+      - create-changelog
+    steps:
+      - name: checkout the action
+        id: checkout_slack_action
+        uses: actions/checkout@v3
+        with:
+          repository: onboardiq/gh-action-post-message-to-slack
+          token: ${{ secrets.github-automation-token }}
+          path: ./action
+      - name: run the action
+        uses: ./action
+        with:
+          message: Issues added to Jira Release ${{ inputs.release-name }} ${{ needs.create-changelog.outputs.release-link }}
+          slack_webhook_url: ${{ secrets.slack-webhook-url }}
