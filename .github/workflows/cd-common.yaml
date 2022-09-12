@@ -179,7 +179,7 @@ jobs:
       - name: "Post message to Slack"
         uses: ./common-workflows/.github/workflows/actions/notify-slack-pipeline-status
         with:
-          slack_webhook_url: ${{ secrets.slack_webhook_url }}
+          slack_webhook_url: ${{ secrets.slack-webhook-url }}
           gh_automation_token: ${{ secrets.github-automation-token }}
           environment: ${{ inputs.env }}
           message: ${{ inputs.message_for_slack }}
