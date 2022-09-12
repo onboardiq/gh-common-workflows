@@ -24,15 +24,26 @@ runs:
       shell: bash
       run: echo "::set-output name=now::$(TZ=America/Los_Angeles date +'%Y-%m-%d')"
 
+    - name: "Create branch name"
+      id: branch-name
+      outputs:
+        branch-name: "merge-master-with-stable-${{ steps.date.outputs.now }}"
+      run: true
+      
     - name: "Create merge stable with master branch"
       uses: peterjgrainger/action-create-branch@v2.1.0
       env:
         GITHUB_TOKEN: ${{ inputs.github-automation-token }}
       with:
         # Adding date to prevent branch naming conflict (even though they should be deleted)
-        branch: "merge-master-with-stable-${{ steps.date.outputs.now }}"
+        branch: ${{ steps.branch-name.outputs.branch-name }}
         sha: ${{ inputs.sha }}
 
+    - name: Checkout new branch
+      use: actions/checkout@v3
+      with:
+        branch: ${{ steps.branch-name.outputs.branch-name }}
+        
     - name: 'Merge stable to master on success'
       id: create-pr
       uses: repo-sync/pull-request@v2

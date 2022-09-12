@@ -147,7 +147,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: onboardiq/gh-action-post-release-status-to-notion
-          token: ${{ secrets.github-automation-token }}
           path: ./action
       - name: run the action
         uses: ./action
@@ -174,7 +173,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: onboardiq/gh-action-post-message-to-slack
-          token: ${{ secrets.github-automation-token }}
           path: ./action
 
       - name: run the action
@@ -197,7 +195,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: onboardiq/gh-action-post-release-status-to-notion
-          token: ${{ secrets.github-automation-token }}
           path: ./action
       - name: run the action
         uses: ./action
@@ -218,7 +215,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: onboardiq/gh-action-post-message-to-slack
-          token: ${{ secrets.github-automation-token }}
           path: ./action
       - name: run the action
         uses: ./action
