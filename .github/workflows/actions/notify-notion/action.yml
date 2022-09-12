@@ -42,6 +42,7 @@ runs:
         repository: onboardiq/gh-action-post-release-status-to-notion
         token: ${{ inputs.gh_automation_token }}
         path: ./action
+
     - name: run the action
       uses: ./action
       with:

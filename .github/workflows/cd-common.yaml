@@ -182,7 +182,8 @@ jobs:
           slack_webhook_url: ${{ secrets.slack_webhook_url }}
           gh_automation_token: ${{ secrets.github-automation-token }}
           environment: ${{ inputs.env }}
-          messsage: ${{ inputs.message_for_slack }}
+          message: ${{ inputs.message_for_slack }}
+
       - name: "Post data row to Notion"
         uses: ./common-workflows/.github/workflows/actions/notify-notion
         with:

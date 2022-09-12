@@ -19,15 +19,17 @@ runs:
     - name: 'Add masks'
       shell: bash
       run: |
-        echo "::add-mask::${{ inputs.gh_action_token }}"
+        echo "::add-mask::${{ inputs.gh_automation_token }}"
         echo "::add-mask::${{ inputs.slack_webhook_url }}"
+
     - name: checkout the action
       id: checkout_slack_action
       uses: actions/checkout@v3
       with:
         repository: onboardiq/gh-action-post-message-to-slack
-        token: ${{ inputs.gh_automationn_token }}
+        token: ${{ inputs.gh_automation_token }}
         path: ./action
+
     - name: run the action
       uses: ./action
       with:
