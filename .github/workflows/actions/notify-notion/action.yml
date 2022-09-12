@@ -13,9 +13,6 @@ inputs:
   sha:
     description: "The commit sha"
     required: true
-  status:
-    description: "Status to report"
-    required: true
   body:
     description: "Body text of the database entry"
     required: false

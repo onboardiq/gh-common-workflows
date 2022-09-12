@@ -148,6 +148,7 @@ jobs:
         with:
           repository: onboardiq/gh-action-post-release-status-to-notion
           path: ./action
+          token: ${{ secrets.github-automation-token }}
       - name: run the action
         uses: ./action
         with:
