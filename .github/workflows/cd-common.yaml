@@ -169,7 +169,6 @@ jobs:
     needs:
       - deploy
       - deploy-env
-      - release
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout common workflows and actions"
