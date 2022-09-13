@@ -88,6 +88,8 @@ on:
       notion-secret:
         description: 'Secret token allowing working with notion'
         required: true
+      doppler-token:
+        description: 'Secret token to allow doppler-cli to interact with doppler'
 
 jobs:
   deploy-env:
