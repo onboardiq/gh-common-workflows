@@ -33,5 +33,5 @@ runs:
     - name: run the action
       uses: ./action
       with:
-        message: monolith has been deployed to production.
+        message: {{ inputs.message }}
         slack_webhook_url: ${{ inputs.slack_webhook_url }}
