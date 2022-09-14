@@ -21,10 +21,6 @@ on:
         description: "The name of the release branch"
         required: true
         type: string
-      compare-to:
-        description: "The branch or tag name or SHA to compare to"
-        required: true
-        type: string
       jira-host:
         description: 'Jira instance hostname'
         required: true
@@ -84,7 +80,7 @@ jobs:
           jira_email: ${{ inputs.jira-email }}
           jira_token: ${{ secrets.jira-token }}
           jira_base_url: ${{ inputs.jira-base-url }}
-          source_control_range_from: origin/${{ inputs.compare-to }}
+          source_control_range_from: origin/${{ inputs.previous_release }}
           source_control_range_to: origin/${{ inputs.release-name }}
           jira_ticket_id_pattern: '/[A-Z]+\-[0-9]+/i'
 
