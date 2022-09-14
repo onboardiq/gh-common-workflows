@@ -105,7 +105,7 @@ jobs:
       - name: run the action
         uses: ./action
         with:
-          database-id: ${{ secrets.notion-db-id }}
+          database-id: ${{ secrets.notion-database-id }}
           notion-secret: ${{ secrets.notion-secret }}
           repo: ${{ inputs.project-name }}
           sha: ${{ needs.create-changelog.outputs.release-sha }}
