@@ -31,7 +31,7 @@ on:
         type: string
       jira-base-url:
         description: 'Base URL of the jira instance for building links'
-        require: true
+        required: true
         type: string
         
     secrets:
