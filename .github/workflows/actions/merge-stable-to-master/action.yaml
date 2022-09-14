@@ -26,9 +26,7 @@ runs:
 
     - name: "Create branch name"
       id: branch-name
-      outputs:
-        branch-name: "merge-master-with-stable-${{ steps.date.outputs.now }}"
-      run: true
+      run: echo "::set-output name=branch-name::${{steps.date.outputs.now}}"
       
     - name: "Create merge stable with master branch"
       uses: peterjgrainger/action-create-branch@v2.1.0
