@@ -71,6 +71,7 @@ runs:
       env:
         NAMESPACE: ${{ inputs.namespace }}
         PROJECT: ${{ inputs.project-name }}
+      shell: bash
       run: |
         release_status=$(helm history ${PROJECT} --max 1 -o json 2>/dev/null);
 
@@ -87,6 +88,7 @@ runs:
       if: ${{ steps.needs-rollback.outputs.result == 'false' }}
       env:
         NAMESPACE: ${{ inputs.namespace }}
+      shell: bash
       run: |
         echo "**SKIPPED**: Release not pending for ${NAMESPACE}" >> $GITHUB_STEP_SUMMARY;
         
@@ -98,6 +100,7 @@ runs:
         }}
       env:
         NAMESPACE: ${{ inputs.namespace }}
+      shell: bash
       run: |
         echo "**DRY ROLLBACK**: Would have rolled back pending release for ${NAMESPACE}";
 
@@ -109,6 +112,7 @@ runs:
         }}
       env:
         NAMESPACE: ${{ inputs.namespace }}
+      shell: bash
       run: |
         echo "**ROLLBACK**: Rolling back pending release for ${NAMESPACE}" >> $GITHUB_STEP_SUMMARY;
 
