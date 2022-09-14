@@ -21,6 +21,10 @@ on:
         description: "A JSON string representing a list of tenant data"
         required: true
         type: string
+      helm-version:
+        description: "The version of Helm to use"
+        required: true
+        type: string
 
     secrets:
       aws-access-key-id:
