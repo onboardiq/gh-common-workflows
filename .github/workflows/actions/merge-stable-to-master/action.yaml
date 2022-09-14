@@ -26,6 +26,7 @@ runs:
 
     - name: "Create branch name"
       id: branch-name
+      shell: bash
       run: echo "::set-output name=branch-name::${{steps.date.outputs.now}}"
       
     - name: "Create merge stable with master branch"
@@ -38,7 +39,7 @@ runs:
         sha: ${{ inputs.sha }}
 
     - name: Checkout new branch
-      use: actions/checkout@v3
+      uses: actions/checkout@v3
       with:
         branch: ${{ steps.branch-name.outputs.branch-name }}
         
