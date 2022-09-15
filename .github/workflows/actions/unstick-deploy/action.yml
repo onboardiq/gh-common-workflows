@@ -39,7 +39,6 @@ runs:
       run: |
         echo "::add-mask::${{ inputs.aws-access-key-id }}"
         echo "::add-mask::${{ inputs.aws-secret-access-key }}"
-        echo "::add-mask::${{ inputs.aws-account-id }}"
 
     - name: 'Checkout Github Action'
       uses: actions/checkout@v3
