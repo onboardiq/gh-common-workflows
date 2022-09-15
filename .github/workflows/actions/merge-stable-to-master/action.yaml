@@ -35,7 +35,7 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github-automation-token }}
       with:
         # Adding date to prevent branch naming conflict (even though they should be deleted)
-        branch: ${{ steps.branch-name.outputs.branch-name }}
+        ref: ${{ steps.branch-name.outputs.branch-name }}
         sha: ${{ inputs.sha }}
 
     - name: Checkout new branch
