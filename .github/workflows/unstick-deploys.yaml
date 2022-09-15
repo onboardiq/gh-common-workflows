@@ -74,6 +74,7 @@ jobs:
       - name: "Validate ref against env"
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+        shell: bash
         run: |
           sha=$(git rev-parse HEAD);
           if [[ $DEPLOY_ENVIRONMENT = "prod" ]]; then

@@ -69,6 +69,7 @@ jobs:
         id: release-sha
         env:
           REF: ${{ inputs.release-name }}
+        shell: bash
         run: |
           echo "::set-output name=result::$(git rev-parse $REF)"
 
@@ -85,6 +86,7 @@ jobs:
           jira_ticket_id_pattern: '/[A-Z]+\-[0-9]+/i'
 
       - name: Changelog Output
+        shell: bash
         run: echo '${{ steps.changelog.outputs.changelog_message }}'
 
   post-status-to-notion:

@@ -48,6 +48,7 @@ jobs:
         env:
           FROM: ${{ inputs.main-branch }}
           TO: ${{ inputs.release-branch }}
+        shell: bash
         run: |
           echo "## Changed files check" >> $GITHUB_STEP_SUMMARY;
 
@@ -65,6 +66,7 @@ jobs:
         id: open-release
         env:
           GITHUB_TOKEN: ${{ secrets.github-automation-token }}
+        shell: bash
         run: |
           echo "## Open PR Check" >> $GITHUB_STEP_SUMMARY;
 
@@ -82,6 +84,7 @@ jobs:
         env:
           FROM: ${{ inputs.main-branch }}
           TO: ${{ inputs.release-branch }}
+        shell: bash
         run: |
           echo "## Unmerged commits check" >> $GITHUB_STEP_SUMMARY;
           echo "Comparing $FROM..$TO" >> $GITHUB_STEP_SUMMARY;
@@ -107,6 +110,7 @@ jobs:
     steps:
       - name: "Get current date"
         id: date
+        shell: bash
         run: echo "::set-output name=now::$(TZ=America/Los_Angeles date +'%Y-%m-%d')"
 
       - name: "Create release branch"
@@ -130,6 +134,7 @@ jobs:
       - name: Add to summary
         env:
           BRANCH: release/${{ steps.date.outputs.now }}
+        shell: bash
         run: echo "### Cut release branch $BRANCH" >> $GITHUB_STEP_SUMMARY
 
 

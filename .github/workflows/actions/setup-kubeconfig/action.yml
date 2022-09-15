@@ -31,6 +31,7 @@ runs:
 
     - name: 'Deny azure'
       if: ${{ inputs.cloud == 'azure' }}
+      shell: bash
       run: |
         echo "::error title=Azure not configured::Azure is not configured for setting up kubeconfig yet"
         
