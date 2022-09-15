@@ -159,6 +159,7 @@ jobs:
         with:
           github-automation-token: ${{ secrets.github-automation-token }}
           sha: ${{ needs.deploy-env.outputs.commit-sha }}
+
       - uses: ./common-workflows/.github/workflows/actions/merge-stable-to-master
         with:
           sha: ${{ needs.deploy-env.outputs.commit-sha }}
