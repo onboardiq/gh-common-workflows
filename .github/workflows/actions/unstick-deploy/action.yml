@@ -73,7 +73,7 @@ runs:
         PROJECT: ${{ inputs.project-name }}
       shell: bash
       run: |
-        release_status=$(helm history ${PROJECT} --max 1 -o json 2>/dev/null);
+        release_status=$(helm history ${PROJECT} --max 1 -o json || true);
 
         if [[ $release_status = '' ]]; then
           echo "**SKIPPED**: No status from helm for ${NAMESPACE}" >> $GITHUB_STEP_SUMMARY;
