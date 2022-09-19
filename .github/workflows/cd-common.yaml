@@ -131,7 +131,7 @@ jobs:
           chart-version: ${{ inputs.helm-chart-version }}
           cloud: ${{ matrix.cluster.cloud }}
           commit-sha: ${{ needs.deploy-env.outputs.commit-sha }}
-          doppler-token: ${{ secrets.doppler_token }}
+          doppler-token: ${{ secrets.doppler-token }}
           dry-run: ${{ inputs.dry-run }}
           eks-suffix: ${{ matrix.cluster.cluster-suffix }}
           env: ${{ inputs.env }}
