@@ -58,7 +58,15 @@ inputs:
     required: true
     type: string
   project-name:
-    description: 'The name of the project'
+    description: "The name of the project"
+    required: true
+    type: string
+  doppler-token:
+    description: "The token required to intract with the doppler API"
+    required: true
+    type: string
+  env:
+    description: "The deployment environment PROD | UAT | DEV"
     required: true
     type: string
     
