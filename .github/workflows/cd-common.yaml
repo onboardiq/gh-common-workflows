@@ -88,6 +88,8 @@ on:
       notion-secret:
         description: 'Secret token allowing working with notion'
         required: true
+      doppler-token:
+        description: 'Secret token to allow doppler-cli to interact with doppler'
 
 jobs:
   deploy-env:
@@ -129,8 +131,10 @@ jobs:
           chart-version: ${{ inputs.helm-chart-version }}
           cloud: ${{ matrix.cluster.cloud }}
           commit-sha: ${{ needs.deploy-env.outputs.commit-sha }}
+          doppler-token: ${{ secrets.doppler_token }}
           dry-run: ${{ inputs.dry-run }}
           eks-suffix: ${{ matrix.cluster.cluster-suffix }}
+          env: ${{ inputs.env }}
           helm-version: ${{ inputs.helm-version }}
           namespace: ${{ matrix.namespace }}
           region: ${{ matrix.cluster.region }}

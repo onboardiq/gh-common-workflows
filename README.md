@@ -90,6 +90,9 @@ jobs:
       # AWS credentials with sufficient permissions to push to ECR
       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # Doppler API Token to create doppler secrets
+      doppler-token: ${{ secrets.DOPPLER_TOKEN }}
   
 
       # Helm Repo Credentials

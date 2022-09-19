@@ -71,6 +71,7 @@ runs:
         echo "::add-mask::${{ inputs.aws-access-key-id }}"
         echo "::add-mask::${{ inputs.aws-secret-access-key }}"
         echo "::add-mask::${{ inputs.aws-account-id }}"
+        echo "::add-mask::${{ inputs.doppler-token }}"
         echo "::add-mask::${{ inputs.helm_repo_username }}"
         echo "::add-mask::${{ inputs.helm_repo_password }}"
 
@@ -97,6 +98,9 @@ runs:
       with:
         version: ${{ inputs.helm-version }}
         token: ${{ inputs.gh_pat }}
+
+    - name: 'Install and setup Doppler'
+      uses: dopplerhq/cli-action@v1
 
     # GITHUB_RUN_ID is the unique identifier (id) within a repo
     - name: 'Set the KUBECONFIG'
@@ -138,6 +142,8 @@ runs:
         CHART_VERSION: ${{ steps.version.outputs.chart-version }}
         CLOUD: ${{ inputs.cloud }}
         CLUSTER_SUFFIX: ${{ inputs.eks-suffix }}
+        DOPPLER_ENV: ${{ inputs.env }}
+        DOPPLER_TOKEN: ${{ inputs.doppler-token }}
         HELM_REPO_PASSWORD: ${{ inputs.helm_repo_password }}
         HELM_REPO_USERNAME: ${{ inputs.helm_repo_username }}
         IMAGE_TAG: ${{ steps.version.outputs.image-tag }}
@@ -157,6 +163,8 @@ runs:
         CHART_VERSION: ${{ steps.version.outputs.chart-version }}
         CLOUD: ${{ inputs.cloud }}
         CLUSTER_SUFFIX: ${{ inputs.eks-suffix }}
+        DOPPLER_ENV: ${{ inputs.env }}
+        DOPPLER_TOKEN: ${{ inputs.doppler-token }}
         HELM_REPO_PASSWORD: ${{ inputs.helm_repo_password }}
         HELM_REPO_USERNAME: ${{ inputs.helm_repo_username }}
         IMAGE_TAG: ${{ steps.version.outputs.image-tag }}
