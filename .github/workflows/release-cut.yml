@@ -108,6 +108,17 @@ jobs:
     name: "Create Release branch"
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get main branch sha
+        id: sha
+        env:
+          MAIN: ${{ inputs.main-branch }}
+        run: |
+          sha=$(git rev-parse ${MAIN});
+          echo "::set-output name=result::${sha}";
+
       - name: "Get current date"
         id: date
         shell: bash
@@ -116,38 +127,34 @@ jobs:
       - name: Create release branch
         uses: actions/github-script@v6
         env:
+          SHA: ${{ steps.sha.outputs.result }}
           BRANCH: "release/${{ steps.date.outputs.now }}"
         with:
           script: |
-            const { BRANCH } = process.env;
+            const { BRANCH, SHA } = process.env;
             try {
+                // checking if branch exists
                 await github.rest.repos.getBranch({
                   ...context.repo,
                   branch: BRANCH
                 });
             } catch (error) {
+              
               if (error.name === 'HttpError' && error.status === 404) {
+                // the request failed because the branch needs creating
+                
                 const resp = await github.rest.git.createRef({
                   ref: `refs/heads/${BRANCH}`,
-                  sha: context.sha,
+                  sha: SHA,
                   ...context.repo,
                 });
-                console.log(resp);
+                
               } else {
+                // the request failed for some other reason
                 throw error;
               }
             }
         
-      # - name: "Create release branch"
-      #   uses: peterjgrainger/action-create-branch@v2.2.0
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.github-automation-token }}
-      #   with:
-      #     branch: "release/${{ steps.date.outputs.now }}"
-
-      - name: Checkout
-        uses: actions/checkout@v3
-
       - name: Create Pull Request
         uses: repo-sync/pull-request@v2
         with:
