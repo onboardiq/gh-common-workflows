@@ -128,7 +128,7 @@ jobs:
             } catch (error) {
               if (error.name === 'HttpError' && error.status === 404) {
                 const resp = await github.rest.git.createRef({
-                  `refs/heads/${BRANCH}`,
+                  ref: `refs/heads/${BRANCH}`,
                   sha: sha || context.sha,
                   ...context.repo,
                 });
@@ -217,41 +217,41 @@ jobs:
             Check for open PR: **${{ needs.gather-facts.outputs.open-release }}**,
             Check for unmerged commits: **${{ needs.gather-facts.outputs.unmerged-commits }}**,
 
-  post-release-cut-to-notion:
-    name: Post release event status to Notion
-    runs-on: ubuntu-latest
-    needs: create-release-branch
-    steps:
-      - name: checkout the private repository
-        id: checkout_notion_action
-        uses: actions/checkout@v3
-        with:
-          repository: onboardiq/gh-action-post-release-status-to-notion
-          token: ${{ secrets.github-automation-token }}
-          path: ./action
-      - name: run the action
-        uses: ./action
-        with:
-          database-id: ${{ secrets.notion-database-id }}
-          notion-secret: ${{ secrets.notion-secret }}
-          repo: ${{ inputs.project-name }}
-          sha: ${{ github.sha }}
-          status: release branch cut
+  # post-release-cut-to-notion:
+  #   name: Post release event status to Notion
+  #   runs-on: ubuntu-latest
+  #   needs: create-release-branch
+  #   steps:
+  #     - name: checkout the private repository
+  #       id: checkout_notion_action
+  #       uses: actions/checkout@v3
+  #       with:
+  #         repository: onboardiq/gh-action-post-release-status-to-notion
+  #         token: ${{ secrets.github-automation-token }}
+  #         path: ./action
+  #     - name: run the action
+  #       uses: ./action
+  #       with:
+  #         database-id: ${{ secrets.notion-database-id }}
+  #         notion-secret: ${{ secrets.notion-secret }}
+  #         repo: ${{ inputs.project-name }}
+  #         sha: ${{ github.sha }}
+  #         status: release branch cut
 
-  post-release-cut-message-to-slack:
-    name: Post a success message to the release status slack channel.
-    runs-on: ubuntu-latest
-    needs: post-release-cut-to-notion
-    steps:
-      - name: checkout the action
-        id: checkout_slack_action
-        uses: actions/checkout@v3
-        with:
-          repository: onboardiq/gh-action-post-message-to-slack
-          token: ${{ secrets.github-automation-token }}
-          path: ./action
-      - name: run the action
-        uses: ./action
-        with:
-          message: ${{ inputs.project-name }} RC branch has been cut.
-          slack_webhook_url: ${{ secrets.slack-webhook-url }}
+  # post-release-cut-message-to-slack:
+  #   name: Post a success message to the release status slack channel.
+  #   runs-on: ubuntu-latest
+  #   needs: post-release-cut-to-notion
+  #   steps:
+  #     - name: checkout the action
+  #       id: checkout_slack_action
+  #       uses: actions/checkout@v3
+  #       with:
+  #         repository: onboardiq/gh-action-post-message-to-slack
+  #         token: ${{ secrets.github-automation-token }}
+  #         path: ./action
+  #     - name: run the action
+  #       uses: ./action
+  #       with:
+  #         message: ${{ inputs.project-name }} RC branch has been cut.
+  #         slack_webhook_url: ${{ secrets.slack-webhook-url }}
