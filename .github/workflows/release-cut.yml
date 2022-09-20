@@ -129,7 +129,7 @@ jobs:
               if (error.name === 'HttpError' && error.status === 404) {
                 const resp = await github.rest.git.createRef({
                   ref: `refs/heads/${BRANCH}`,
-                  sha: sha || context.sha,
+                  sha: context.sha,
                   ...context.repo,
                 });
                 console.log(resp);
