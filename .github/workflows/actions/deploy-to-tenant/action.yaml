@@ -107,9 +107,6 @@ runs:
         version: ${{ inputs.helm-version }}
         token: ${{ inputs.gh_pat }}
 
-    - name: 'Install and setup Doppler'
-      uses: dopplerhq/cli-action@v1
-
     # GITHUB_RUN_ID is the unique identifier (id) within a repo
     - name: 'Set the KUBECONFIG'
       shell: bash
