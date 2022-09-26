@@ -91,6 +91,7 @@ runs:
       with:
         repository: onboardiq/gh-common-workflows
         path: ./common-workflows
+        fetch-depth: 0
 
     - name: "Install Doppler CLI"
       uses: dopplerhq/cli-action@v1

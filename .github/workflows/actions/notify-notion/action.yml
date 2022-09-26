@@ -32,6 +32,7 @@ runs:
         echo "::add-mask::${{ inputs.database-id }}"
         echo "::add-mask::${{ inputs.notion-secret }}"
         echo "::add-mask::${{ inputs.gh_automation_token }}"
+
     - name: checkout the private repository
       id: checkout_notion_action
       uses: actions/checkout@v3
@@ -39,6 +40,7 @@ runs:
         repository: onboardiq/gh-action-post-release-status-to-notion
         token: ${{ inputs.gh_automation_token }}
         path: ./action
+        fetch-depth: 0
 
     - name: run the action
       uses: ./action

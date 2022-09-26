@@ -121,6 +121,7 @@ jobs:
         with:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
+          fetch-depth: 0
 
       - name: Deploy job for ${{ matrix.name }}
         uses: ./common-workflows/.github/workflows/actions/deploy-to-tenant
@@ -158,6 +159,7 @@ jobs:
         with:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
+          fetch-depth: 0
 
       - uses: ./common-workflows/.github/workflows/actions/create-github-release
         with:
@@ -182,6 +184,8 @@ jobs:
         with:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
+          fetch-depth: 0
+
       - name: "Post message to Slack"
         uses: ./common-workflows/.github/workflows/actions/notify-slack-pipeline-status
         with:

@@ -45,6 +45,7 @@ runs:
       with:
         repository: onboardiq/gh-common-workflows
         path: ./common-workflows
+        fetch-depth: 0
 
     - id: version
       uses: ./common-workflows/.github/workflows/actions/version

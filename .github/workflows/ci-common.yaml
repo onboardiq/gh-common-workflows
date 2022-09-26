@@ -58,10 +58,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
       - uses: actions/checkout@v3
         with:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
+          fetch-depth: 0
           
       - uses: ./common-workflows/.github/workflows/actions/build-assets
         if: ${{ inputs.build-assets }}
@@ -84,10 +88,14 @@ jobs:
         include: ${{ fromJSON(inputs.clusters) }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
       - uses: actions/checkout@v3
         with:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
+          fetch-depth: 0
 
       - uses: ./common-workflows/.github/workflows/actions/helm-push
         with:
@@ -112,7 +120,8 @@ jobs:
         with:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
-
+          fetch-depth: 0
+          
       - uses: ./common-workflows/.github/workflows/actions/notify-slack-pipeline-status
         with:
           slack-channel: ${{ inputs.slack-channel }}

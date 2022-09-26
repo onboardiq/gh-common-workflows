@@ -29,6 +29,7 @@ runs:
         repository: onboardiq/gh-action-post-message-to-slack
         token: ${{ inputs.gh_automation_token }}
         path: ./action
+        fetch-depth: 0
 
     - name: run the action
       uses: ./action

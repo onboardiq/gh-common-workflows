@@ -45,6 +45,7 @@ runs:
       with:
         repository: onboardiq/gh-common-workflows
         path: ./common-workflows
+        fetch-depth: 0
         
     - name: 'Install and Setup Helm'
       uses: Azure/setup-helm@v3.3
