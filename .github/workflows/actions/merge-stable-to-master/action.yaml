@@ -35,13 +35,8 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github-automation-token }}
       with:
         # Adding date to prevent branch naming conflict (even though they should be deleted)
-        ref: ${{ steps.branch-name.outputs.branch-name }}
-        sha: ${{ inputs.sha }}
-
-    - name: Checkout new branch
-      uses: actions/checkout@v3
-      with:
         branch: ${{ steps.branch-name.outputs.branch-name }}
+        sha: ${{ inputs.sha }}
         
     - name: 'Merge stable to master on success'
       id: create-pr
