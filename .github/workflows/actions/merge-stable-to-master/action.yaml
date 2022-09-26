@@ -18,7 +18,7 @@ runs:
       run: |
         echo "::add-mask::${{ inputs.github-automation-token }}"
         echo "::add-mask::${{ inputs.gh-token }}"
-        
+
     - name: "Get current date"
       id: date
       shell: bash
@@ -27,17 +27,17 @@ runs:
     - name: "Create branch name"
       id: branch-name
       shell: bash
+      # Adding date to prevent branch naming conflict (even though they should be deleted)
       run: echo "::set-output name=branch-name::${{steps.date.outputs.now}}"
-      
+
     - name: "Create merge stable with master branch"
       uses: peterjgrainger/action-create-branch@v2.1.0
       env:
         GITHUB_TOKEN: ${{ inputs.github-automation-token }}
       with:
-        # Adding date to prevent branch naming conflict (even though they should be deleted)
         branch: ${{ steps.branch-name.outputs.branch-name }}
         sha: ${{ inputs.sha }}
-        
+
     - name: 'Merge stable to master on success'
       id: create-pr
       uses: repo-sync/pull-request@v2
