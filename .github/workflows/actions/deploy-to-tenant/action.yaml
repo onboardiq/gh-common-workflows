@@ -91,7 +91,6 @@ runs:
     - uses: actions/checkout@v3
       with:
         repository: onboardiq/gh-common-workflows
-        ref: doppler-secret-creation
         path: ./common-workflows
 
     - name: "Install Doppler CLI"
