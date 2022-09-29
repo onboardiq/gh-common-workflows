@@ -151,7 +151,7 @@ runs:
       with:
         doppler-project: ${{ inputs.project-name }}
         namespace: ${{ inputs.namespace }}
-        environment: ${{ inputs.env }
+        environment: ${{ inputs.env }}
         doppler-token: ${{ inputs.doppler-token }}
 
     - name: 'Deployment Dry Run'
