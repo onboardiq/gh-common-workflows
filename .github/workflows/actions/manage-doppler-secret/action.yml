@@ -29,4 +29,4 @@ runs:
       if: ${{ inputs.doppler-project == 'fountain_pool' || inputs.doppler-project == 'url-shortener' }}
       shell: bash
       run: |
-        ./.github/workflows/actions/manage-doppler-secret/manage.sh ${{ inputs.doppler-project }} ${{ inputs.namespace }} ${{ inputs.environment }}
+        ./common-workflows/.github/workflows/actions/manage-doppler-secret/manage.sh ${{ inputs.doppler-project }} ${{ inputs.namespace }} ${{ inputs.environment }}
