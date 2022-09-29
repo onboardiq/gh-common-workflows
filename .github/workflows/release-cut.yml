@@ -110,6 +110,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.github-automation-token }}
 
       - name: Get main branch sha
         id: sha
