@@ -19,6 +19,11 @@ runs:
         echo "::add-mask::${{ inputs.github-automation-token }}"
         echo "::add-mask::${{ inputs.gh-token }}"
 
+    - name: "Checkout"
+      uses: actions/checkout@v3
+      with:
+        token: ${{ inputs.github-automation-token }}
+        
     - name: "Get current date"
       id: date
       shell: bash
