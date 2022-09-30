@@ -1,0 +1,32 @@
+name: 'Manage Doppler Secret'
+description: |
+   Manages the Doppler Secret as described in the docs https://docs.doppler.com/docs/kubernetes-operator#dopplersecret-crd.
+   It is expected that kubectl is setup and the correct context is selected when calling this step.
+inputs:
+  doppler-project:
+    description: 'The project name in doppler to use.'
+    required: true
+  namespace:
+    description: 'The kubernetes namespace being deployed in.'
+    required: true
+  environment:
+    description: "The environment being deployed in DEV | UAT | PROD"
+    required: true
+  doppler-token:
+    description: "The token required to intract with the doppler API"
+    required: true
+    type: string
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Add masks'
+      shell: bash
+      run: |
+        echo "::add-mask::${{ inputs.doppler-token }}"
+    - name: 'Execute Doppler Secret Management script'
+      env:
+        DOPPLER_TOKEN: ${{ inputs.doppler-token }}
+      if: ${{ inputs.doppler-project == 'fountain_pool' || inputs.doppler-project == 'url-shortener' ||  inputs.doppler-project == 'sourcery' }}
+      shell: bash
+      run: |
+        ./common-workflows/.github/workflows/actions/manage-doppler-secret/manage.sh ${{ inputs.doppler-project }} ${{ inputs.namespace }} ${{ inputs.environment }}

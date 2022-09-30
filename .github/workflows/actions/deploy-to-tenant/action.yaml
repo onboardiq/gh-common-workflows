@@ -141,6 +141,15 @@ runs:
         aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
         aws-region: ${{ inputs.region }}
 
+    - name: "Manage Doppler Secret"
+      if: ${{ inputs.dry-run == 'false' || inputs.dry-run == false }}
+      uses: ./common-workflows/.github/workflows/actions/manage-doppler-secret
+      with:
+        doppler-project: ${{ inputs.project-name }}
+        namespace: ${{ inputs.namespace }}
+        environment: ${{ inputs.env }}
+        doppler-token: ${{ inputs.doppler-token }}
+
     - name: 'Deployment Dry Run'
       if: ${{ inputs.dry-run == 'true' || inputs.dry-run == true }}
       env:
