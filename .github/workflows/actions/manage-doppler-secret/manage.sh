@@ -23,6 +23,7 @@ function main(){
 }
 
 function get_current_secret() {
+  # --template=SERVICE_TOKEN={{.data.serviceToken}} is a go template which will exract the current secret token into the string SECRET_TOKEN=<token>
   eval "kubectl get secret -n doppler-operator-system $DOPPLER_OPERATOR_SECRET_NAME --template=SERVICE_TOKEN={{.data.serviceToken}}"
 }
 
@@ -41,6 +42,7 @@ function create_secret() {
   if [ "$DOPPLER_SERVICE_TOKEN" = "" ];
   then
     echo "[create_doppler_secret] Problem creating the Doppler Service Token, exiting."
+    echo "## There was an error creating the Doppler Service Token" >> "$GITHUB_STEP_SUMMARY";
     exit 1
   else
     kubectl create secret generic "$DOPPLER_OPERATOR_SECRET_NAME" \
