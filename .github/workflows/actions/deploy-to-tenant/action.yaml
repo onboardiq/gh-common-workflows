@@ -86,7 +86,6 @@ runs:
     - uses: actions/checkout@v3
       with:
         repository: onboardiq/${{ inputs.project-name }}
-        ref: ${{ inputs.ref }}
 
     - uses: actions/checkout@v3
       with:
