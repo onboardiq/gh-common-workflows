@@ -9,12 +9,12 @@ DOPPLER_CONFIG="${ENVIRONMENT}_${NAMESPACE}"
 
 function main(){
   CURRENT_SECRET=$(get_current_secret)
-  if [ "$CURRENT_SECRET" = "SERVICE_TOKEN=" ]; 
+  if [ "$CURRENT_SECRET" = "SERVICE_TOKEN=" ];
   then
     echo "[create_doppler_secret] SERVICE_TOKEN is there but it's empty, deleting."
-    kubectl delete secret "$DOPPLER_OPERATOR_SECRET_NAME"
+    kubectl delete secret -n doppler-operator-system "$DOPPLER_OPERATOR_SECRET_NAME"
     create_secret
-  elif [ "$CURRENT_SECRET" = "" ]; 
+  elif [ "$CURRENT_SECRET" = "" ];
   then
     create_secret
   else
