@@ -69,7 +69,7 @@ inputs:
     description: "The deployment environment PROD | UAT | DEV"
     required: true
     type: string
-    
+
 runs:
   using: 'composite'
   steps:
@@ -147,6 +147,7 @@ runs:
       with:
         doppler-project: ${{ inputs.project-name }}
         namespace: ${{ inputs.namespace }}
+        tenant-name: ${{ inputs.tenant-name }}
         environment: ${{ inputs.env }}
         doppler-token: ${{ inputs.doppler-token }}
 
