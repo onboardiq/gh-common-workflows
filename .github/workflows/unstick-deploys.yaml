@@ -113,6 +113,6 @@ jobs:
           cloud: ${{ matrix.cluster.cloud }}
           namespace: ${{ matrix.namespace }}
           region: ${{ matrix.cluster.region }}
-          cluster-suffix: ${{ matrix.cluster.suffix }}
+          cluster-suffix: ${{ matrix.cluster.cluster-suffix }}
           stage: ${{ matrix.cluster.stage }}
           dry-run: ${{ inputs.dry-run }}
