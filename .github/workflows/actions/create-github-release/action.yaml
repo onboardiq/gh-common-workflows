@@ -28,13 +28,30 @@ runs:
         echo "::set-output name=notes::${RELEASE_NOTES}"
         echo "::set-output name=tag::$(TZ=America/Los_Angeles date +'%Y-%m-%dTH%H-M%M')"
 
-    - name: 'Create a Release'
+    - name: 'Create a Release via API'
       id: create_release
-      uses: actions/create-release@v1
+      uses: actions/github-script@v6
       env:
         GITHUB_TOKEN: ${{ inputs.github-automation-token }}
+        TAG: ${{ steps.release-info.outputs.tag }}
+        RELEASE: ${{ steps.release-info.outputs.tag }}
+        BODY: ${{ steps.release-info.outputs.notes }}
+        COMMIT: ${{ inputs.sha }}
       with:
-        tag_name: ${{ steps.release-info.outputs.tag }}
-        release_name: ${{ steps.release-info.outputs.tag }}
-        body: ${{ steps.release-info.outputs.notes }}
-        commitish: ${{ inputs.sha }}
+        debug: true
+        script: |
+          const { TAG, RELEASE, BODY, COMMIT } = process.env;
+          try {
+            const createReleaseResponse = await github.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo,
+              tag_name: TAG,
+              name: RELEASE,
+              body: BODY,
+              draft: false,
+              prerelease: false,
+              target_commitish: COMMIT,
+            });
+          } catch (err) {
+            core.setFailed(err.message);
+          }
