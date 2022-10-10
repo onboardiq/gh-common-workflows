@@ -40,7 +40,7 @@ runs:
         repository: onboardiq/gh-action-post-release-status-to-notion
         token: ${{ inputs.gh_automation_token }}
         path: ./action
-        fetch-depth: 0
+        fetch-depth: 1
 
     - name: run the action
       uses: ./action

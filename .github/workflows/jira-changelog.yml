@@ -63,7 +63,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: get new release sha
         id: release-sha
@@ -96,7 +96,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: checkout the private repository
         id: checkout_notion_action
@@ -105,7 +105,7 @@ jobs:
           repository: onboardiq/gh-action-post-release-status-to-notion
           token: ${{ secrets.github-automation-token }}
           path: ./action
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: run the action
         uses: ./action
@@ -131,7 +131,7 @@ jobs:
           repository: onboardiq/gh-action-post-message-to-slack
           token: ${{ secrets.github-automation-token }}
           path: ./action
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: run the action
         uses: ./action

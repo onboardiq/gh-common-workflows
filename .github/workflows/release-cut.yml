@@ -167,7 +167,7 @@ jobs:
           repository: onboardiq/gh-action-post-release-status-to-notion
           path: ./action
           token: ${{ secrets.github-automation-token }}
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: run the action
         uses: ./action
@@ -199,7 +199,7 @@ jobs:
           repository: onboardiq/gh-action-post-message-to-slack
           token: ${{ secrets.github-automation-token }}
           path: ./action
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: run the action
         uses: ./action
@@ -223,7 +223,7 @@ jobs:
           repository: onboardiq/gh-action-post-release-status-to-notion
           token: ${{ secrets.github-automation-token }}
           path: ./action
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: run the action
         uses: ./action
@@ -246,7 +246,7 @@ jobs:
           repository: onboardiq/gh-action-post-message-to-slack
           token: ${{ secrets.github-automation-token }}
           path: ./action
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: run the action
         uses: ./action

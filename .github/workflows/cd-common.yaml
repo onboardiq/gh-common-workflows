@@ -102,7 +102,8 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: ${{ inputs.ref }}
-          fetch-depth: 0
+          fetch-depth: 1
+
 
       - name: 'Get the commit sha'
         id: commit-sha
@@ -121,7 +122,7 @@ jobs:
         with:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Deploy job for ${{ matrix.name }}
         uses: ./common-workflows/.github/workflows/actions/deploy-to-tenant
@@ -159,7 +160,7 @@ jobs:
         with:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
-          fetch-depth: 0
+          fetch-depth: 1
 
       - uses: ./common-workflows/.github/workflows/actions/create-github-release
         with:
@@ -184,7 +185,7 @@ jobs:
         with:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: "Post message to Slack"
         uses: ./common-workflows/.github/workflows/actions/notify-slack-pipeline-status
