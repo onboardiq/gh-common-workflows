@@ -9,11 +9,14 @@ inputs:
   namespace:
     description: 'The kubernetes namespace being deployed in.'
     required: true
+  tenant-name:
+    description: 'The name of the tenant.'
+    required: true
   environment:
     description: "The environment being deployed in DEV | UAT | PROD"
     required: true
   doppler-token:
-    description: "The token required to intract with the doppler API"
+    description: "The token required to intract with the Doppler API"
     required: true
     type: string
 runs:
@@ -29,4 +32,4 @@ runs:
       if: ${{ inputs.doppler-project == 'fountain_pool' || inputs.doppler-project == 'url-shortener' ||  inputs.doppler-project == 'sourcery' || inputs.doppler-project == 'wheregologin' }}
       shell: bash
       run: |
-        ./common-workflows/.github/workflows/actions/manage-doppler-secret/manage.sh ${{ inputs.doppler-project }} ${{ inputs.namespace }} ${{ inputs.environment }}
+        ./common-workflows/.github/workflows/actions/manage-doppler-secret/manage.sh ${{ inputs.doppler-project }} ${{ inputs.namespace }} ${{ inputs.environment }} {{ inputs.tenant-name }}

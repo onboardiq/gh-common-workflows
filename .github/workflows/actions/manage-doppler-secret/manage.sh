@@ -4,17 +4,18 @@
 DOPPLER_PROJECT=$1
 NAMESPACE=$2
 ENVIRONMENT=$3
-DOPPLER_OPERATOR_SECRET_NAME="${NAMESPACE}-${DOPPLER_PROJECT//_/-}"
-DOPPLER_CONFIG="${ENVIRONMENT}_${NAMESPACE}"
+TENANT_NAME=$4
+DOPPLER_OPERATOR_SECRET_NAME="${TENANT_NAME}-${DOPPLER_PROJECT//_/-}"
+DOPPLER_CONFIG="${ENVIRONMENT}_${TENANT_NAME}"
 
 function main(){
   CURRENT_SECRET=$(get_current_secret)
-  if [ "$CURRENT_SECRET" = "SERVICE_TOKEN=" ]; 
+  if [ "$CURRENT_SECRET" = "SERVICE_TOKEN=" ];
   then
     echo "[create_doppler_secret] SERVICE_TOKEN is there but it's empty, deleting."
     kubectl delete secret "$DOPPLER_OPERATOR_SECRET_NAME"
     create_secret
-  elif [ "$CURRENT_SECRET" = "" ]; 
+  elif [ "$CURRENT_SECRET" = "" ];
   then
     create_secret
   else
