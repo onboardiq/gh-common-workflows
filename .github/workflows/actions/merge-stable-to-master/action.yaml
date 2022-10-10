@@ -65,7 +65,7 @@ runs:
       with:
         github-token: ${{ inputs.gh-token }}
         script: |
-          await github.pulls.createReview({
+          await github.rest.pulls.createReview({
             owner: context.repo.owner,
             repo: context.repo.repo,
             pull_number: ${{ steps.create-pr.outputs.pr_number }},

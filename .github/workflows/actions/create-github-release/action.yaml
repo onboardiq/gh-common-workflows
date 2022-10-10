@@ -42,7 +42,7 @@ runs:
         script: |
           const { TAG, RELEASE, BODY, COMMIT } = process.env;
           try {
-            const createReleaseResponse = await github.repos.createRelease({
+            const createReleaseResponse = await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo,
               tag_name: TAG,
