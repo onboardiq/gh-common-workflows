@@ -32,4 +32,4 @@ runs:
       if: ${{ inputs.doppler-project == 'pool' || inputs.doppler-project == 'fountain_pool' || inputs.doppler-project == 'url-shortener' ||  inputs.doppler-project == 'sourcery' || inputs.doppler-project == 'wheregologin' }}
       shell: bash
       run: |
-        ./common-workflows/.github/workflows/actions/manage-doppler-secret/manage.sh ${{ inputs.doppler-project }} ${{ inputs.namespace }} ${{ inputs.environment }} {{ inputs.tenant-name }}
+        ./common-workflows/.github/workflows/actions/manage-doppler-secret/manage.sh ${{ inputs.doppler-project }} ${{ inputs.namespace }} ${{ inputs.environment }} ${{ inputs.tenant-name }}
