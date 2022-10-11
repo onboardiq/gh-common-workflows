@@ -88,7 +88,7 @@ jobs:
             exit 1;
           fi
 
-          git merge-base --is-ancestor $sha $expected_branch
+          git merge-base --is-ancestor $sha origin/$expected_branch
 
   unstick-deploys:
     runs-on: ubuntu-latest
