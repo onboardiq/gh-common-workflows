@@ -162,10 +162,10 @@ jobs:
           path: ./common-workflows
           fetch-depth: 1
 
-      - uses: ./common-workflows/.github/workflows/actions/create-github-release
-        with:
-          github-automation-token: ${{ secrets.github-automation-token }}
-          sha: ${{ needs.deploy-env.outputs.commit-sha }}
+      # - uses: ./common-workflows/.github/workflows/actions/create-github-release
+      #   with:
+      #     github-automation-token: ${{ secrets.github-automation-token }}
+      #     sha: ${{ needs.deploy-env.outputs.commit-sha }}
 
       - uses: ./common-workflows/.github/workflows/actions/merge-stable-to-master
         with:
