@@ -1,0 +1,12 @@
+{
+  "name": "gh-common-workflows",
+  "version": "0.0.1",
+  "description": "Common workflows used across the entire product.",
+  "scripts": {
+    "lint": "yamllint ./.github"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/onboardiq/gh-common-workflows.git"
+  }
+}

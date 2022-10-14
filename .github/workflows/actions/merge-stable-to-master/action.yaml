@@ -23,7 +23,7 @@ runs:
       uses: actions/checkout@v3
       with:
         token: ${{ inputs.github-automation-token }}
-        
+
     - name: "Get current date"
       id: date
       shell: bash

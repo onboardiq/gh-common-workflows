@@ -101,7 +101,7 @@ runs:
           } catch (error) {
             throw new Error(`Error while parsing repos JSON body - ${REPOS}: ${error}`);
           }
-        
+
     - name: 'Docker meta - production'
       id: meta
       uses: docker/metadata-action@v3

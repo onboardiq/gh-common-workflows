@@ -42,7 +42,6 @@ env:
   # we can env use variable `KUBERNETES_EXEC_INFO` to hint cli to use `v1beta1` version.
   KUBERNETES_EXEC_INFO: '{"kind":"ExecCredential","apiVersion":"client.authentication.k8s.io/v1beta1","spec":{"interactive":true}}'
 
-
 jobs:
   check-inputs:
     runs-on: ubuntu-latest

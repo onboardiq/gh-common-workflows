@@ -1,7 +1,7 @@
 name: 'Notify Slack'
 description: 'Sends the configured channel a message'
 inputs:
-  slack_webhook_url: 
+  slack_webhook_url:
     description: 'The URL of the Slack Webhook to post the message to'
     required: true
   gh_automation_token:

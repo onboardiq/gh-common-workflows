@@ -29,7 +29,7 @@ inputs:
   cluster-suffix:
     description: 'A string to differentiate between helm repos in the same region'
     default: ''
-    
+
 runs:
   using: 'composite'
   steps:
@@ -57,7 +57,7 @@ runs:
       with:
         version: ${{ inputs.helm-version }}
         token: ${{ inputs.token }}
-        
+
     - name: 'Push Helm chart'
       env:
         CLOUD: ${{ inputs.cloud }}

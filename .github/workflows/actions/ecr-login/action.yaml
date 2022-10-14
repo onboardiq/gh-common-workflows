@@ -106,7 +106,7 @@ runs:
         IMAGE_NAME: ${{ inputs.image-name }}
         REGISTRIES: |
           [ "${{ steps.login-ecr-use.outputs.registry }}",
-            "${{ steps.login-ecr-euc.outputs.registry }}", 
+            "${{ steps.login-ecr-euc.outputs.registry }}",
             "${{ steps.login-ecr-euw-1.outputs.registry }}",
             "${{ steps.login-ecr-aps.outputs.registry }}",
             "${{ steps.login-ecr-euw-3.outputs.registry }}",
