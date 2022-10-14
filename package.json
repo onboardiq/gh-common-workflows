@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Common workflows used across the entire product.",
   "scripts": {
+    "get_deps": "brew bundle",
     "lint": "yamllint ./.github"
   },
   "repository": {
