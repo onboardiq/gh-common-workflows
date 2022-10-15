@@ -60,16 +60,13 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 1
-          
       - uses: actions/checkout@v3
         with:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
           fetch-depth: 1
-          
       - uses: ./common-workflows/.github/workflows/actions/build-assets
         if: ${{ inputs.build-assets }}
-        
       - uses: ./common-workflows/.github/workflows/actions/docker-build
         with:
           image-name: ${{ inputs.project-name }}
@@ -90,13 +87,11 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 1
-          
       - uses: actions/checkout@v3
         with:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
           fetch-depth: 1
-
       - uses: ./common-workflows/.github/workflows/actions/helm-push
         with:
           image-name: ${{ inputs.project-name }}
@@ -121,9 +116,7 @@ jobs:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
           fetch-depth: 1
-          
       - uses: ./common-workflows/.github/workflows/actions/notify-slack-pipeline-status
         with:
           slack-channel: ${{ inputs.slack-channel }}
           slack-bot-token: ${{ secrets.slack-bot-token }}
-      

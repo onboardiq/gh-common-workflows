@@ -33,7 +33,7 @@ on:
         description: 'Base URL of the jira instance for building links'
         required: true
         type: string
-        
+
     secrets:
       jira-token:
         description: "A token with access to jira"
@@ -138,5 +138,6 @@ jobs:
       - name: run the action
         uses: ./action
         with:
-          message: Issues added to Jira Release ${{ inputs.release-name }} ${{ needs.create-changelog.outputs.release-link }}
+          message: |
+            Issues added to Jira Release ${{ inputs.release-name }} ${{ needs.create-changelog.outputs.release-link }}
           slack_webhook_url: ${{ secrets.slack-webhook-url }}

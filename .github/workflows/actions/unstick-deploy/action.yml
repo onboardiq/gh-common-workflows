@@ -46,7 +46,7 @@ runs:
         repository: onboardiq/gh-common-workflows
         path: ./common-workflows
         fetch-depth: 1
-        
+
     - name: 'Install and Setup Helm'
       uses: Azure/setup-helm@v3.3
       with:
@@ -91,7 +91,7 @@ runs:
       shell: bash
       run: |
         echo "**SKIPPED**: Release not pending for ${NAMESPACE}" >> $GITHUB_STEP_SUMMARY;
-        
+
     - name: 'Dry run rollback if pending'
       if: >-
         ${{

@@ -38,18 +38,15 @@ on:
       #   projects: Project[];
       #   include_faut_reset_cronjob?: number;
       # }
-      # 
+      #
       # interface Cluster {
       #   region: string;
       #   cloud: string;
       #   eks_suffix: string;
       #   stage: Stage;
       # }
-      # 
       # type Stage = 'prod' | 'stage';
-      # 
       # type Environment = 'prod' | 'uat' | 'dev';
-      # 
       # type Project = 'monolith'
       tenants:
         description: "A JSON string representing a list of tenant data"
@@ -103,8 +100,6 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
           fetch-depth: 1
-
-
       - name: 'Get the commit sha'
         id: commit-sha
         shell: bash
@@ -123,7 +118,6 @@ jobs:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
           fetch-depth: 1
-
       - name: Deploy job for ${{ matrix.name }}
         uses: ./common-workflows/.github/workflows/actions/deploy-to-tenant
         with:
@@ -162,11 +156,6 @@ jobs:
           path: ./common-workflows
           fetch-depth: 1
 
-      # - uses: ./common-workflows/.github/workflows/actions/create-github-release
-      #   with:
-      #     github-automation-token: ${{ secrets.github-automation-token }}
-      #     sha: ${{ needs.deploy-env.outputs.commit-sha }}
-
       - uses: ./common-workflows/.github/workflows/actions/merge-stable-to-master
         with:
           sha: ${{ needs.deploy-env.outputs.commit-sha }}
@@ -186,7 +175,6 @@ jobs:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
           fetch-depth: 1
-
       - name: "Post message to Slack"
         uses: ./common-workflows/.github/workflows/actions/notify-slack-pipeline-status
         with:
@@ -194,7 +182,6 @@ jobs:
           gh_automation_token: ${{ secrets.github-automation-token }}
           environment: ${{ inputs.env }}
           message: ${{ inputs.message_for_slack }}
-
       - name: "Post data row to Notion"
         uses: ./common-workflows/.github/workflows/actions/notify-notion
         with:

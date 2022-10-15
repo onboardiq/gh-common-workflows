@@ -40,7 +40,7 @@ runs:
       shell: bash
       run: |
         echo "::error title=Azure not configured::Azure is not configured for setting up kubeconfig yet"
-        
+
     - name: 'Get the kubeconfig'
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
@@ -53,5 +53,3 @@ runs:
         --alias aws-${{ inputs.region }}-${{ inputs.stage }} \
         --kubeconfig ${KUBECONFIG} \
         --region ${{ inputs.region }}
-
-    
