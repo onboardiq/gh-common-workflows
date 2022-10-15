@@ -29,7 +29,7 @@ runs:
     - name: 'Execute Doppler Secret Management script'
       env:
         DOPPLER_TOKEN: ${{ inputs.doppler-token }}
-      if: ${{ inputs.doppler-project == 'fountain_pool' || inputs.doppler-project == 'url-shortener' ||  inputs.doppler-project == 'sourcery' || inputs.doppler-project == 'wheregologin' }}
+      if: ${{ inputs.doppler-project == 'pool' || inputs.doppler-project == 'fountain_pool' || inputs.doppler-project == 'url-shortener' ||  inputs.doppler-project == 'sourcery' || inputs.doppler-project == 'wheregologin' }}
       shell: bash
       run: |
-        ./common-workflows/.github/workflows/actions/manage-doppler-secret/manage.sh ${{ inputs.doppler-project }} ${{ inputs.environment }} {{ inputs.tenant-name }}
+        ./common-workflows/.github/workflows/actions/manage-doppler-secret/manage.sh ${{ inputs.doppler-project }} ${{ inputs.environment }} ${{ inputs.tenant-name }}
