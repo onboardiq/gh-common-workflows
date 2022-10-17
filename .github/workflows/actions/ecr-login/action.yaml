@@ -30,7 +30,7 @@ runs:
         echo "::add-mask::${{ inputs.aws-secret-access-key }}"
 
     - name: 'Configure AWS Credentials - USE'
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v1-node16
       if: ${{ contains(fromJSON(inputs.regions), 'us-east-1') }}
       with:
         aws-access-key-id: ${{ inputs.aws-access-key-id }}
@@ -49,7 +49,7 @@ runs:
         echo "::set-output name=repo::${{ steps.login-ecr-use.outputs.registry }}/cache/${{ inputs.image-name }}"
 
     - name: 'Configure AWS Credentials - EUC'
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v1-node16
       if: ${{ contains(fromJSON(inputs.regions), 'eu-central-1') }}
       with:
         aws-access-key-id: ${{ inputs.aws-access-key-id }}
@@ -62,7 +62,7 @@ runs:
       uses: aws-actions/amazon-ecr-login@v1
 
     - name: 'Configure AWS credentials - EUW-1'
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v1-node16
       if: ${{ contains(fromJSON(inputs.regions), 'eu-west-1') }}
       with:
         aws-access-key-id: ${{ inputs.aws-access-key-id }}
@@ -75,7 +75,7 @@ runs:
       uses: aws-actions/amazon-ecr-login@v1
 
     - name: 'Configure AWS credentials - EUW-3'
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v1-node16
       if: ${{ contains(fromJSON(inputs.regions), 'eu-west-3') }}
       with:
         aws-access-key-id: ${{ inputs.aws-access-key-id }}
@@ -88,7 +88,7 @@ runs:
       uses: aws-actions/amazon-ecr-login@v1
 
     - name: 'Configure AWS credentials - APS'
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v1-node16
       if: ${{ contains(fromJSON(inputs.regions), 'ap-south-1') }}
       with:
         aws-access-key-id: ${{ inputs.aws-access-key-id }}
