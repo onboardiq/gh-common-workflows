@@ -16,7 +16,7 @@ npm run setup
 
 ### pre-commit
 
-We are using `pre-commit` to manage the pre-commit git hooks in this repository.
+We are using [pre-commit](https://github.com/pre-commit/pre-commit-hooks) to manage the pre-commit git hooks in this repository.
 
 > You should not have to do this step manually, as `npm run setup` takes care of installing pre-commit. Follow this only if `pre-commit --version` fails.
 
