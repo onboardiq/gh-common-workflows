@@ -4,6 +4,34 @@ Common CI/CD workflows
 
 These workflows and actions form the base of how we do CI/CD at Fountain
 
+## Setup
+
+### General
+
+All you need to do in order to set up the dev env for yourself can be achieved by running
+
+```
+npm run setup
+```
+
+### pre-commit
+
+We are using `pre-commit` to manage the pre-commit git hooks in this repository.
+
+> You should not have to do this step manually, as `npm run setup` takes care of installing pre-commit. Follow this only if `pre-commit --version` fails.
+
+After you pull the repo for the first time, run
+
+```
+pre-commit install
+```
+
+If you are wishing to run the hook without having to commit, this command is your friend:
+
+```
+npm run pre_commit
+```
+
 ## Workflows
 
 ### CI
