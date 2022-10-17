@@ -27,14 +27,14 @@ jobs:
       with:
         # My Project name, is also the base image name
         project-name: my-project
-  
+
         # If my project is a Rails app, I can set this flag to true to get
         # a cached pre-docker-build asset step
         build-assets: false
-  
+
         # The version of my Helm Chart
         helm-chart-version: 1.0.0
-  
+
         # The specific version of Helm I want my project to use,
         # the default is probably what you should use
         helm-version: 3.4.1
@@ -43,11 +43,11 @@ jobs:
         # AWS credentials with sufficient permissions to push to ECR
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  
+
         # Azure credentials able to push to ACR
         azure-registry-username: ${{ secrets.REGISTRY_USERNAME }}
         azure-registry-password: ${{ secrets.REGISTRY_PASSWORD }}
-  
+
         # Helm Repo Credentials
         helm-repo-username: ${{ secrets.HELM_REPO_USERNAME }}
         helm-repo-password: ${{ secrets.HELM_REPO_PASSWORD }}
@@ -93,7 +93,7 @@ jobs:
 
       # Doppler API Token to create doppler secrets
       doppler-token: ${{ secrets.DOPPLER_TOKEN }}
-  
+
 
       # Helm Repo Credentials
       helm-repo-username: ${{ secrets.HELM_REPO_USERNAME }}
@@ -116,5 +116,3 @@ TODO: Fill out the action definitions
 ### build-assets
 ### helm-push
 ### docker-build
-
-
