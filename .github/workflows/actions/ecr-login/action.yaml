@@ -46,7 +46,7 @@ runs:
       if: ${{ contains(fromJSON(inputs.regions), 'us-east-1') }}
       shell: bash
       run: |
-        echo "::set-output name=repo::${{ steps.login-ecr-use.outputs.registry }}/cache/${{ inputs.image-name }}"
+        echo "repo=${{ steps.login-ecr-use.outputs.registry }}/cache/${{ inputs.image-name }}" >> $GITHUB_OUTPUT
 
     - name: 'Configure AWS Credentials - EUC'
       uses: aws-actions/configure-aws-credentials@v1

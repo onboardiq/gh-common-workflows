@@ -33,13 +33,13 @@ runs:
     - name: "Get current date"
       id: date
       shell: bash
-      run: echo "::set-output name=now::$(TZ=America/Los_Angeles date +'%Y-%m-%d')"
+      run: echo "now=$(TZ=America/Los_Angeles date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
     - name: "Create branch name"
       id: branch-name
       shell: bash
       # Adding date to prevent branch naming conflict (even though they should be deleted)
-      run: echo "::set-output name=branch-name::${{steps.date.outputs.now}}"
+      run: echo "branch-name=${{steps.date.outputs.now}}" >> $GITHUB_OUTPUT
 
     - name: "Create merge stable with master branch"
       uses: peterjgrainger/action-create-branch@v2.1.0
