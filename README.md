@@ -133,14 +133,38 @@ jobs:
 
 ## Actions
 
-TODO: Fill out the action definitions
-
 ### notify-slack-pipeline-status
+
+Aptly named, will send a Slack message with the status of the pipeline to a channel.
+
 ### merge-stable-to-master
+
+Automatically merges changes present in `stable` to `master`. Used after a successful deploy to match state.
+
 ### create-github-release
+
+Self descript.
+
 ### deploy-to-tenant
+
+Self descript.
+
 ### ecr-login
+
+Logs into ECR (or ACR) repositories by region
+
 ### version
+
+Determine the image tag and chart version given a specific git reference
+
 ### build-assets
+
+Builds static assets. Only used when deploying `monolith`.
+
 ### helm-push
+
+Push a Helm Chart to a given region
+
 ### docker-build
+
+Build and push docker images to selected repos.
