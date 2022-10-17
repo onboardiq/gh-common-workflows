@@ -9,5 +9,5 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-      - run: /home/linuxbrew/.linuxbrew/bin/brew intall pre-commit
+      - run: /home/linuxbrew/.linuxbrew/bin/brew install pre-commit
       - run: pre-commit run --all-files
