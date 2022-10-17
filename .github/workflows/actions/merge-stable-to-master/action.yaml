@@ -24,6 +24,12 @@ runs:
       with:
         token: ${{ inputs.github-automation-token }}
 
+    - uses: actions/checkout@v3
+      with:
+        repository: onboardiq/gh-common-workflows
+        path: ./common-workflows
+        fetch-depth: 1
+
     - name: "Get current date"
       id: date
       shell: bash
