@@ -94,13 +94,13 @@ runs:
         fetch-depth: 1
 
     - name: "Install Doppler CLI"
-      uses: dopplerhq/cli-action@v1
+      uses: dopplerhq/cli-action@v2
 
     - name: 'Install Kubectl'
       id: install-kubectl
-      uses: azure/setup-kubectl@v1
+      uses: azure/setup-kubectl@v3
       with:
-        version: v1.19.0
+        version: v1.21.0
 
     - name: 'Install and Setup Helm'
       uses: Azure/setup-helm@v3.3
@@ -135,7 +135,7 @@ runs:
         base-chart-version: ${{ inputs.chart-version }}
 
     - name: "Configure AWS credentials"
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v1-node16
       with:
         aws-access-key-id: ${{ inputs.aws-access-key-id }}
         aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
