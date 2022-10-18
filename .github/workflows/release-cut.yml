@@ -15,6 +15,11 @@ on:
         description: 'The name of the branch representing the currently deployed release'
         required: true
         type: string
+      release-commit:
+        description: 'Whether an empty commit should be added to produce a new SHA'
+        type: boolean
+        required: false
+        default: false
     secrets:
       github-automation-token:
         description: "A github user token with sufficent permissions to create, approve, and merge PRs"
@@ -127,10 +132,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.github-automation-token }}
           BRANCH: "release/${{ steps.date.outputs.now }}"
           SHA: ${{ steps.sha.outputs.result }}
+          SHOULD_COMMIT: ${{ inputs.release-commit }}
         shell: bash
         run: |
           git checkout -b ${BRANCH} ${SHA}
+          if [[ ${SHOULD_COMMIT} == 'true' ]]; then
+            git commit --no-verify --allow-empty -m "Cut Release Branch ${BRANCH}";
+          fi
           git push -u origin ${BRANCH}
+
       - name: Create Pull Request
         uses: repo-sync/pull-request@v2
         with:
