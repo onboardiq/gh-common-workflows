@@ -66,12 +66,12 @@ runs:
     # The github bot approves the PR to satisfy the
     # branch protection rule
     - name: 'Approve the PR'
-      uses: actions/github-script@v4
+      uses: actions/github-script@v6
       if: ${{ steps.create-pr.outputs.pr_number != null }}
       with:
         github-token: ${{ inputs.gh-token }}
         script: |
-          await github.pulls.createReview({
+          await github.rest.pulls.createReview({
             owner: context.repo.owner,
             repo: context.repo.repo,
             pull_number: ${{ steps.create-pr.outputs.pr_number }},
