@@ -71,7 +71,7 @@ jobs:
           REF: ${{ inputs.release-name }}
         shell: bash
         run: |
-          echo "::set-output name=result::$(git rev-parse $REF)"
+          echo "result=$(git rev-parse $REF)" >> $GITHUB_OUTPUT
 
       - name: List and Parse Commits
         id: changelog

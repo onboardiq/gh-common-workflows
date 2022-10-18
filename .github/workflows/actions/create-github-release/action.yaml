@@ -25,8 +25,8 @@ runs:
         RELEASE_NOTES="${RELEASE_NOTES//'%'/'%25'}"
         RELEASE_NOTES="${RELEASE_NOTES//$'\n'/'%0A'}"
         RELEASE_NOTES="${RELEASE_NOTES//$'\r'/'%0D'}"
-        echo "::set-output name=notes::${RELEASE_NOTES}"
-        echo "::set-output name=tag::$(TZ=America/Los_Angeles date +'%Y-%m-%dTH%H-M%M')"
+        echo "notes=${RELEASE_NOTES}" >> $GITHUB_OUTPUT
+        echo "tag=$(TZ=America/Los_Angeles date +'%Y-%m-%dTH%H-M%M')" >> $GITHUB_OUTPUT
 
     - name: 'Create a Release via API'
       id: create_release

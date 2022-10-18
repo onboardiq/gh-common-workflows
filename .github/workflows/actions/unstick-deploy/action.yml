@@ -82,7 +82,7 @@ runs:
           needs_rollback=$(echo $release_status | jq '.[0].status == "pending-upgrade"');
         fi
 
-        echo "::set-output name=result::${needs_rollback}";
+        echo "result=${needs_rollback}" >> $GITHUB_OUTPUT;
 
     - name: 'Mark skipped if not pending'
       if: ${{ steps.needs-rollback.outputs.result == 'false' }}
