@@ -135,6 +135,8 @@ jobs:
           SHOULD_COMMIT: ${{ inputs.release-commit }}
         shell: bash
         run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
           git checkout -b ${BRANCH} ${SHA}
           if [[ ${SHOULD_COMMIT} == 'true' ]]; then
             git commit --no-verify --allow-empty -m "Cut Release Branch ${BRANCH}";
