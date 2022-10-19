@@ -14,6 +14,7 @@ inputs:
     required: true
   doppler-token:
     description: "The token required to intract with the Doppler API"
+    required: true
     type: string
 runs:
   using: 'composite'
@@ -25,7 +26,6 @@ runs:
     - name: 'Execute Doppler Secret Management script'
       env:
         DOPPLER_TOKEN: ${{ inputs.doppler-token }}
-      if: ${{ inputs.doppler-token != 0 && inputs.doppler-token != '' }}
       shell: bash
       run: |
         ./common-workflows/.github/workflows/actions/manage-doppler-secret/manage.sh ${{ inputs.doppler-project }} ${{ inputs.environment }} ${{ inputs.tenant-name }}
