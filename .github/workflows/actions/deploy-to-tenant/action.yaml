@@ -63,7 +63,6 @@ inputs:
     type: string
   doppler-token:
     description: "The token required to intract with the doppler API"
-    required: true
     type: string
   env:
     description: "The deployment environment PROD | UAT | DEV"
