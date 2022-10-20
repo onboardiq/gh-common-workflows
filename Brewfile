@@ -1,1 +1,1 @@
-brew "yamllint"
+brew "pre-commit"

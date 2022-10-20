@@ -34,5 +34,5 @@ runs:
     - name: run the action
       uses: ./action
       with:
-        message: {{ inputs.message }}
+        message: ${{ inputs.message }}
         slack_webhook_url: ${{ inputs.slack_webhook_url }}
