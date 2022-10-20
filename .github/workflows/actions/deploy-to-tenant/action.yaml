@@ -63,7 +63,6 @@ inputs:
     type: string
   doppler-token:
     description: "The token required to intract with the doppler API"
-    required: true
     type: string
   env:
     description: "The deployment environment PROD | UAT | DEV"
@@ -95,6 +94,7 @@ runs:
 
     - name: "Install Doppler CLI"
       uses: dopplerhq/cli-action@v2
+      if: ${{ inputs.doppler-token != 0 && inputs.doppler-token != '' }}
 
     - name: 'Install Kubectl'
       id: install-kubectl
@@ -142,7 +142,7 @@ runs:
         aws-region: ${{ inputs.region }}
 
     - name: "Manage Doppler Secret"
-      if: ${{ inputs.dry-run == 'false' || inputs.dry-run == false }}
+      if: ${{ (inputs.doppler-token != 0 && inputs.doppler-token != '') && (inputs.dry-run == 'false' || inputs.dry-run == false) }}
       uses: ./common-workflows/.github/workflows/actions/manage-doppler-secret
       with:
         doppler-project: ${{ inputs.project-name }}
