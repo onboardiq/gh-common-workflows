@@ -71,6 +71,9 @@ runs:
       env:
         NAMESPACE: ${{ inputs.namespace }}
         PROJECT: ${{ inputs.project-name }}
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
+        AWS_DEFAULT_REGION: ${{ inputs.region }}
       shell: bash
       run: |
         release_status=$(helm history ${PROJECT} --max 1 -o json || true);
