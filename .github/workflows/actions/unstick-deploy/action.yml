@@ -76,7 +76,7 @@ runs:
         AWS_DEFAULT_REGION: ${{ inputs.region }}
       shell: bash
       run: |
-        release_status=$(helm history ${PROJECT} --max 1 -o json || true);
+        release_status=$(helm history ${PROJECT} -n ${NAMESPACE} --max 1 -o json || true);
 
         if [[ $release_status = '' ]]; then
           echo "**SKIPPED**: No status from helm for ${NAMESPACE}" >> $GITHUB_STEP_SUMMARY;
