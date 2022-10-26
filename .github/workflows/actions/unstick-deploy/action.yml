@@ -115,6 +115,9 @@ runs:
         }}
       env:
         NAMESPACE: ${{ inputs.namespace }}
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
+        AWS_DEFAULT_REGION: ${{ inputs.region }}
       shell: bash
       run: |
         echo "**ROLLBACK**: Rolling back pending release for ${NAMESPACE}" >> $GITHUB_STEP_SUMMARY;
