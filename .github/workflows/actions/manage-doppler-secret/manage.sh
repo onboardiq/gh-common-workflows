@@ -17,7 +17,7 @@ main() {
 delete_duplicate() {
   if [ "$TENANT_NAME" != "$NAMESPACE" ];
   then
-    CURRENT_SECRET=$(get_secret $LEGACY_DOPPLER_OPERATOR_SECRET_NAME)
+    CURRENT_SECRET=$(get_secret "$LEGACY_DOPPLER_OPERATOR_SECRET_NAME")
 
     if [ "$CURRENT_SECRET" != "" ];
     then
