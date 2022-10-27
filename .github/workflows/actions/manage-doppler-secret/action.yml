@@ -9,6 +9,9 @@ inputs:
   tenant-name:
     description: 'The name of the tenant.'
     required: true
+  namespace:
+    description: 'The kubernetes namespace the tenant is in'
+    required: true
   environment:
     description: "The environment being deployed in DEV | UAT | PROD"
     required: true
@@ -28,4 +31,4 @@ runs:
         DOPPLER_TOKEN: ${{ inputs.doppler-token }}
       shell: bash
       run: |
-        ./common-workflows/.github/workflows/actions/manage-doppler-secret/manage.sh ${{ inputs.doppler-project }} ${{ inputs.environment }} ${{ inputs.tenant-name }}
+        ./common-workflows/.github/workflows/actions/manage-doppler-secret/manage.sh ${{ inputs.doppler-project }} ${{ inputs.environment }} ${{ inputs.tenant-name }} {{ inputs.namespace }}
