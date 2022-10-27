@@ -31,4 +31,4 @@ runs:
         DOPPLER_TOKEN: ${{ inputs.doppler-token }}
       shell: bash
       run: |
-        ./common-workflows/.github/workflows/actions/manage-doppler-secret/manage.sh ${{ inputs.doppler-project }} ${{ inputs.environment }} ${{ inputs.tenant-name }} {{ inputs.namespace }}
+        ./common-workflows/.github/workflows/actions/manage-doppler-secret/manage.sh ${{ inputs.doppler-project }} ${{ inputs.environment }} ${{ inputs.tenant-name }} ${{ inputs.namespace }}
