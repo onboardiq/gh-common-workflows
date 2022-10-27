@@ -60,7 +60,7 @@ create_secret() {
 }
 
 check_secret() {
-  CURRENT_SECRET=$(get_secret $DOPPLER_OPERATOR_SECRET_NAME)
+  CURRENT_SECRET=$(get_secret "$DOPPLER_OPERATOR_SECRET_NAME")
   if [ "$CURRENT_SECRET" = "SERVICE_TOKEN=" ];
   then
     echo "[create_doppler_secret] SERVICE_TOKEN is there but it's empty, deleting."
