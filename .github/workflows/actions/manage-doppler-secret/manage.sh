@@ -15,10 +15,14 @@ main() {
 }
 
 delete_duplicate() {
-  CURRENT_SECRET=$(get_secret $LEGACY_DOPPLER_OPERATOR_SECRET_NAME)
-  if [ "$TENANT_NAME" != "$NAMESPACE" ] && [ "$CURRENT_SECRET" != "" ];
+  if [ "$TENANT_NAME" != "$NAMESPACE" ];
   then
-    delete_secret "$LEGACY_DOPPLER_OPERATOR_SECRET_NAME"
+    CURRENT_SECRET=$(get_secret $LEGACY_DOPPLER_OPERATOR_SECRET_NAME)
+
+    if [ "$CURRENT_SECRET" != "" ];
+    then
+      delete_secret "$LEGACY_DOPPLER_OPERATOR_SECRET_NAME"
+    fi
   fi
 }
 
