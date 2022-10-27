@@ -115,6 +115,7 @@ runs:
         }}
       env:
         NAMESPACE: ${{ inputs.namespace }}
+        PROJECT: ${{ inputs.project-name }}
         AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
         AWS_DEFAULT_REGION: ${{ inputs.region }}
@@ -122,4 +123,4 @@ runs:
       run: |
         echo "**ROLLBACK**: Rolling back pending release for ${NAMESPACE}" >> $GITHUB_STEP_SUMMARY;
 
-        helm rollback monolith 0 -n ${NAMESPACE};
+        helm rollback ${PROJECT} 0 -n ${NAMESPACE};
