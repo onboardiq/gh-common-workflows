@@ -147,6 +147,7 @@ runs:
       with:
         doppler-project: ${{ inputs.project-name }}
         tenant-name: ${{ inputs.tenant-name }}
+        namespace: ${{ inputs.namespace }}
         environment: ${{ inputs.env }}
         doppler-token: ${{ inputs.doppler-token }}
 

@@ -4,30 +4,38 @@
 DOPPLER_PROJECT=$1
 ENVIRONMENT=$2
 TENANT_NAME=$3
-DOPPLER_OPERATOR_SECRET_NAME="${TENANT_NAME}-${DOPPLER_PROJECT//_/-}"
+NAMESPACE=$4
+LEGACY_DOPPLER_OPERATOR_SECRET_NAME="${TENANT_NAME}-${DOPPLER_PROJECT//_/-}"
+DOPPLER_OPERATOR_SECRET_NAME="${NAMESPACE}-${DOPPLER_PROJECT//_/-}"
 DOPPLER_CONFIG="${ENVIRONMENT}_${TENANT_NAME}"
 
-function main(){
-  CURRENT_SECRET=$(get_current_secret)
-  if [ "$CURRENT_SECRET" = "SERVICE_TOKEN=" ];
+main() {
+  check_secret
+  delete_duplicate
+}
+
+delete_duplicate() {
+  if [ "$TENANT_NAME" != "$NAMESPACE" ];
   then
-    echo "[create_doppler_secret] SERVICE_TOKEN is there but it's empty, deleting."
-    kubectl delete secret -n doppler-operator-system "$DOPPLER_OPERATOR_SECRET_NAME"
-    create_secret
-  elif [ "$CURRENT_SECRET" = "" ];
-  then
-    create_secret
-  else
-    echo "[create_doppler_secret] Secret is already in place."
+    CURRENT_SECRET=$(get_secret "$LEGACY_DOPPLER_OPERATOR_SECRET_NAME")
+
+    if [ "$CURRENT_SECRET" != "" ];
+    then
+      delete_secret "$LEGACY_DOPPLER_OPERATOR_SECRET_NAME"
+    fi
   fi
 }
 
-function get_current_secret() {
-  # --template=SERVICE_TOKEN={{.data.serviceToken}} is a go template which will exract the current secret token into the string SECRET_TOKEN=<token>
-  eval "kubectl get secret -n doppler-operator-system $DOPPLER_OPERATOR_SECRET_NAME --template=SERVICE_TOKEN={{.data.serviceToken}}"
+delete_secret() {
+  eval "kubectl delete secret -n doppler-operator-system $1"
 }
 
-function get_doppler_service_token() {
+get_secret() {
+  # --template=SERVICE_TOKEN={{.data.serviceToken}} is a go template which will extract the current secret token into the string SECRET_TOKEN=<token>
+  eval "kubectl get secret -n doppler-operator-system $1 --template=SERVICE_TOKEN={{.data.serviceToken}}"
+}
+
+get_doppler_service_token() {
   doppler configs tokens create \
     --config "$DOPPLER_CONFIG" \
     --project "$DOPPLER_PROJECT" \
@@ -36,7 +44,7 @@ function get_doppler_service_token() {
     --plain
 }
 
-function create_secret() {
+create_secret() {
   echo "[create_doppler_secret] Creating secret"
   DOPPLER_SERVICE_TOKEN="$(get_doppler_service_token)"
   if [ "$DOPPLER_SERVICE_TOKEN" = "" ];
@@ -48,6 +56,21 @@ function create_secret() {
     kubectl create secret generic "$DOPPLER_OPERATOR_SECRET_NAME" \
           --namespace doppler-operator-system \
           --from-literal=serviceToken="$DOPPLER_SERVICE_TOKEN"
+  fi
+}
+
+check_secret() {
+  CURRENT_SECRET=$(get_secret "$DOPPLER_OPERATOR_SECRET_NAME")
+  if [ "$CURRENT_SECRET" = "SERVICE_TOKEN=" ];
+  then
+    echo "[create_doppler_secret] SERVICE_TOKEN is there but it's empty, deleting."
+    delete_secret "$DOPPLER_OPERATOR_SECRET_NAME"
+    create_secret
+  elif [ "$CURRENT_SECRET" = "" ];
+  then
+    create_secret
+  else
+    echo "[create_doppler_secret] Secret is already in place."
   fi
 }
 
