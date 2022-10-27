@@ -1,2 +1,3 @@
 # starting very broadly
 * @onboardiq/release-engineers
+.github/workflows/actions/manage-doppler-secret/**/* @onboardiq/devex
