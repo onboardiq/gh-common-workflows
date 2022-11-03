@@ -5,3 +5,63 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: ".github/workflows/actions/build-assets"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: ".github/workflows/actions/create-github-release"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: ".github/workflows/actions/deploy-to-tenant"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: ".github/workflows/actions/detect-environment"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: ".github/workflows/actions/docker-build"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: ".github/workflows/actions/ecr-login"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: ".github/workflows/actions/helm-push"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: ".github/workflows/actions/install-jq"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: ".github/workflows/actions/manage-doppler-secret"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: ".github/workflows/actions/merge-stable-to-master"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: ".github/workflows/actions/notify-notion"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: ".github/workflows/actions/notify-slack-pipeline-status"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: ".github/workflows/actions/setup-kubeconfig"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: ".github/workflows/actions/unstick-deploy"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: ".github/workflows/actions/version"
+    schedule:
+      interval: "daily"
