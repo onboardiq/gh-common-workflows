@@ -53,7 +53,7 @@ runs:
         base-chart-version: ${{ inputs.chart-version }}
 
     - name: 'Install and Setup Helm'
-      uses: Azure/setup-helm@v3.3
+      uses: Azure/setup-helm@v3
       with:
         version: ${{ inputs.helm-version }}
         token: ${{ inputs.token }}

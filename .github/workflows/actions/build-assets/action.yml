@@ -6,7 +6,7 @@ runs:
     - uses: ruby/setup-ruby@v1
       with:
         bundler-cache: true
-    - uses: actions/setup-node@v2
+    - uses: actions/setup-node@v3
       with:
         node-version-file: '.node-version'
         cache: 'npm'
@@ -22,7 +22,7 @@ runs:
       run: npm install --only=dev
 
     - name: 'Cache Asset Pipeline'
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           tmp/cache/assets
@@ -32,7 +32,7 @@ runs:
         restore-keys: ${{ runner.os }}-assets-
 
     - name: 'Cache UglifyJs cache'
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: .cache/uglifyjs-webpack-plugin
         key: ${{ runner.os }}-uglifyjs-cache-${{ hashFiles('app/assets/**') }}
@@ -57,7 +57,7 @@ runs:
       shell: bash
       run: npm run webpack:production
 
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         if-no-files-found: 'error'
         name: public-assets-front

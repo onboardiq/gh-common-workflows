@@ -103,7 +103,7 @@ runs:
         version: v1.21.0
 
     - name: 'Install and Setup Helm'
-      uses: Azure/setup-helm@v3.3
+      uses: Azure/setup-helm@v3
       with:
         version: ${{ inputs.helm-version }}
         token: ${{ inputs.gh_pat }}
