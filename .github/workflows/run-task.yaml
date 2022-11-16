@@ -1,0 +1,139 @@
+name: Run Task
+
+on:
+  workflow_dispatch:
+    inputs:
+      project-name:
+        description: The name of the project
+        required: true
+      name:
+        description: A human readable name for the job
+        required: true
+        type: string
+      environment:
+        description: One of prod, uat, dev
+        required: true
+      branch:
+        description: The name of the branch to draw the image tag from. The tag will correspond to the tip of this branch.
+        required: true
+      command:
+        description: The base command to run
+        required: true
+      args:
+        description: Subcommands and arguments to pass to the base command, a JSON array of strings
+        required: true
+      tenants:
+        description: "A JSON string representing a list of tenant data"
+        required: true
+        type: string
+      dry_run:
+        description: "Dry run: set this to true to template and print the kubernetes manifest, but not run the job. (true / false)"
+        required: true
+        default: false
+    secrets:
+      aws-access-key-id:
+        description: "An AWS Access Key ID with sufficient access to read from ECR repos"
+        required: true
+      aws-secret-access-key:
+        description: "An AWS Secret Access Key matching the given AWS Access Key ID"
+        required: true
+      aws-account-id:
+        description: "An AWS Account ID to form ECR URLs from"
+        required: true
+      github-automation-token:
+        description: "A github user token with sufficent permissions to create, approve, and merge PRs"
+        required: true
+
+env:
+  # kubernetes has deprecated "client.authentication.k8s.io/v1alpha1" api versions
+  # and is now using "client.authentication.k8s.io/v1beta1". This has caused clients
+  # like `aws-iam-authenticator` and `aws eks token` to fail when authenticating with
+  # the cluster. In case the clients are trying to use `v1alpha1`,
+  # we can env use variable `KUBERNETES_EXEC_INFO` to hint cli to use `v1beta1` version.
+  KUBERNETES_EXEC_INFO: '{"kind":"ExecCredential","apiVersion":"client.authentication.k8s.io/v1beta1","spec":{"interactive":true}}'
+
+jobs:
+  check-inputs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: origin/${{ inputs.branch }}
+          fetch-depth: 0
+
+      - name: Validate environment
+        uses: actions/github-script@v6
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+        with:
+          script: |
+            const { DEPLOY_ENVIRONMENT } = process.env;
+
+            switch (DEPLOY_ENVIRONMENT) {
+            case 'prod':
+              // fallthrough
+            case 'uat':
+              // fallthrough
+            case 'dev':
+              core.setOutput('success', true);
+              break;
+            default:
+              core.setFailed(`Supplied argument for deploy environment was expected to be one of 'prod', 'uat', or 'dev', got ${DEPLOY_ENVIRONMENT} instead`);
+            }
+
+      - name: "Validate branch against env"
+        env:
+          BRANCH: ${{ inputs.branch }}
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { DEPLOY_ENVIRONMENT, BRANCH } = process.env;
+
+            const matches_prod = DEPLOY_ENVIRONMENT === 'prod' && BRANCH === 'stable';
+            const matches_uat = DEPLOY_ENVIRONMENT === 'uat'
+              && (
+                BRANCH.startsWith('release/')
+                || BRANCH.startsWith('hotfix/')
+              );
+
+            const matches_dev = DEPLOY_ENVIRONMENT === 'dev';
+
+            const valid = matches_prod || matches_uat || matches_dev;
+
+            if (!valid) {
+              core.setFailed(`Supplied argument for branch didn't match deploy environment. Supplied: ${DEPLOY_ENVIRONMENT} and ${BRANCH}, which are incompatible.`);
+            }
+
+            core.setOutput('success', true);
+
+
+  run_job:
+    runs-on: ubuntu-latest
+    needs:
+      - check-inputs
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(inputs.tenants) }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: onboardiq/gh-common-workflows
+          path: ./common-workflows
+          fetch-depth: 1
+
+      - name: Run job
+        uses: ./common-workflows/.github/workflows/actions/run-task-on-tenant
+        with:
+          name: ${{ inputs.name }}
+          command: ${{ inputs.command }}
+          args: ${{ inputs.args }}
+          branch: ${{ inputs.branch }}
+          region: ${{ matrix.cluster.region }}
+          cluster-suffix: ${{ matrix.cluster.suffix }}
+          tenant-name: ${{ matrix.name }}
+          namespace: ${{ matrix.namespace }}
+          stage: ${{ matrix.stage }}
+          dry-run: ${{ inputs.dry-run }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
