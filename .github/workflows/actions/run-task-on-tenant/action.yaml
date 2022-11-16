@@ -120,7 +120,7 @@ runs:
         AWS_ACCOUNT_ID: ${{ inputs.aws-account-id }}
         TAG: ${{ steps.image-tag.outputs.result }}
       shell: bash
-      run: node ./create-job-manifest.js
+      run: node common-workflows/.github/workflows/actions/run-task-on-tenant/create-job-manifest.js
 
     - name: Test job
       shell: bash
