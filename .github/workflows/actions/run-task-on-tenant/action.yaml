@@ -124,9 +124,17 @@ runs:
 
     - name: Test job
       shell: bash
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
+        AWS_DEFAULT_REGION: ${{ inputs.region }}
       run: kubectl apply -f job.json --dry-run=client
 
     - name: Apply job
       shell: bash
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
+        AWS_DEFAULT_REGION: ${{ inputs.region }}
       if: ${{ inputs.dry-run == 'false' }}
       run: kubectl apply -f job.json
