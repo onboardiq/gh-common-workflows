@@ -142,7 +142,7 @@ jobs:
           cluster-suffix: ${{ matrix.cluster.suffix }}
           tenant-name: ${{ matrix.name }}
           namespace: ${{ matrix.namespace }}
-          stage: ${{ matrix.stage }}
+          stage: ${{ matrix.cluster.stage }}
           dry-run: ${{ inputs.dry-run }}
           aws-access-key-id: ${{ secrets.aws-access-key-id }}
           aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
