@@ -51,7 +51,7 @@ env:
   # the cluster. In case the clients are trying to use `v1alpha1`,
   # we can env use variable `KUBERNETES_EXEC_INFO` to hint cli to use `v1beta1` version.
   KUBERNETES_EXEC_INFO: '{"kind":"ExecCredential","apiVersion":"client.authentication.k8s.io/v1beta1","spec":{"interactive":true}}'
-        
+
 jobs:
   check-inputs:
     runs-on: ubuntu-latest
@@ -60,7 +60,7 @@ jobs:
         with:
           ref: origin/${{ inputs.branch }}
           fetch-depth: 0
-      
+
       - name: Validate environment
         uses: actions/github-script@v6
         env:
@@ -80,7 +80,7 @@ jobs:
             default:
               core.setFailed(`Supplied argument for deploy environment was expected to be one of 'prod', 'uat', or 'dev', got ${DEPLOY_ENVIRONMENT} instead`);
             }
-      
+
       - name: "Validate branch against env"
         env:
           BRANCH: ${{ inputs.branch }}
@@ -89,7 +89,7 @@ jobs:
         with:
           script: |
             const { DEPLOY_ENVIRONMENT, BRANCH } = process.env;
-            
+
             const matches_prod = DEPLOY_ENVIRONMENT === 'prod' && BRANCH === 'stable';
             const matches_uat = DEPLOY_ENVIRONMENT === 'uat'
               && (
@@ -122,7 +122,7 @@ jobs:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
           fetch-depth: 1
-          
+
       - name: Run job
         uses: ./common-workflows/.github/workflows/actions/run-task-on-tenant
         with:
@@ -137,5 +137,3 @@ jobs:
           stage: ${{ matrix.stage }}
           dry-run: ${{ inputs.dry-run }}
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          
-          

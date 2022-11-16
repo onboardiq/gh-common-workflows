@@ -68,7 +68,7 @@ runs:
         repository: onboardiq/${{ inputs.project-name }}
         ref: origin/${{ inputs.branch }}
         fetch-depth: 1
-        
+
     - uses: actions/checkout@v3
       with:
         repository: onboardiq/gh-common-workflows
@@ -83,7 +83,7 @@ runs:
       run: |
         sha=$(git rev-parse HEAD)
         echo "result=${BRANCH##*/}-${sha::7}" >> $GITHUB_OUTPUT
-        
+
     - name: 'Install Kubectl'
       id: install-kubectl
       uses: azure/setup-kubectl@v1
@@ -125,9 +125,8 @@ runs:
     - name: Test job
       shell: bash
       run: kubectl apply job.json --dry-run=client
-          
+
     - name: Apply job
       shell: bash
       if: ${{ inputs.dry-run == 'false' }}
       run: kubectl apply job.json
-        
