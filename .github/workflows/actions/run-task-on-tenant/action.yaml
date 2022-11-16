@@ -124,7 +124,7 @@ runs:
 
     - name: Test job
       shell: bash
-      run: kubectl apply job.json --dry-run=client
+      run: kubectl apply -f job.json --dry-run=client
 
     - name: Apply job
       shell: bash
