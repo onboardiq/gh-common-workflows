@@ -13,7 +13,8 @@ const {
 
 const jobTimestamp = new Date()
       .toISOString()
-      .replaceAll(/[:.]/g, '-');
+      .replaceAll(/[:.T]/g, '-')
+      .toLowerCase();
 
 const content = {
   apiVersion: "batch/v1",
