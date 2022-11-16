@@ -4,6 +4,14 @@ inputs:
   name:
     description: "The name of the running job"
     required: true
+  project-name:
+    description: "The name of the project"
+    required: true
+    type: string
+  env:
+    description: "The deployment environment PROD | UAT | DEV"
+    required: true
+    type: string
   command:
     description: "The command to run"
     required: true
@@ -43,14 +51,6 @@ inputs:
   gh_pat:
     description: "A GitHub personal access token"
     required: true
-  project-name:
-    description: "The name of the project"
-    required: true
-    type: string
-  env:
-    description: "The deployment environment PROD | UAT | DEV"
-    required: true
-    type: string
 
 runs:
   using: 'composite'

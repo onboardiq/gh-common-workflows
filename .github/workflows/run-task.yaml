@@ -133,6 +133,8 @@ jobs:
         uses: ./common-workflows/.github/workflows/actions/run-task-on-tenant
         with:
           name: ${{ inputs.name }}
+          project-name: ${{ inputs.project-name}}
+          env: ${{ inputs.environment }}
           command: ${{ inputs.command }}
           args: ${{ inputs.args }}
           branch: ${{ inputs.branch }}
@@ -142,4 +144,7 @@ jobs:
           namespace: ${{ matrix.namespace }}
           stage: ${{ matrix.stage }}
           dry-run: ${{ inputs.dry-run }}
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-access-key-id: ${{ secrets.aws-access-key-id }}
+          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
+          aws-account-id: ${{ secrets.aws-account-id }}
+          gh_pat: ${{ secrets.github-automation-token }}
