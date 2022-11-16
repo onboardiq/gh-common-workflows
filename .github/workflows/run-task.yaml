@@ -13,6 +13,7 @@ on:
         type: string
       environment:
         description: One of prod, uat, dev
+        type: string
         required: true
       branch:
         description: The name of the branch to draw the image tag from. The tag will correspond to the tip of this branch.
