@@ -129,4 +129,4 @@ runs:
     - name: Apply job
       shell: bash
       if: ${{ inputs.dry-run == 'false' }}
-      run: kubectl apply job.json
+      run: kubectl apply -f job.json
