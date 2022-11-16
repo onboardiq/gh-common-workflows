@@ -5,6 +5,7 @@ on:
     inputs:
       project-name:
         description: The name of the project
+        type: string
         required: true
       name:
         description: A human readable name for the job
@@ -15,12 +16,15 @@ on:
         required: true
       branch:
         description: The name of the branch to draw the image tag from. The tag will correspond to the tip of this branch.
+        type: string
         required: true
       command:
         description: The base command to run
+        type: string
         required: true
       args:
         description: Subcommands and arguments to pass to the base command, a JSON array of strings
+        type: string
         required: true
       tenants:
         description: "A JSON string representing a list of tenant data"
@@ -30,6 +34,7 @@ on:
         description: "Dry run: set this to true to template and print the kubernetes manifest, but not run the job. (true / false)"
         required: true
         default: false
+        type: boolean
     secrets:
       aws-access-key-id:
         description: "An AWS Access Key ID with sufficient access to read from ECR repos"
