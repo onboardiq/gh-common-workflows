@@ -139,7 +139,7 @@ jobs:
           args: ${{ inputs.args }}
           branch: ${{ inputs.branch }}
           region: ${{ matrix.cluster.region }}
-          cluster-suffix: ${{ matrix.cluster.suffix }}
+          cluster-suffix: ${{ matrix.cluster.cluster-suffix }}
           tenant-name: ${{ matrix.name }}
           namespace: ${{ matrix.namespace }}
           stage: ${{ matrix.cluster.stage }}
