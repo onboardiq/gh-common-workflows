@@ -31,7 +31,7 @@ on:
         description: "A JSON string representing a list of tenant data"
         required: true
         type: string
-      dry_run:
+      dry-run:
         description: "Dry run: set this to true to template and print the kubernetes manifest, but not run the job. (true / false)"
         required: true
         default: false
