@@ -14,8 +14,10 @@ const {
 const content = {
   apiVersion: "batch/v1",
   kind: "Job",
-  metadata: { name: `${NAME}-${new Date().toISOString()}` },
-  namespace: NAMESPACE,
+  metadata: {
+    name: `${NAME}-${new Date().toISOString()}`,
+    namespace: NAMESPACE,
+  },
   spec: {
     backoffLimit: 0,
     completions: 1,
@@ -26,11 +28,7 @@ const content = {
           {
             name: NAME,
             imagePullPolicy: "Always",
-            image: {
-              name: `${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${PROJECT}`,
-              tag: TAG
-            },
-            command: [ COMMAND ],
+            image: `${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${PROJECT}:${TAG}`,       command: [ COMMAND ],
             args: JSON.parse(ARGS),
             envFrom: [
               {
@@ -46,10 +44,10 @@ const content = {
                 cpu: "1",
                 memory: "4Gi"
               }
-            },
-            restartPolicy: "Never"
+            }
           }
-        ]
+        ],
+        restartPolicy: "Never"
       }
     }
   }

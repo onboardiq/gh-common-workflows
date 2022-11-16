@@ -1,0 +1,50 @@
+{
+  "apiVersion": "batch/v1",
+  "kind": "Job",
+  "metadata": {
+    "name": "dan-job-2022-11-16T18:51:22.955Z",
+    "namespace": "shared-01"
+  },
+  "spec": {
+    "backoffLimit": 0,
+    "completions": 1,
+    "parallelism": 1,
+    "template": {
+      "spec": {
+        "containers": [
+          {
+            "name": "dan-job",
+            "imagePullPolicy": "Always",
+            "image": "90901.dkr.ecr.us-east-1.amazonaws.com/monolith:master-beecafe",
+            "command": [
+              "bundle"
+            ],
+            "args": [
+              "exec",
+              "rake",
+              "about"
+            ],
+            "envFrom": [
+              {
+                "configMapRef": {
+                  "name": "monolith-env"
+                }
+              }
+            ],
+            "resources": {
+              "limits": {
+                "cpu": "1",
+                "memory": "4Gi"
+              },
+              "requests": {
+                "cpu": "1",
+                "memory": "4Gi"
+              }
+            }
+          }
+        ],
+        "restartPolicy": "Never"
+      }
+    }
+  }
+}
