@@ -11,11 +11,15 @@ const {
   TAG
 } = process.env;
 
+const jobTimestamp = new Date()
+      .toISOString()
+      .replaceAll(/[:.]/g, '-');
+
 const content = {
   apiVersion: "batch/v1",
   kind: "Job",
   metadata: {
-    name: `${NAME}-${new Date().toISOString()}`,
+    name: `${NAME}-${jobTimestamp}`,
     namespace: NAMESPACE,
   },
   spec: {
