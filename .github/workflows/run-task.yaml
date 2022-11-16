@@ -1,7 +1,7 @@
 name: Run Task
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       project-name:
         description: The name of the project
