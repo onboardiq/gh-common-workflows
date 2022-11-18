@@ -46,11 +46,6 @@ jobs:
   check-inputs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ inputs.ref }}
-          fetch-depth: 0
-
       - name: Validate environment
         uses: actions/github-script@v6
         env:
@@ -70,24 +65,6 @@ jobs:
             default:
               core.setFailed(`Supplied argument for deploy environment was expected to be one of 'prod', 'uat', or 'dev', got ${DEPLOY_ENVIRONMENT} instead`);
             }
-
-      - name: "Validate ref against env"
-        env:
-          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
-        shell: bash
-        run: |
-          sha=$(git rev-parse HEAD);
-          if [[ $DEPLOY_ENVIRONMENT = "prod" ]]; then
-            expected_branch="stable";
-          elif [[ $DEPLOY_ENVIRONMENT = "uat" ]]; then
-            expected_branch="master";
-          elif [[ $DEPLOY_ENVIRONMENT = "dev" ]]; then
-            exit 0;
-          else
-            exit 1;
-          fi
-
-          git merge-base --is-ancestor $sha origin/$expected_branch
 
   unstick-deploys:
     runs-on: ubuntu-latest
