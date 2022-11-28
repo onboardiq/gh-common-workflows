@@ -79,11 +79,12 @@ runs:
       if: ${{ inputs.dry-run }}
       shell: bash
       run: |
-        echo helm rollback ${{ inputs.project-name }} 0 \
+        helm rollback ${{ inputs.project-name }} 0 \
           -n ${{ inputs.namespace }} \
           --atomic \
           --wait \
-          --timeout 60m0s;
+          --timeout 10m0s \
+          --dry-run;
         helm -n ${{ inputs.namespace }} history ${{ inputs.project-name }} --max 2;
 
     - name: 'Rollback'
@@ -94,4 +95,4 @@ runs:
           -n ${{ inputs.namespace }} \
           --atomic \
           --wait \
-          --timeout 60m0s;
+          --timeout 10m0s;
