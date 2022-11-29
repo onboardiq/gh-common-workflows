@@ -49,10 +49,10 @@ runs:
         base-chart-version: ${{ inputs.chart-version }}
 
     - name: 'Set up Docker Buildx'
-      uses: docker/setup-buildx-action@v1
+      uses: docker/setup-buildx-action@v2
 
     - name: 'Cache Docker layers'
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: /tmp/.buildx-cache
         key: ${{ runner.os }}-buildx-${{ github.sha }}
@@ -71,14 +71,14 @@ runs:
 
     - name: 'Docker meta - build-env'
       id: meta-build-env
-      uses: docker/metadata-action@v3
+      uses: docker/metadata-action@v4
       with:
         images: ${{ steps.repos.outputs.image-cache-repo }}
         tags: |
           type=raw,value=${{ steps.version.outputs.image-tag }}
 
     - name: 'Build Docker Image - buildenv'
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v3
       with:
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
@@ -104,7 +104,7 @@ runs:
 
     - name: 'Docker meta - production'
       id: meta
-      uses: docker/metadata-action@v3
+      uses: docker/metadata-action@v4
       with:
         images: |
           ${{ steps.images.outputs.result }}
@@ -112,7 +112,7 @@ runs:
           type=raw,value=${{ steps.version.outputs.image-tag }}
 
     - name: 'Build Docker Image - production'
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v3
       with:
         build-args: |
           "BUILD_ENV_IMAGE=${{ steps.meta-build-env.outputs.tags }}"
@@ -124,7 +124,7 @@ runs:
 
     - name: 'Docker meta - web-exec'
       id: meta-web-exec
-      uses: docker/metadata-action@v3
+      uses: docker/metadata-action@v4
       with:
         images: |
           ${{ steps.images.outputs.result }}
@@ -132,7 +132,7 @@ runs:
           type=raw,value=${{ steps.version.outputs.image-tag }}-web-exec
 
     - name: 'Build Docker Image - web-exec'
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v3
       with:
         build-args: |
           "BUILD_ENV_IMAGE=${{ steps.meta-build-env.outputs.tags }}"
