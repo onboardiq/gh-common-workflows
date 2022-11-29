@@ -1,0 +1,63 @@
+name: Quick Helm Rollback
+
+on:
+  workflow_call:
+    inputs:
+      project-name:
+        description: 'The name of the project'
+        required: true
+        type: string
+      helm-version:
+        description: "The version of Helm to use"
+        required: true
+        type: string
+      env:
+        description: 'The environment to deploy to, one of "all", "prod", "dev", "uat"'
+        required: true
+        type: string
+      dry-run:
+        description: "When true, only does a dry run of deployment"
+        required: true
+        type: boolean
+      tenants:
+        description: "A JSON string representing a list of tenant data"
+        required: true
+        type: string
+    secrets:
+      aws-access-key-id:
+        description: "An AWS Access Key ID with sufficient access to push to ECR repos"
+        required: true
+      aws-secret-access-key:
+        description: "An AWS Secret Access Key matching the given AWS Access Key ID"
+        required: true
+      github-automation-token:
+        description: "A github user token with sufficent permissions to create, approve, and merge PRs"
+        required: true
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(inputs.tenants) }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: onboardiq/gh-common-workflows
+          path: ./common-workflows
+          fetch-depth: 1
+      - name: Rollback
+        uses: ./common-workflows/.github/workflows/actions/helm-rollback
+        with:
+          region: ${{ matrix.cluster.region }}
+          eks-suffix: ${{ matrix.cluster.cluster-suffix }}
+          tenant-name: ${{ matrix.name }}
+          namespace: ${{ matrix.namespace }}
+          stage: ${{ matrix.cluster.stage }}
+          dry-run: ${{ inputs.dry-run }}
+          project-name: ${{ inputs.project-name }}
+          aws-access-key-id: ${{ secrets.aws-access-key-id }}
+          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
+          gh_pat: ${{ secrets.github-automation-token }}
+          helm-version: ${{ inputs.helm-version }}
