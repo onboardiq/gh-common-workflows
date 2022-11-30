@@ -62,7 +62,7 @@ runs:
         # actions can run for this PR
         github_token: ${{ inputs.github-automation-token }}
         pr_body: "Automated merge of master with stable"
-        source_branch: ${{ steps.branch-name.outputs.branch-name }}
+        source_branch: "release/${{ steps.branch-name.outputs.branch-name }}"
         destination_branch: "master"
         pr_title: "Merge release back to master"
         pr_allow_empty: true
