@@ -44,13 +44,14 @@ runs:
     - name: "Create merge stable with master branch"
       env:
         GITHUB_TOKEN: ${{ inputs.github-automation-token }}
-        BRANCH: ${{ steps.branch-name.outputs.branch-name }}
+        BRANCH: "release/${{ steps.date.outputs.now }}"
         SHA: ${{ inputs.sha }}
       shell: bash
       run: |
         git config user.name github-actions
         git config user.email github-actions@github.com
         git checkout -b ${BRANCH} ${SHA}
+        git fetch
         git push -u origin ${BRANCH}
 
     - name: 'Merge stable to master on success'
