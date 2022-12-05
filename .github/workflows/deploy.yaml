@@ -36,7 +36,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include: ${{ inputs.projects }}
+        include: ${{ fromJSON(inputs.projects) }}
     with:
       dry-run: ${{ inputs.dry-run }}
       env: ${{ inputs.env }}
