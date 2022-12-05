@@ -37,7 +37,7 @@ jobs:
       fail-fast: false
       matrix:
         project: ${{ fromJSON(inputs.projects) }}
-        tenant: ${{ fromJSON(inputs.tenants) }}
+        tenant: ${{ fromJSON(inputs.tenant_matrix) }}
     steps:
       - uses: actions/checkout@v3
         with:
