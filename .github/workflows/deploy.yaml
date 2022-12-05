@@ -43,6 +43,7 @@ jobs:
         with:
           repository: onboardiq/${{ matrix.project.project }}
           fetch-depth: 1
+          token: ${{ secrets}}
 
       - uses: actions/checkout@v3
         with:
@@ -59,13 +60,13 @@ jobs:
       - name: Deploy job for ${{ matrix.tenant.name }} -- ${{ matrix.project.project }}
         uses: ./common-workflows/.github/workflows/actions/deploy-to-tenant
         with:
-          aws-access-key-id: ${{ secrets.aws-access-key-id }}
-          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
-          aws-account-id: ${{ secrets.aws-account-id }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
           chart-version: 1.0.0
           cloud: ${{ matrix.tenant.cluster.cloud }}
           commit-sha: ${{ steps.commit-sha.outputs.sha }}
-          doppler-token: ${{ secrets.doppler-token }}
+          doppler-token: ${{ secrets.DOPPLER_TOKEN }}
           dry-run: ${{ inputs.dry-run }}
           eks-suffix: ${{ matrix.tenant.cluster.cluster-suffix }}
           env: ${{ inputs.env }}
@@ -76,7 +77,7 @@ jobs:
           context: ${{ matrix.tenant.cluster.stage }}
           tenant-name: ${{ matrix.tenant.name }}
           include_faut_reset_cronjob: ${{ matrix.tenant.include_faut_reset_cronjob }}
-          gh_pat: ${{ secrets.github-automation-token }}
-          helm_repo_username: ${{ secrets.helm-repo-username }}
-          helm_repo_password: ${{ secrets.helm-repo-password }}
+          gh_pat: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          helm_repo_username: ${{ secrets.HELM_REPO_USERNAME }}
+          helm_repo_password: ${{ secrets.HELM_REPO_PASSWORD }}
           project-name: ${{ matrix.projects.project }}
