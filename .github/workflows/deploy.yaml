@@ -43,7 +43,7 @@ jobs:
         with:
           repository: onboardiq/${{ matrix.project.project }}
           fetch-depth: 1
-          token: ${{ secrets}}
+          token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
       - uses: actions/checkout@v3
         with:
