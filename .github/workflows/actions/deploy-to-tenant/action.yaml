@@ -79,12 +79,14 @@ runs:
         echo "::add-mask::${{ inputs.aws-secret-access-key }}"
         echo "::add-mask::${{ inputs.aws-account-id }}"
         echo "::add-mask::${{ inputs.doppler-token }}"
+        echo "::add-mask::${{ inputs.gh_pat }}"
         echo "::add-mask::${{ inputs.helm_repo_username }}"
         echo "::add-mask::${{ inputs.helm_repo_password }}"
 
     - uses: actions/checkout@v3
       with:
         repository: onboardiq/${{ inputs.project-name }}
+        token: ${{ inputs.gh_pat }}
 
     - uses: actions/checkout@v3
       with:
