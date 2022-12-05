@@ -1,0 +1,59 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: An env to deploy to
+        required: true
+        type: string
+      projects:
+        description: A JSON string mapping selected projects to branches to deploy
+        required: true
+        type: string
+      tenant_matrix:
+        description: A JSON string of tenants to be deployed to
+        required: true
+        type: string
+      dry-run:
+        description: Whether to do a dry-run of each deploy
+        type: boolean
+        required: true
+        default: true
+
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: write
+
+env:
+  KUBERNETES_EXEC_INFO: '{"kind":"ExecCredential","apiVersion":"client.authentication.k8s.io/v1beta1","spec":{"interactive":true}}'
+  TZ: America/Los_Angeles
+
+jobs:
+  deploy-project:
+    uses: onboardiq/gh-common-workflows/.github/workflows/cd-common.yaml@main
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ inputs.projects }}
+    with:
+      dry-run: ${{ inputs.dry-run }}
+      env: ${{ inputs.env }}
+      helm-version: 3.4.1
+      helm-chart-version: 1.0.0
+      message_for_slack: ${{ format('{0} {1} has been deployed to {2}', matrix.project, matrix.branch, inputs.env) }}
+      project-name: matrix.project
+      ref: ${{ matrix.branch }}
+      tenants: ${{ inputs.tenants_matrix }}
+    secrets:
+      aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
+      doppler-token: ${{ secrets.DOPPLER_TOKEN }}
+      github-automation-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+      helm-repo-password: ${{ secrets.HELM_REPO_PASSWORD }}
+      helm-repo-username: sysadmin
+      notion-database-id: ${{ secrets.NOTION_DB_ID }}
+      notion-secret: ${{ secrets.NOTION_SECRET }}
+      slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
