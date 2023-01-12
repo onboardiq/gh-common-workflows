@@ -24,6 +24,10 @@ inputs:
   region:
     description: "The region the tenant is in"
     required: true
+  doppler:
+    description: "Whether the project uses doppler or not"
+    required: false
+    default: true
   cluster-suffix:
     description: "A suffix to differentiate tenants in the same region"
     required: true
@@ -119,6 +123,7 @@ runs:
         NAME: ${{ inputs.name }}
         AWS_ACCOUNT_ID: ${{ inputs.aws-account-id }}
         TAG: ${{ steps.image-tag.outputs.result }}
+        DOPPLER: ${{ inputs.doppler }}
       shell: bash
       run: node common-workflows/.github/workflows/actions/run-task-on-tenant/create-job-manifest.js
 

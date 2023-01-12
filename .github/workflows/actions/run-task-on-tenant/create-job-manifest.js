@@ -8,8 +8,21 @@ const {
   ARGS,
   NAME,
   AWS_ACCOUNT_ID,
-  TAG
+  TAG,
+  DOPPLER
 } = process.env;
+
+function envFrom(project, doppler) {
+  if (doppler) {
+    return [
+      { secretRef: { name: `${PROJECT}-doppler-env` } }
+    ];
+  } else {
+    return [
+      { configMapRef: { name: `${PROJECT}-env` } }
+    ];
+  }
+}
 
 const jobTimestamp = new Date()
       .toISOString()
@@ -35,11 +48,7 @@ const content = {
             imagePullPolicy: "Always",
             image: `${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${PROJECT}:${TAG}`,       command: [ COMMAND ],
             args: JSON.parse(ARGS),
-            envFrom: [
-              {
-                configMapRef: { name: `${PROJECT}-env` }
-              }
-            ],
+            envFrom: envFrom(PROJECT, DOPPLER),
             resources: {
               limits: {
                 cpu: "1",

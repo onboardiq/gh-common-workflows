@@ -31,6 +31,11 @@ on:
         description: "A JSON string representing a list of tenant data"
         required: true
         type: string
+      doppler:
+        description: "Whether the project uses doppler"
+        required: false
+        default: true
+        type: boolean
       dry-run:
         description: "Dry run: set this to true to template and print the kubernetes manifest, but not run the job. (true / false)"
         required: true
@@ -143,6 +148,7 @@ jobs:
           tenant-name: ${{ matrix.name }}
           namespace: ${{ matrix.namespace }}
           stage: ${{ matrix.cluster.stage }}
+          doppler: ${{ inputs.doppler }}
           dry-run: ${{ inputs.dry-run }}
           aws-access-key-id: ${{ secrets.aws-access-key-id }}
           aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
