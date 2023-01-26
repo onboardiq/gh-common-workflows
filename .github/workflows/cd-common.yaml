@@ -81,10 +81,10 @@ on:
         required: true
       notion-database-id:
         description: 'The ID of the notion database to post update to'
-        required: true
+        required: false
       notion-secret:
         description: 'Secret token allowing working with notion'
-        required: true
+        required: false
       doppler-token:
         description: 'Secret token to allow doppler-cli to interact with doppler'
 
@@ -183,12 +183,3 @@ jobs:
           gh_automation_token: ${{ secrets.github-automation-token }}
           environment: ${{ inputs.env }}
           message: ${{ inputs.message_for_slack }}
-      - name: "Post data row to Notion"
-        uses: ./common-workflows/.github/workflows/actions/notify-notion
-        with:
-          database-id: ${{ secrets.notion-database-id }}
-          notion-secret: ${{ secrets.notion-secret }}
-          repo: ${{ inputs.project-name }}
-          sha: ${{ needs.deploy-env.outputs.commit-sha }}
-          status: "${{ inputs.project-name }} deployed to ${{ inputs.env }}"
-          gh_automation_token: ${{ secrets.github-automation-token }}
