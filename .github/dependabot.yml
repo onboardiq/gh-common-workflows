@@ -46,10 +46,6 @@ updates:
     schedule:
       interval: "daily"
   - package-ecosystem: "github-actions"
-    directory: ".github/workflows/actions/notify-notion"
-    schedule:
-      interval: "daily"
-  - package-ecosystem: "github-actions"
     directory: ".github/workflows/actions/notify-slack-pipeline-status"
     schedule:
       interval: "daily"

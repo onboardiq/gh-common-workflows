@@ -29,10 +29,10 @@ on:
         required: true
       notion-database-id:
         description: 'The ID of the notion database to post update to'
-        required: true
+        required: false
       notion-secret:
         description: 'Secret token allowing working with notion'
-        required: true
+        required: false
 
 jobs:
   gather-facts:
@@ -156,37 +156,6 @@ jobs:
         shell: bash
         run: echo "### Cut release branch $BRANCH" >> $GITHUB_STEP_SUMMARY
 
-  post-release-cut-skip-to-notion:
-    name: Post release cut skip event status to Notion
-    runs-on: ubuntu-latest
-    needs: gather-facts
-    if: >-
-      needs.gather-facts.outputs.changed-files == 'failed'
-      || needs.gather-facts.outputs.open-release == 'failed'
-      || needs.gather-facts.outputs.unmerged-commits == 'failed'
-    steps:
-      - name: checkout the private repository
-        id: checkout_notion_action
-        uses: actions/checkout@v3
-        with:
-          repository: onboardiq/gh-action-post-release-status-to-notion
-          path: ./action
-          token: ${{ secrets.github-automation-token }}
-          fetch-depth: 1
-
-      - name: run the action
-        uses: ./action
-        with:
-          database-id: ${{ secrets.notion-database-id }}
-          notion-secret: ${{ secrets.notion-secret }}
-          repo: ${{ inputs.project-name }}
-          sha: ${{ github.sha }}
-          status: release branch cut skipped
-          body: >-
-            changed-files: ${{ needs.gather-facts.outputs.changed-files }},
-            open-release: ${{ needs.gather-facts.outputs.open-release }},
-            unmerged-commits: ${{ needs.gather-facts.outputs.unmerged-commits }},
-
   post-release-cut-skip-message-to-slack:
     name: Post a skipped message to the release status slack channel.
     runs-on: ubuntu-latest
@@ -194,7 +163,6 @@ jobs:
       needs.gather-facts.outputs.open-release == 'failed'
       || needs.gather-facts.outputs.unmerged-commits == 'failed'
     needs:
-      - post-release-cut-skip-to-notion
       - gather-facts
     steps:
       - name: checkout the action
@@ -215,32 +183,10 @@ jobs:
             Check for open PR: ${{ needs.gather-facts.outputs.open-release }},
             Check for unmerged commits: ${{ needs.gather-facts.outputs.unmerged-commits }},
 
-  post-release-cut-to-notion:
-    name: Post release event status to Notion
-    runs-on: ubuntu-latest
-    needs: create-release-branch
-    steps:
-      - name: checkout the private repository
-        id: checkout_notion_action
-        uses: actions/checkout@v3
-        with:
-          repository: onboardiq/gh-action-post-release-status-to-notion
-          token: ${{ secrets.github-automation-token }}
-          path: ./action
-          fetch-depth: 1
-      - name: run the action
-        uses: ./action
-        with:
-          database-id: ${{ secrets.notion-database-id }}
-          notion-secret: ${{ secrets.notion-secret }}
-          repo: ${{ inputs.project-name }}
-          sha: ${{ github.sha }}
-          status: release branch cut
-
   post-release-cut-message-to-slack:
     name: Post a success message to the release status slack channel.
     runs-on: ubuntu-latest
-    needs: post-release-cut-to-notion
+    needs: create-release-branch
     steps:
       - name: checkout the action
         id: checkout_slack_action
