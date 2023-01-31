@@ -39,12 +39,12 @@ runs:
       id: branch-name
       shell: bash
       # Adding date to prevent branch naming conflict (even though they should be deleted)
-      run: echo "branch-name=${{steps.date.outputs.now}}" >> $GITHUB_OUTPUT
+      run: echo "branch-name=merge-stable-master-${{steps.date.outputs.now}}" >> $GITHUB_OUTPUT
 
     - name: "Create merge stable with master branch"
       env:
         GITHUB_TOKEN: ${{ inputs.github-automation-token }}
-        BRANCH: "release/${{ steps.date.outputs.now }}"
+        BRANCH: ${{ steps.branch-name.outputs.branch-name }}
         SHA: ${{ inputs.sha }}
       shell: bash
       run: |
@@ -62,7 +62,7 @@ runs:
         # actions can run for this PR
         github_token: ${{ inputs.github-automation-token }}
         pr_body: "Automated merge of master with stable"
-        source_branch: "release/${{ steps.branch-name.outputs.branch-name }}"
+        source_branch: ${{ steps.branch-name.outputs.branch-name }}
         destination_branch: "master"
         pr_title: "Merge release back to master"
         pr_allow_empty: true
