@@ -163,6 +163,14 @@ jobs:
           github-automation-token: ${{ secrets.github-automation-token }}
           gh-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - uses: ./common-workflows/.github/workflows/actions/create-github-deployment
+        with:
+          github-automation-token: ${{ secrets.github-automation-token }}
+          ref: ${{ inputs.ref }}
+          repo: ${{ inputs.project-name }}
+          owner: 'onboardiq'
+          env: ${{ inputs.env }}
+
   post-deploy:
     needs:
       - deploy
