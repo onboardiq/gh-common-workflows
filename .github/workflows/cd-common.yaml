@@ -87,6 +87,9 @@ on:
         required: false
       doppler-token:
         description: 'Secret token to allow doppler-cli to interact with doppler'
+      swarmia-deployments-authorization:
+        description: 'Secret token to allow creating swarmia deployments'
+        required: false
 
 jobs:
   deploy-env:
@@ -170,6 +173,15 @@ jobs:
           repo: ${{ inputs.project-name }}
           owner: 'onboardiq'
           env: ${{ inputs.env }}
+
+      - uses: ./common-workflows/.github/workflows/actions/create-swarmia-deployment
+        if: ${{ secrets.swarmia-deployments-authorization != '' }}
+        with:
+          project-name: ${{ inputs.project-name }}
+          sha: ${{ needs.deploy-env.outputs.commit-sha }}
+          full-repo-name: onboardiq/${{ inputs.project-name }}
+          env: ${{ inputs.env }}
+          swarmia-deployments-authorization: ${{ secrets.swarmia-deployments-authorization }}
 
   post-deploy:
     needs:
