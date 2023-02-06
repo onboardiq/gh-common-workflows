@@ -1,0 +1,48 @@
+name: 'Create Swarmia Deployment'
+description: "Create a new Swarmia Deployment"
+inputs:
+  project-name:
+    description: 'The name of the project'
+    required: true
+  swarmia-deployments-authorization:
+    description: "A Swarmia-provided token authorized to create new deployments for the project"
+    required: true
+  sha:
+    description: 'The released SHA'
+    required: true
+  full-repo-name:
+    description: "The full name of the repo, equivalent to `github.repository`"
+    required: true
+  env:
+    description: 'The environment deployed to one of "prod", "dev", "uat"'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Add masks'
+      shell: bash
+      run: |
+        echo "::add-mask::${{ inputs.swarmia-deployments-authorization }}"
+    
+    - name: Send deployment to Swarmia
+      env:
+        SHA: ${{ inputs.sha }}
+        SDA: ${{ inputs.swarmia-deployments-authorization }}
+        REPO: ${{ inputs.full-repo-name }}
+        PROJECT: ${{ inputs.project-name }}
+        ENV: ${{ inputs.env }}
+      shell: bash
+      run: |
+        JSON_STRING=$( jq --null-input --compact-output \
+        --arg version "$SHA" \
+        --arg appName "$PROJECT" \
+        --arg environment "$ENV" \
+        --arg commitSha "$SHA" \
+        --arg repositoryFullName "$REPO" \
+        '{"version": $version, "appName": $appName, "environment": $environment, "commitSha": $commitSha, "repositoryFullName": $repositoryFullName}' )
+    
+        curl -H "Authorization: ${{ secrets.SWARMIA_DEPLOYMENTS_AUTHORIZATION }}" \
+        -H "Content-Type: application/json" \
+        -d "$JSON_STRING" \
+        https://hook.swarmia.com/deployments

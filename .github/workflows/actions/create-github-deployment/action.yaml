@@ -1,0 +1,53 @@
+name: 'Create Github Deployment'
+description: "Create a new Github Deployment"
+inputs:
+  github-automation-token:
+    description: "A Github oauth token with sufficent permissions to make, approve, and merge PRs"
+    required: true
+  repo:
+    description: 'The target repo to make a deployment for'
+    required: true
+  owner:
+    description: 'The owner of the target repo'
+    required: true
+  ref:
+    description: "A valid Git ref to be marked as having been deployed"
+    required: true
+    env:
+      description: 'The environment deployed to one of "prod", "dev", "uat"'
+      required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Add masks'
+      shell: bash
+      run: |
+        echo "::add-mask::${{ inputs.github-automation-token }}"
+
+    - name: 'Create a Deployment via API'
+      uses: actions/github-script@v6
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-automation-token }}
+        REF: ${{ inputs.ref }}
+        REPO: ${{ inputs.repo }}
+        OWNER: ${{ inputs.owner }}
+        ENVIRONMENT: ${{ inputs.env }}
+      with:
+        debug: true
+        script: |
+          const { REF, REPO, OWNER, ENVIRONMENT } = process.env;
+
+          const environment = ENVIRONMENT === 'prod' ? 'production' : ENVIRONMENT;
+          
+          try {
+            await github.rest.repos.createDeployment({
+              owner: OWNER,
+              repo: REPO,
+              ref: REF,
+              environment,
+            });
+          } catch (err) {
+            core.setFailed(err.message);
+          }
+          
