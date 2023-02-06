@@ -13,9 +13,9 @@ inputs:
   ref:
     description: "A valid Git ref to be marked as having been deployed"
     required: true
-    env:
-      description: 'The environment deployed to one of "prod", "dev", "uat"'
-      required: true
+  env:
+    description: 'The environment deployed to one of "prod", "dev", "uat"'
+    required: true
 
 runs:
   using: 'composite'
