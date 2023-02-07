@@ -42,7 +42,7 @@ runs:
         --arg repositoryFullName "$REPO" \
         '{"version": $version, "appName": $appName, "environment": $environment, "commitSha": $commitSha, "repositoryFullName": $repositoryFullName}' )
     
-        curl -H "Authorization: ${{ secrets.SWARMIA_DEPLOYMENTS_AUTHORIZATION }}" \
+        curl -H "Authorization: $SDA" \
         -H "Content-Type: application/json" \
         -d "$JSON_STRING" \
         https://hook.swarmia.com/deployments
