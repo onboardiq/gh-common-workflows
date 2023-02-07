@@ -174,9 +174,7 @@ jobs:
           owner: 'onboardiq'
           env: ${{ inputs.env }}
 
-
       - uses: ./common-workflows/.github/workflows/actions/create-swarmia-deployment
-        if: ${{ secrets.swarmia-deployments-authorization != '' }}
         with:
           project-name: ${{ inputs.project-name }}
           sha: ${{ needs.deploy-env.outputs.commit-sha }}

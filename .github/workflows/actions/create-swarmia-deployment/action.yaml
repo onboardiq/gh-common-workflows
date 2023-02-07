@@ -24,8 +24,16 @@ runs:
       shell: bash
       run: |
         echo "::add-mask::${{ inputs.swarmia-deployments-authorization }}"
-    
+
+    - name: 'Check Secret'
+      id: check-secret
+      if: ${{ inputs.swarmia-deployments-authorization != '' }}
+      shell: bash
+      run: |
+        true
+
     - name: Send deployment to Swarmia
+      if: ${{ steps.check-secret.status == 'success' }}
       env:
         SHA: ${{ inputs.sha }}
         SDA: ${{ inputs.swarmia-deployments-authorization }}
@@ -41,7 +49,7 @@ runs:
         --arg commitSha "$SHA" \
         --arg repositoryFullName "$REPO" \
         '{"version": $version, "appName": $appName, "environment": $environment, "commitSha": $commitSha, "repositoryFullName": $repositoryFullName}' )
-    
+
         curl -H "Authorization: $SDA" \
         -H "Content-Type: application/json" \
         -d "$JSON_STRING" \

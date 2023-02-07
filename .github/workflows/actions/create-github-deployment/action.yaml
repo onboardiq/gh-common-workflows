@@ -39,7 +39,7 @@ runs:
           const { REF, REPO, OWNER, ENVIRONMENT } = process.env;
 
           const environment = ENVIRONMENT === 'prod' ? 'production' : ENVIRONMENT;
-          
+
           try {
             await github.rest.repos.createDeployment({
               owner: OWNER,
@@ -50,4 +50,3 @@ runs:
           } catch (err) {
             core.setFailed(err.message);
           }
-          
