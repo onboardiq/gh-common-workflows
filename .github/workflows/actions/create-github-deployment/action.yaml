@@ -46,6 +46,7 @@ runs:
               repo: REPO,
               ref: REF,
               environment,
+              auto_merge: false
             });
           } catch (err) {
             core.setFailed(err.message);
