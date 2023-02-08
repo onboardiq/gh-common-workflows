@@ -28,13 +28,13 @@ runs:
     - name: 'Create a Deployment via API'
       uses: actions/github-script@v6
       env:
-        GITHUB_TOKEN: ${{ inputs.github-automation-token }}
         REF: ${{ inputs.ref }}
         REPO: ${{ inputs.repo }}
         OWNER: ${{ inputs.owner }}
         ENVIRONMENT: ${{ inputs.env }}
       with:
         debug: true
+        github-token: ${{ inputs.github-automation-token }}
         script: |
           const { REF, REPO, OWNER, ENVIRONMENT } = process.env;
 
