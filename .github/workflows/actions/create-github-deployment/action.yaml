@@ -41,7 +41,7 @@ runs:
           const environment = ENVIRONMENT === 'prod' ? 'production' : ENVIRONMENT;
 
           try {
-            await github.rest.repos.createDeployment({
+            const { data: deployment } = await github.rest.repos.createDeployment({
               owner: OWNER,
               repo: REPO,
               ref: REF,
@@ -49,6 +49,17 @@ runs:
               auto_merge: false,
               required_contexts: []
             });
+
+            await github.request(
+            'POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses',
+            {
+              owner: OWNER,
+              repo: REPO,
+              deployment_id: deployment.id,
+              environment: 'production',
+              state: 'success',
+              description: 'Deployment finished successfully.'
+            })
           } catch (err) {
             core.setFailed(err.message);
           }
