@@ -33,7 +33,6 @@ runs:
         true
 
     - name: Send deployment to Swarmia
-      if: ${{ steps.check-secret.status == 'success' }}
       env:
         SHA: ${{ inputs.sha }}
         SDA: ${{ inputs.swarmia-deployments-authorization }}
