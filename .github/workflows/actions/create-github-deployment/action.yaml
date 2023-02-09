@@ -46,7 +46,8 @@ runs:
               repo: REPO,
               ref: REF,
               environment,
-              auto_merge: false
+              auto_merge: false,
+              required_contexts: []
             });
           } catch (err) {
             core.setFailed(err.message);
