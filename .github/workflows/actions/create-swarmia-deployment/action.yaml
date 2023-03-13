@@ -1,14 +1,14 @@
-name: 'Create Swarmia Deployment'
+name: "Create Swarmia Deployment"
 description: "Create a new Swarmia Deployment"
 inputs:
   project-name:
-    description: 'The name of the project'
+    description: "The name of the project"
     required: true
   swarmia-deployments-authorization:
     description: "A Swarmia-provided token authorized to create new deployments for the project"
     required: true
   sha:
-    description: 'The released SHA'
+    description: "The released SHA"
     required: true
   full-repo-name:
     description: "The full name of the repo, equivalent to `github.repository`"
@@ -18,14 +18,14 @@ inputs:
     required: true
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
-    - name: 'Add masks'
+    - name: "Add masks"
       shell: bash
       run: |
         echo "::add-mask::${{ inputs.swarmia-deployments-authorization }}"
 
-    - name: 'Check Secret'
+    - name: "Check Secret"
       id: check-secret
       if: ${{ inputs.swarmia-deployments-authorization != '' }}
       shell: bash
@@ -47,7 +47,10 @@ runs:
         --arg environment "$ENV" \
         --arg commitSha "$SHA" \
         --arg repositoryFullName "$REPO" \
-        '{"version": $version, "appName": $appName, "environment": $environment, "commitSha": $commitSha, "repositoryFullName": $repositoryFullName}' )
+        '{"version": $version, "appName": $appName, "environment": $environment, "commitSha": $commitSha, "repositoryFullName": $repositoryFullName}' );
+
+        echo "## Swarmia API Request Body" >> $GITHUB_STEP_SUMMARY;
+        echo $JSON_STRING >> $GITHUB_STEP_SUMMARY;
 
         curl -H "Authorization: $SDA" \
         -H "Content-Type: application/json" \
