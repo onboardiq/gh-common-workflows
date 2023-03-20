@@ -202,3 +202,8 @@ jobs:
           gh_automation_token: ${{ secrets.github-automation-token }}
           environment: ${{ inputs.env }}
           message: ${{ inputs.message_for_slack }}
+      - name: "Apply Ready for FAUT label if necessary"
+        uses: actions-ecosystem/action-add-labels@v1.1.0
+        if: ${{ startswith(env.DEPLOYMENT_BRANCH, env.RELEASE_BRANCH_PREFIX) || startswith(env.DEPLOYMENT_BRANCH, env.HOTFIX_BRANCH_PREFIX) }}
+        with:
+          labels: Ready for FAUT
