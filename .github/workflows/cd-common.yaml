@@ -188,7 +188,7 @@ jobs:
           environment: ${{ inputs.env }}
           message: ${{ inputs.message_for_slack }}
       - name: "Apply Ready for FAUT label if necessary"
-        uses: actions-ecosystem/action-add-labels@v1.1.0
+        uses: actions-ecosystem/action-add-labels@v1.1.3
         if: ${{ inputs.label_faut_ready && startswith(inputs.branch, 'release') }}
         with:
           labels: Ready for FAUT
