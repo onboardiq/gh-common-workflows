@@ -186,17 +186,18 @@ jobs:
     needs:
       - deploy
       - deploy-env
-      - release
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout common workflows and actions"
         uses: actions/checkout@v3
+        if: ${{ inputs.env == 'prod' && success() }}
         with:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
           fetch-depth: 1
       - name: "Post message to Slack"
         uses: ./common-workflows/.github/workflows/actions/notify-slack-pipeline-status
+        if: ${{ inputs.env == 'prod' && success() }}
         with:
           slack_webhook_url: ${{ secrets.slack-webhook-url }}
           gh_automation_token: ${{ secrets.github-automation-token }}
