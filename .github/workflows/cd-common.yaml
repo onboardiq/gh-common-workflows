@@ -199,3 +199,4 @@ jobs:
            }}
         with:
           labels: Ready for FAUT
+          github_token: ${{ secrets.GITHUB_TOKEN }}
