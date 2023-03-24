@@ -27,11 +27,27 @@ on:
         description: "When true, only does a dry run of deployment"
         required: true
         type: boolean
-      label_faut_ready:
-        description: 'When true, labels branches deployed to FAUT with the "Ready for FAUT" label"'
-        type: boolean
-        required: false
-        default: false
+      # expected JSON structure:
+      # type Tenants = Tenant[];
+      # interface Tenant {
+      #   name: string;
+      #   title: string;
+      #   namespace: string;
+      #   cluster: Cluster;
+      #   envs: Environment[];
+      #   projects: Project[];
+      #   include_faut_reset_cronjob?: number;
+      # }
+      #
+      # interface Cluster {
+      #   region: string;
+      #   cloud: string;
+      #   eks_suffix: string;
+      #   stage: Stage;
+      # }
+      # type Stage = 'prod' | 'stage';
+      # type Environment = 'prod' | 'uat' | 'dev';
+      # type Project = 'monolith'
       tenants:
         description: "A JSON string representing a list of tenant data"
         required: true
@@ -170,26 +186,19 @@ jobs:
     needs:
       - deploy
       - deploy-env
+      - release
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout common workflows and actions"
         uses: actions/checkout@v3
-        if: ${{ inputs.env == 'prod' && success() }}
         with:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
           fetch-depth: 1
       - name: "Post message to Slack"
         uses: ./common-workflows/.github/workflows/actions/notify-slack-pipeline-status
-        if: ${{ inputs.env == 'prod' && success() }}
         with:
           slack_webhook_url: ${{ secrets.slack-webhook-url }}
           gh_automation_token: ${{ secrets.github-automation-token }}
           environment: ${{ inputs.env }}
           message: ${{ inputs.message_for_slack }}
-      - name: "Apply Ready for FAUT label if necessary"
-        uses: actions-ecosystem/action-add-labels@v1.1.0
-        if: ${{ inputs.label_faut_ready && startswith(inputs.branch, 'release') }}
-        with:
-          labels: Ready for FAUT
-          github_token: ${{ secrets.GITHUB_TOKEN }}
