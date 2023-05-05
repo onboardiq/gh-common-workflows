@@ -169,6 +169,7 @@ runs:
         NAMESPACE: ${{ inputs.namespace }}
         REGION: ${{ inputs.region }}
         TENANT: ${{ inputs.tenant-name }}
+        COMMIT_SHA: ${{ inputs.commit-sha}}
       shell: bash
       run: |
         kubectl config use-context aws-${{ inputs.region }}-${{ inputs.context }}
@@ -190,6 +191,7 @@ runs:
         NAMESPACE: ${{ inputs.namespace }}
         REGION: ${{ inputs.region }}
         TENANT: ${{ inputs.tenant-name }}
+        COMMIT_SHA: ${{ inputs.commit-sha}}
       shell: bash
       run: |
         kubectl config use-context aws-${{ inputs.region }}-${{ inputs.context }}
