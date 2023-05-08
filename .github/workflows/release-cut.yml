@@ -116,15 +116,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
           token: ${{ secrets.github-automation-token }}
-
+          ref: ${{ inputs.main-branch }}
       - name: Get main branch sha
         id: sha
-        env:
-          MAIN: ${{ inputs.main-branch }}
         run: |
-          sha=$(git rev-parse ${MAIN});
+          sha=$(git rev-parse HEAD);
           echo "result=${sha}" >> $GITHUB_OUTPUT;
 
       - name: "Get current date"
