@@ -20,6 +20,10 @@ on:
         type: boolean
         required: false
         default: false
+      branch-name:
+        description: 'The name of the branch to be created'
+        required: false
+        type: string
     secrets:
       github-automation-token:
         description: "A github user token with sufficent permissions to create, approve, and merge PRs"
@@ -130,7 +134,7 @@ jobs:
       - name: "Create release branch"
         env:
           GITHUB_TOKEN: ${{ secrets.github-automation-token }}
-          BRANCH: "release/${{ steps.date.outputs.now }}"
+          BRANCH: "release/${{ inputs.branch-name || steps.date.outputs.now }}"
           SHA: ${{ steps.sha.outputs.result }}
           SHOULD_COMMIT: ${{ inputs.release-commit }}
         shell: bash
