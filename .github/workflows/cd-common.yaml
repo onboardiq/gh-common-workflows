@@ -159,13 +159,6 @@ jobs:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
           fetch-depth: 1
-
-      - uses: ./common-workflows/.github/workflows/actions/merge-stable-to-master
-        with:
-          sha: ${{ needs.deploy-env.outputs.commit-sha }}
-          github-automation-token: ${{ secrets.github-automation-token }}
-          gh-token: ${{ secrets.GITHUB_TOKEN }}
-
       - uses: ./common-workflows/.github/workflows/actions/create-github-deployment
         with:
           github-automation-token: ${{ secrets.github-automation-token }}
