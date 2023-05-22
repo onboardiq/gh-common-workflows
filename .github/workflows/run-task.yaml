@@ -101,16 +101,14 @@ jobs:
           script: |
             const { DEPLOY_ENVIRONMENT, BRANCH } = process.env;
 
-            const matches_prod = DEPLOY_ENVIRONMENT === 'prod' && BRANCH === 'stable';
-            const matches_uat = DEPLOY_ENVIRONMENT === 'uat'
-              && (
-                BRANCH.startsWith('release/')
-                || BRANCH.startsWith('hotfix/')
-              );
+            // only allow prod to deploy from stable, also allow release/* and hotfix/* (with stable) for uat, and any branch for dev
+            const allowed_branches_regex = {
+              prod: '^stable$',
+              uat: '^(stable|release/.*|hotfix/.*)$',
+              dev: '.*',
+            };
 
-            const matches_dev = DEPLOY_ENVIRONMENT === 'dev';
-
-            const valid = matches_prod || matches_uat || matches_dev;
+            const valid = new RegExp(allowed_branches_regex[DEPLOY_ENVIRONMENT]).test(BRANCH);
 
             if (!valid) {
               core.setFailed(`Supplied argument for branch didn't match deploy environment. Supplied: ${DEPLOY_ENVIRONMENT} and ${BRANCH}, which are incompatible.`);
