@@ -72,6 +72,10 @@ inputs:
     description: "Path to directory from the repo root where the helm Makefile is present"
     required: true
     type: string
+  doppler-project-name:
+    description: "Name of the doppler project. Its often same as 'project-name'"
+    required: true
+    type: string
 
 runs:
   using: 'composite'
@@ -151,7 +155,7 @@ runs:
       if: ${{ (inputs.doppler-token != 0 && inputs.doppler-token != '') && (inputs.dry-run == 'false' || inputs.dry-run == false) }}
       uses: ./common-workflows/.github/workflows/actions/manage-doppler-secret
       with:
-        doppler-project: ${{ inputs.project-name }}
+        doppler-project: ${{ inputs.doppler-project-name }}
         tenant-name: ${{ inputs.tenant-name }}
         namespace: ${{ inputs.namespace }}
         environment: ${{ inputs.env }}

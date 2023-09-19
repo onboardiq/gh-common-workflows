@@ -61,6 +61,11 @@ on:
         type: string
         required: false
         default: 'helm'
+      doppler-project-name:
+        description: "Name of the doppler project. Its often same as 'project-name'"
+        type: string
+        required: false
+        default:
     secrets:
       aws-access-key-id:
         description: "An AWS Access Key ID with sufficient access to push to ECR repos"
@@ -151,6 +156,7 @@ jobs:
           helm_repo_password: ${{ secrets.helm-repo-password }}
           project-name: ${{ inputs.project-name }}
           helm-makefile-location: ${{ inputs.helm-makefile-location }}
+          doppler-project-name: ${{ inputs.doppler-project-name || inputs.project-name }}
 
   release:
     needs:
