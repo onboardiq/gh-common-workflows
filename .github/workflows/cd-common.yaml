@@ -56,7 +56,11 @@ on:
         description: "The message to post on successful deployment"
         type: string
         required: true
-
+      helm-makefile-location:
+        description: "Path to directory from the repo root where the helm Makefile is present"
+        type: string
+        required: false
+        default: 'helm'
     secrets:
       aws-access-key-id:
         description: "An AWS Access Key ID with sufficient access to push to ECR repos"
@@ -146,6 +150,7 @@ jobs:
           helm_repo_username: ${{ secrets.helm-repo-username }}
           helm_repo_password: ${{ secrets.helm-repo-password }}
           project-name: ${{ inputs.project-name }}
+          helm-makefile-location: ${{ inputs.helm-makefile-location }}
 
   release:
     needs:

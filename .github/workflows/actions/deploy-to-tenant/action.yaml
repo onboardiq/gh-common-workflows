@@ -68,6 +68,10 @@ inputs:
     description: "The deployment environment PROD | UAT | DEV"
     required: true
     type: string
+  helm-makefile-location:
+    description: "Path to directory from the repo root where the helm Makefile is present"
+    required: true
+    type: string
 
 runs:
   using: 'composite'
@@ -173,7 +177,7 @@ runs:
       shell: bash
       run: |
         kubectl config use-context aws-${{ inputs.region }}-${{ inputs.context }}
-        make -C helm test
+        make -C ${{ inputs.helm-makefile-location }} test
 
     - name: 'Deployment - LIVE'
       if: ${{ inputs.dry-run == 'false' || inputs.dry-run == false }}
@@ -195,4 +199,4 @@ runs:
       shell: bash
       run: |
         kubectl config use-context aws-${{ inputs.region }}-${{ inputs.context }}
-        make -C helm install
+        make -C ${{ inputs.helm-makefile-location }} install
