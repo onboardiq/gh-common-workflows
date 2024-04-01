@@ -52,11 +52,11 @@ const content = {
             resources: {
               limits: {
                 cpu: "1",
-                memory: "4Gi"
+                memory: "2Gi"
               },
               requests: {
-                cpu: "1",
-                memory: "4Gi"
+                cpu: "500m",
+                memory: "1Gi"
               }
             }
           }
