@@ -70,7 +70,7 @@ async function run() {
 
       await notion.pages.create({
         parent: {
-          database_id: "18a34ec6bc7880ea9121d374580132b7",
+          database_id: context.payload.notion,
         },
         properties: {
           "Linear Ticket": {
