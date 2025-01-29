@@ -2,18 +2,11 @@ name: Changelog - Linear Tickets
 
 on:
   workflow_call:
-    inputs:
-      project-name:
-        description: 'The name of the project'
-        required: true
-        type: string
-      notion:
-        required: true
-        type: string
+
 jobs:
   sync:
     runs-on: ubuntu-latest
-    if: startsWith(github.event.pull_request.title, 'release ')
+    #if: startsWith(github.event.pull_request.title, 'release ')
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -25,5 +18,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NOTION_API_KEY: ${{ secrets.NOTION_SECRET }}
           NOTION_DATABASE_ID: ${{ github.event.inputs.notion }}
-          PROJECT_NAME: ${{ github.event.inputs.project-name}}
         run: node scripts/sync-linear-notion.js 
