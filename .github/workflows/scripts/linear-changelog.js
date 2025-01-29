@@ -25,6 +25,7 @@ export async function extractLinearUrls(htmlContent) {
 
 async function run() {
   try {
+    const PROJECT_NAME = process.env.PROJECT_NAME;
     // Initialize clients
     const notion = new Client({ auth: process.env.NOTION_API_KEY });
     const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
@@ -41,7 +42,7 @@ async function run() {
     });
 
     // Validate PR title format
-    if (!pullRequest.title.startsWith("release ")) {
+    if (!pullRequest.title.toLowerCase().startsWith("release ")) {
       console.log("Not a release PR, skipping...");
       return;
     }
