@@ -70,7 +70,7 @@ async function run() {
 
       await notion.pages.create({
         parent: {
-          database_id: process.env.NOTION_DATABASE_ID,
+          database_id: "18a34ec6bc7880ea9121d374580132b7",
         },
         properties: {
           "Linear Ticket": {
@@ -92,6 +92,9 @@ async function run() {
           },
           "Pull Request": {
             url: pullRequest.html_url,
+          },
+          Project: {
+            title: [{ text: { content: repo } }],
           },
         },
       });
