@@ -69,6 +69,9 @@ async function run() {
     const GITHUB_TOKEN = core.getInput("github-token");
     const NOTION_DB_ID = core.getInput("notion-db");
 
+    if (GITHUB_TOKEN.length < 3) {
+      console.error("github token is doinked my dude");
+    }
     // Initialize clients
     const notion = new Client({ auth: NOTION_API_KEY });
     const octokit = new Octokit({ auth: GITHUB_TOKEN });
