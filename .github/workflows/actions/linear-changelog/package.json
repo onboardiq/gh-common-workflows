@@ -4,6 +4,7 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "dependencies": {
+    "@actions/core": "^1.11.1",
     "@notionhq/client": "^2.2.15",
     "@octokit/rest": "^21.1.0",
     "cheerio": "^1.0.0",

@@ -1,6 +1,7 @@
 import { Client } from "@notionhq/client";
 import { Octokit } from "@octokit/rest";
 import * as cheerio from "cheerio";
+import { core } from "@actions/core";
 
 export async function extractLinearUrls(htmlContent) {
   try {
@@ -64,17 +65,19 @@ async function findPullRequestsForCommit(octokit, owner, repo, commitSha) {
 
 async function run() {
   try {
+    const NOTION_API_KEY = core.getInput("notion-token");
+    const GITHUB_TOKEN = core.getInput("github-token");
+    const NOTION_DB_ID = core.getInput("notion-db");
+
     // Initialize clients
-    const notion = new Client({ auth: process.env.NOTION_API_KEY });
-    const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+    const notion = new Client({ auth: NOTION_API_KEY });
+    const octokit = new Octokit({ auth: GITHUB_TOKEN });
 
     // Get PR details from GitHub context
     const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
 
     // TODO: Change to input value
-    // const prNumber = context.payload.pull_request.number;
-    // FOR TESTING: https://github.com/onboardiq/monolith/pull/31286
-    const prNumber = 31286;
+    const prNumber = core.getInput("pull-request-number");
 
     // get the commits on the associated PR
     const { data: commits } = await octokit.pulls.get({
@@ -130,7 +133,7 @@ async function run() {
 
       await notion.pages.create({
         parent: {
-          database_id: context.payload.notion,
+          database_id: NOTION_DB_ID,
         },
         properties: {
           "Linear Ticket": {
