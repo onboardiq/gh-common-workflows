@@ -23,6 +23,45 @@ export async function extractLinearUrls(htmlContent) {
   }
 }
 
+async function getLinearUrlsFromComments(octokit, owner, repo, pullNumber) {
+  try {
+    // Get only issue comments on the PR
+    const { data: issueComments } = await octokit.issues.listComments({
+      owner,
+      repo,
+      issue_number: pullNumber,
+    });
+
+    // Filter comments to only those from 'linear' user
+    const linearIssueComments = issueComments.filter(
+      (comment) => comment.user.login === "linear",
+    );
+
+    return linearIssueComments.map(extractLinearUrls);
+  } catch (error) {
+    console.error(
+      `Error fetching comments for PR #${pullNumber}:`,
+      error.message,
+    );
+    return [];
+  }
+}
+
+async function findPullRequestsForCommit(octokit, owner, repo, commitSha) {
+  try {
+    const { data: associatedPRs } =
+      await octokit.repos.listPullRequestsAssociatedWithCommit({
+        owner,
+        repo,
+        commit_sha: commitSha,
+      });
+    return associatedPRs;
+  } catch (error) {
+    console.error(`Error finding PRs for commit ${commitSha}:`, error.message);
+    return [];
+  }
+}
+
 async function run() {
   try {
     // Initialize clients
@@ -31,33 +70,54 @@ async function run() {
 
     // Get PR details from GitHub context
     const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
-    const prNumber = context.payload.pull_request.number;
 
-    // Get PR details
-    const { data: pullRequest } = await octokit.pulls.get({
+    // TODO: Change to input value
+    // const prNumber = context.payload.pull_request.number;
+    // FOR TESTING: https://github.com/onboardiq/monolith/pull/31286
+    const prNumber = 31286;
+
+    // get the commits on the associated PR
+    const { data: commits } = await octokit.pulls.get({
       owner,
       repo,
       pull_number: prNumber,
     });
 
-    // Get PR comments to find Linear bot comments
-    const { data: comments } = await octokit.issues.listComments({
-      owner,
-      repo,
-      issue_number: prNumber,
-    });
+    const linearUrls = [];
 
-    // Filter comments to only those from Linear bot and extract ticket URLs
-    const linearComments = comments.filter(
-      (comment) => comment.user.login === "linear",
-    );
+    // loop through _those_ pull requests to get their comments
+    for (const [index, commit] of commits.entries()) {
+      console.log(`\n${index + 1}. Commit: ${commit.sha}`);
+      console.log(
+        `   Author: ${commit.commit.author.name} <${commit.commit.author.email}>`,
+      );
+      console.log(`   Date: ${commit.commit.author.date}`);
+      console.log(`   Message: ${commit.commit.message}`);
 
-    const linearUrls = new Set();
+      // Find associated PRs for this commit
+      const associatedPRs = await findPullRequestsForCommit(
+        octokit,
+        owner,
+        repo,
+        commit.sha,
+      );
 
-    // Process each Linear bot comment
-    for (const comment of linearComments) {
-      const urls = await extractLinearUrls(comment.body);
-      urls.forEach((url) => linearUrls.add(url));
+      if (associatedPRs.length > 0) {
+        console.log("   Associated Pull Requests:");
+        for (const pr of associatedPRs) {
+          console.log(`     - #${pr.number}: ${pr.title} (${pr.state})`);
+
+          // Get Linear's comments for this PR
+          const linearTicketUrls = await getLinearUrlsFromComments(
+            octokit,
+            owner,
+            repo,
+            pr.number,
+          );
+
+          linearUrls.push(...linearTicketUrls);
+        }
+      }
     }
 
     // Get release date from PR title
