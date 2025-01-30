@@ -1,7 +1,8 @@
 import { Client } from "@notionhq/client";
 import { Octokit } from "@octokit/rest";
 import * as cheerio from "cheerio";
-import { core } from "@actions/core";
+import pkg from "@actions/core";
+const { core } = pkg;
 
 export async function extractLinearUrls(htmlContent) {
   try {
