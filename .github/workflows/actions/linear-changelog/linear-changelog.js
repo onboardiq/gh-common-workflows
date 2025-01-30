@@ -1,4 +1,4 @@
-import Client from "@notionhq/client";
+import { Client } from "@notionhq/client";
 import { Octokit } from "@octokit/rest";
 import * as cheerio from "cheerio";
 
