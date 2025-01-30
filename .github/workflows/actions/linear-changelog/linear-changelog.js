@@ -16,7 +16,6 @@ export async function extractLinearUrls(htmlContent) {
       }
     });
 
-    console.log(urls);
     return urls;
   } catch (error) {
     console.error("Error parsing html:", error);
@@ -35,10 +34,16 @@ async function getLinearUrlsFromComments(octokit, owner, repo, pullNumber) {
 
     // Filter comments to only those from 'linear' user
     const linearIssueComments = issueComments.filter(
-      (comment) => comment.user.login === "linear",
+      (comment) => comment.user.login === "linear[bot]",
     );
 
-    return linearIssueComments.map(extractLinearUrls);
+    const urlArray = await Promise.all(
+      linearIssueComments.map(async (comment) =>
+        extractLinearUrls(comment.body),
+      ),
+    );
+
+    return urlArray;
   } catch (error) {
     console.error(
       `Error fetching comments for PR #${pullNumber}:`,
@@ -66,7 +71,8 @@ async function findPullRequestsForCommit(octokit, owner, repo, commitSha) {
 async function run() {
   try {
     const NOTION_API_KEY = core.getInput("notion-token");
-    const GITHUB_TOKEN = core.getInput("github-token");
+    const GITHUB_TOKEN =
+      core.getInput("github-token") || process.env.GITHUB_TOKEN;
     const NOTION_DB_ID = core.getInput("notion-db");
 
     if (GITHUB_TOKEN.length < 3) {
@@ -79,51 +85,54 @@ async function run() {
     // Get PR details from GitHub context
     const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
 
+    // TODO: PR Number Input
     const prNumber = 31286; //core.getInput("pull-request-number");
 
     // get the commits on the associated PR
-    const commits = await octokit.pulls.listCommits({
+    const { data: commits } = await octokit.pulls.listCommits({
       owner,
       repo,
       pull_number: prNumber,
     });
 
-    const linearUrls = [];
+    const linearUrls = await Promise.all(
+      commits.map(async (commit) => {
+        const intermediate = [];
+        // Find associated PRs for this commit
+        const associatedPRs = await findPullRequestsForCommit(
+          octokit,
+          owner,
+          repo,
+          commit.sha,
+        );
 
-    // loop through _those_ pull requests to get their comments
-    //for (const [index, commit] of commits.entries()) {
-    commits.forEach(commit => {
-      // Find associated PRs for this commit
-      const associatedPRs = await findPullRequestsForCommit(
-        octokit,
-        owner,
-        repo,
-        commit.sha,
-      );
+        if (associatedPRs.length > 0) {
+          console.log("   Associated Pull Requests:");
+          for (const pr of associatedPRs) {
+            console.log(`     - #${pr.number}: ${pr.title} (${pr.state})`);
 
-      if (associatedPRs.length > 0) {
-        console.log("   Associated Pull Requests:");
-        for (const pr of associatedPRs) {
-          console.log(`     - #${pr.number}: ${pr.title} (${pr.state})`);
-
-          // Get Linear's comments for this PR
-          const linearTicketUrls = await getLinearUrlsFromComments(
-            octokit,
-            owner,
-            repo,
-            pr.number,
-          );
-
-          linearUrls.push(...linearTicketUrls);
+            // Get Linear's comments for this PR
+            const linearTicketUrls = await getLinearUrlsFromComments(
+              octokit,
+              owner,
+              repo,
+              pr.number,
+            );
+            if (linearTicketUrls) {
+              intermediate.push(linearTicketUrls);
+            }
+          }
         }
-      }
-    }
 
-    // Get release date from PR title
-    const releaseDate = pullRequest.title.split(" ")[1];
+        return intermediate;
+      }),
+    );
+
+    // TODO: Get release date from PR title or new Date()
+    const releaseDate = "2022-02-02"; //pullRequest.title.split(" ")[1];
 
     // Add tickets to Notion database
-    for (const url of linearUrls) {
+    for (const url of linearUrls.flat(Infinity)) {
       // Extract ticket ID from URL (assumes URL format like https://linear.app/company/issue/TICKET-123/...)
       const ticketId = url.split("/issue/")[1].split("/")[0];
 
@@ -150,7 +159,7 @@ async function run() {
             },
           },
           "Pull Request": {
-            url: pullRequest.html_url,
+            url: "https://github.com/pullRequest.html_url",
           },
           Project: {
             title: [{ text: { content: repo } }],
@@ -161,7 +170,7 @@ async function run() {
       console.log(`Added ticket ${ticketId} to Notion database`);
     }
 
-    console.log("Successfully processed all tickets");
+    console.log(`Successfully processed ${linearUrls.length} tickets`);
   } catch (error) {
     console.error("Error:", error);
     process.exit(1);
