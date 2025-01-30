@@ -82,7 +82,7 @@ async function run() {
     const prNumber = 31286; //core.getInput("pull-request-number");
 
     // get the commits on the associated PR
-    const { data: commits } = await octokit.pulls.get({
+    const commits = await octokit.pulls.listCommits({
       owner,
       repo,
       pull_number: prNumber,
@@ -92,13 +92,6 @@ async function run() {
 
     // loop through _those_ pull requests to get their comments
     for (const [index, commit] of commits.entries()) {
-      console.log(`\n${index + 1}. Commit: ${commit.sha}`);
-      console.log(
-        `   Author: ${commit.commit.author.name} <${commit.commit.author.email}>`,
-      );
-      console.log(`   Date: ${commit.commit.author.date}`);
-      console.log(`   Message: ${commit.commit.message}`);
-
       // Find associated PRs for this commit
       const associatedPRs = await findPullRequestsForCommit(
         octokit,
