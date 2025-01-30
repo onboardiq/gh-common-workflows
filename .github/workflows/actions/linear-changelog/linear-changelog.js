@@ -91,7 +91,8 @@ async function run() {
     const linearUrls = [];
 
     // loop through _those_ pull requests to get their comments
-    for (const [index, commit] of commits.entries()) {
+    //for (const [index, commit] of commits.entries()) {
+    commits.forEach(commit => {
       // Find associated PRs for this commit
       const associatedPRs = await findPullRequestsForCommit(
         octokit,
