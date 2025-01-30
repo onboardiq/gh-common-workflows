@@ -76,8 +76,7 @@ async function run() {
     // Get PR details from GitHub context
     const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
 
-    // TODO: Change to input value
-    const prNumber = core.getInput("pull-request-number");
+    const prNumber = 31286; //core.getInput("pull-request-number");
 
     // get the commits on the associated PR
     const { data: commits } = await octokit.pulls.get({
