@@ -14,7 +14,6 @@ jobs:
           node-version: '22'
       - run: npm install @notionhq/client @octokit/rest cheerio 
       - name: Run sync script
-        working-directory: .github/workflows/
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NOTION_API_KEY: ${{ secrets.NOTION_SECRET }}

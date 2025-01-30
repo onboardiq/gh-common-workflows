@@ -1,0 +1,5 @@
+name: Changelog - Linear Tickets
+description: 'Runs a script to generate changelog and post to notion db'
+runs:
+  using: 'node20'
+  main: './sync-linear-notion.js' 
