@@ -1,7 +1,19 @@
 name: Changelog - Linear Tickets
 description: 'Runs a script to generate changelog and post to notion db'
 
-
+inputs:
+  github-token:
+    description: "A Github oauth token with sufficent permissions to read PRs, commits, and comments"
+    required: true
+  notion-token:
+    description: "A Notion oauth token with write permissions" 
+    required: true
+  notion-db:
+    description: "A notion database to insert the released tickets into"
+    required: true
+  pull-request-number:
+    description: "The pull request number for the release"
+    required: true
 runs:
   using: 'node20'
   main: 'linear-changelog.js' 
