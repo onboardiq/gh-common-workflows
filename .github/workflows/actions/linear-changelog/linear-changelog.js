@@ -70,10 +70,10 @@ async function findPullRequestsForCommit(octokit, owner, repo, commitSha) {
 
 async function run() {
   try {
-    const NOTION_API_KEY = core.getInput("notion-token");
     const GITHUB_TOKEN =
       core.getInput("github-token") || process.env.GITHUB_TOKEN;
-    const NOTION_DB_ID = core.getInput("notion-db");
+    const NOTION_DB_ID = core.getInput("notion-db", { required: true });
+    const NOTION_API_KEY = core.getInput("notion-token", { required: true });
 
     if (GITHUB_TOKEN.length < 3) {
       console.error("github token is doinked my dude");

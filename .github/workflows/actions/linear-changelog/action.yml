@@ -9,7 +9,7 @@ inputs:
     description: "A Notion oauth token with write permissions" 
     required: true
   notion-db:
-    description: "A notion database to insert the released tickets into"
+    description: "A notion database id to insert the released tickets into"
     required: true
   pull-request-number:
     description: "The pull request number for the release"
