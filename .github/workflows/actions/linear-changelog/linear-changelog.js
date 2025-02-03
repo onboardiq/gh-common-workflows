@@ -72,8 +72,10 @@ async function run() {
   try {
     const GITHUB_TOKEN =
       core.getInput("github-token") || process.env.GITHUB_TOKEN;
-    const NOTION_DB_ID = core.getInput("notion-db", { required: true });
-    const NOTION_API_KEY = core.getInput("notion-token", { required: true });
+    const NOTION_DB_ID =
+      core.getInput("notion-db", {}) || process.env.NOTION_DB;
+    const NOTION_API_KEY =
+      core.getInput("notion-token", {}) || process.env.NOTION_TOKEN;
 
     if (GITHUB_TOKEN.length < 3) {
       console.error("github token is doinked my dude");
@@ -162,7 +164,8 @@ async function run() {
             url: "https://github.com/pullRequest.html_url",
           },
           Project: {
-            title: [{ text: { content: repo } }],
+            rich_text: [{ text: { content: repo } }],
+            type: "rich_text",
           },
         },
       });
@@ -170,7 +173,9 @@ async function run() {
       console.log(`Added ticket ${ticketId} to Notion database`);
     }
 
-    console.log(`Successfully processed ${linearUrls.length} tickets`);
+    console.log(
+      `Successfully processed ${linearUrls.length} commits from the release PR`,
+    );
   } catch (error) {
     console.error("Error:", error);
     process.exit(1);
