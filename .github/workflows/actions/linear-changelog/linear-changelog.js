@@ -120,8 +120,9 @@ async function run() {
               repo,
               pr.number,
             );
+
             if (linearTicketUrls) {
-              intermediate.push(linearTicketUrls);
+              intermediate.push(pr.number, linearTicketUrls.flat(Infinity));
             }
           }
         }
@@ -129,48 +130,62 @@ async function run() {
         return intermediate;
       }),
     );
-
+    console.log(linearUrls);
     // TODO: Get release date from PR title or new Date()
     const releaseDate = "2022-02-02"; //pullRequest.title.split(" ")[1];
 
     // Add tickets to Notion database
-    for (const url of linearUrls.flat(Infinity)) {
-      // Extract ticket ID from URL (assumes URL format like https://linear.app/company/issue/TICKET-123/...)
-      const ticketId = url.split("/issue/")[1].split("/")[0];
+    // [
+    //  [
+    //   31286,
+    //   [
+    //     'https://linear.app/fountain/issue/AXH-597/[spike]-user-profile-is-slow-to-load'
+    //   ]
+    //  ],
+    // ]
+    for (const tuple of linearUrls) {
+      const [pull, ticketURLs] = tuple;
 
-      await notion.pages.create({
-        parent: {
-          database_id: NOTION_DB_ID,
-        },
-        properties: {
-          "Linear Ticket": {
-            title: [
-              {
-                text: {
-                  content: ticketId,
+      for (const url of ticketURLs) {
+        // Extract ticket ID from URL (assumes URL format like https://linear.app/company/issue/TICKET-123/...)
+        const ticketId = url.split("/issue/")[1].split("/")[0];
+
+        await notion.pages.create({
+          parent: {
+            database_id: NOTION_DB_ID,
+          },
+          properties: {
+            "Linear Ticket": {
+              title: [
+                {
+                  text: {
+                    content: ticketId,
+                  },
                 },
+              ],
+            },
+            "Ticket URL": {
+              url: url,
+            },
+            "Release Date": {
+              date: {
+                start: releaseDate,
               },
-            ],
-          },
-          "Ticket URL": {
-            url: url,
-          },
-          "Release Date": {
-            date: {
-              start: releaseDate,
+            },
+            "Pull Request": {
+              url: `https://github.com/${owner}/${repo}/pull/${pull}`,
+            },
+            Project: {
+              rich_text: [{ text: { content: repo } }],
+              type: "rich_text",
             },
           },
-          "Pull Request": {
-            url: "https://github.com/pullRequest.html_url",
-          },
-          Project: {
-            rich_text: [{ text: { content: repo } }],
-            type: "rich_text",
-          },
-        },
-      });
+        });
 
-      console.log(`Added ticket ${ticketId} to Notion database`);
+        console.log(`Added ticket ${ticketId} to Notion database`);
+      }
+
+      console.log(`Processed ${ticketURLs.length} tickets for PR #${pull}`);
     }
 
     console.log(
