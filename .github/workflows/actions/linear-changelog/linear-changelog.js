@@ -135,8 +135,11 @@ async function run() {
     );
 
     // TODO: Get release date from PR title or new Date()
-    const releaseDate = "2022-02-02"; //pullRequest.title.split(" ")[1];
-
+    //    const releaseDate = "2022-02-02"; //pullRequest.title.split(" ")[1];
+    const releaseDate = await octokit.pulls
+      .get({ owner, repo, pull_number: prNumber })
+      .then((response) => response.data.title.split("Release ")[1])
+      .catch(() => new Date().toISOString().split("T")[0]);
     // Add tickets to Notion database
     // [
     //  [
