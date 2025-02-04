@@ -80,7 +80,8 @@ async function run() {
       core.getInput("notion-token", { required: true }) ||
       process.env.NOTION_TOKEN;
     const prNumber =
-      core.getInput("pull-request-number") || process.env.PULL_REQUEST_NUMBER;
+      core.getInput("pull-request-number", { required: true }) ||
+      process.env.PULL_REQUEST_NUMBER;
 
     if (GITHUB_TOKEN.length < 3) {
       console.error("github token is doinked my dude");
