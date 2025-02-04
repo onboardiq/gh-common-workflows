@@ -70,12 +70,17 @@ async function findPullRequestsForCommit(octokit, owner, repo, commitSha) {
 
 async function run() {
   try {
+    // Note: For testing locally, feel free to use `direnv` and remove `{ required: true }`
     const GITHUB_TOKEN =
-      core.getInput("github-token") || process.env.GITHUB_TOKEN;
+      core.getInput("github-token", { required: true }) ||
+      process.env.GITHUB_TOKEN;
     const NOTION_DB_ID =
-      core.getInput("notion-db", {}) || process.env.NOTION_DB;
+      core.getInput("notion-db", { required: true }) || process.env.NOTION_DB;
     const NOTION_API_KEY =
-      core.getInput("notion-token", {}) || process.env.NOTION_TOKEN;
+      core.getInput("notion-token", { required: true }) ||
+      process.env.NOTION_TOKEN;
+    const prNumber =
+      core.getInput("pull-request-number") || process.env.PULL_REQUEST_NUMBER;
 
     if (GITHUB_TOKEN.length < 3) {
       console.error("github token is doinked my dude");
@@ -86,9 +91,6 @@ async function run() {
 
     // Get PR details from GitHub context
     const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
-
-    // TODO: PR Number Input
-    const prNumber = 31286; //core.getInput("pull-request-number");
 
     // get the commits on the associated PR
     const { data: commits } = await octokit.pulls.listCommits({
@@ -130,7 +132,7 @@ async function run() {
         return intermediate;
       }),
     );
-    console.log(linearUrls);
+
     // TODO: Get release date from PR title or new Date()
     const releaseDate = "2022-02-02"; //pullRequest.title.split(" ")[1];
 
