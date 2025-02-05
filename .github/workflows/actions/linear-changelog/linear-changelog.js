@@ -1,7 +1,6 @@
 import { Client } from "@notionhq/client";
 import { Octokit } from "@octokit/rest";
 import * as cheerio from "cheerio";
-import * as core from "@actions/core";
 
 export async function extractLinearUrls(htmlContent) {
   try {
@@ -70,18 +69,14 @@ async function findPullRequestsForCommit(octokit, owner, repo, commitSha) {
 
 async function run() {
   try {
-    // Note: For testing locally, feel free to use `direnv` and remove `{ required: true }`
-    const GITHUB_TOKEN =
-      core.getInput("github-token", { required: true }) ||
-      process.env.GITHUB_TOKEN;
-    const NOTION_DB_ID =
-      core.getInput("notion-db", { required: true }) || process.env.NOTION_DB;
-    const NOTION_API_KEY =
-      core.getInput("notion-token", { required: true }) ||
-      process.env.NOTION_TOKEN;
-    const prNumber =
-      core.getInput("pull-request-number", { required: true }) ||
-      process.env.PULL_REQUEST_NUMBER;
+    // Note: For testing locally, feel free to use `direnv` and remove `{ required: false }`
+    const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+    const NOTION_DB_ID = process.env.NOTION_DB;
+    const NOTION_API_KEY = process.env.NOTION_TOKEN;
+    const prNumber = process.env.PULL_REQUEST_NUMBER;
+
+    // Get PR details from GitHub context
+    const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
 
     if (GITHUB_TOKEN.length < 3) {
       console.error("github token is doinked my dude");
@@ -89,9 +84,6 @@ async function run() {
     // Initialize clients
     const notion = new Client({ auth: NOTION_API_KEY });
     const octokit = new Octokit({ auth: GITHUB_TOKEN });
-
-    // Get PR details from GitHub context
-    const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
 
     // get the commits on the associated PR
     const { data: commits } = await octokit.pulls.listCommits({
@@ -123,6 +115,10 @@ async function run() {
               repo,
               pr.number,
             );
+
+            // TODO: Implement "UI Changes" Option for Additional Info column
+            //const { data: files } = await octokit.pulls.listFiles({ owner, repo, pull_number: pr.number })
+            //const frontendChanges = files.some(file => file.filename.matchAll());
 
             if (linearTicketUrls) {
               intermediate.push(pr.number, linearTicketUrls.flat(Infinity));
@@ -185,6 +181,7 @@ async function run() {
               rich_text: [{ text: { content: repo } }],
               type: "rich_text",
             },
+            //"Additional Info": {},
           },
         });
 
