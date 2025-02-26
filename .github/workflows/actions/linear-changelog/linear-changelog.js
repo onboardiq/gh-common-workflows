@@ -2,6 +2,10 @@ import { Client } from "@notionhq/client";
 import { Octokit } from "@octokit/rest";
 import * as cheerio from "cheerio";
 
+// Inserts will fail if these values are not available in the db. Add them there first, and then add to this array
+// https://www.notion.so/fountainproduct/Released-Tickets-Page-18f34ec6bc78807cb1dce6a204134992
+const ADDITIONAL_INFO_ALLOWED_VALUES = ["UI Changes"];
+
 export async function extractLinearUrls(htmlContent) {
   try {
     const urls = [];
@@ -117,8 +121,8 @@ async function run() {
             );
 
             // TODO: Implement "UI Changes" Option for Additional Info column
-            //const { data: files } = await octokit.pulls.listFiles({ owner, repo, pull_number: pr.number })
-            //const frontendChanges = files.some(file => file.filename.matchAll());
+            // const { data: files } = await octokit.pulls.listFiles({ owner, repo, pull_number: pr.number })
+            // const frontendChanges = files.some(file => file.filename.matchAll());
 
             if (linearTicketUrls) {
               intermediate.push(pr.number, linearTicketUrls.flat(Infinity));
@@ -151,6 +155,7 @@ async function run() {
       for (const url of ticketURLs) {
         // Extract ticket ID from URL (assumes URL format like https://linear.app/company/issue/TICKET-123/...)
         const ticketId = url.split("/issue/")[1].split("/")[0];
+        const teamSpace = ticketId.split("-")[0];
 
         await notion.pages.create({
           parent: {
@@ -182,6 +187,10 @@ async function run() {
               type: "rich_text",
             },
             //"Additional Info": {},
+            "Team Space": {
+              rich_text: [{ text: { content: teamSpace } }],
+              type: "rich_text",
+            },
           },
         });
 
