@@ -81,7 +81,6 @@ runs:
       run: |
         helm rollback ${{ inputs.project-name }} 0 \
           -n ${{ inputs.namespace }} \
-          --atomic \
           --wait \
           --timeout 10m0s \
           --dry-run;
@@ -93,6 +92,5 @@ runs:
       run: |
         helm rollback ${{ inputs.project-name }} 0 \
           -n ${{ inputs.namespace }} \
-          --atomic \
           --wait \
           --timeout 10m0s;
