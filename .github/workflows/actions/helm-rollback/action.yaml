@@ -87,7 +87,7 @@ runs:
         helm -n ${{ inputs.namespace }} history ${{ inputs.project-name }} --max 2;
 
     - name: 'Rollback'
-      if: ${{ inputs.dry-run != true }}
+      if: ${{ ! inputs.dry-run }}
       shell: bash
       run: |
         helm rollback ${{ inputs.project-name }} 0 \
