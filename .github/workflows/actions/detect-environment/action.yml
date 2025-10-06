@@ -56,6 +56,7 @@ runs:
             return 'prod';
           }
 
-          core.setFailed(
-            `The branch ${TARGET_BRANCH} is not valid. Branch name should be one of: ${PRODUCTION_BRANCH}, ${DEVELOPMENT_BRANCH}, or start with "${RELEASE_PREFIX}" or "${HOTFIX_PREFIX}"`
-          );
+          // For feature branches and other non-standard branches, use 'dev' environment
+          // This allows manual deployments to dev tenants when target_tenant is specified
+          console.log(`Branch ${TARGET_BRANCH} is a feature branch, using 'dev' environment for manual deployment`);
+          return 'dev';
