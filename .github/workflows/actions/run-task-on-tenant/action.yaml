@@ -49,6 +49,9 @@ inputs:
   aws-secret-access-key:
     description: "An AWS Secret Access Key matching the given access key id"
     required: true
+  aws-session-token:
+    description: "An AWS Session Token (present when credentials come from an OIDC-assumed role)"
+    required: false
   aws-account-id:
     description: "An AWS Account ID to form ECR URLs from"
     required: true
@@ -64,6 +67,7 @@ runs:
       run: |
         echo "::add-mask::${{ inputs.aws-access-key-id }}"
         echo "::add-mask::${{ inputs.aws-secret-access-key }}"
+        echo "::add-mask::${{ inputs.aws-session-token }}"
         echo "::add-mask::${{ inputs.aws-account-id }}"
         echo "::add-mask::${{ inputs.gh_pat }}"
 
@@ -104,12 +108,20 @@ runs:
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
+        AWS_SESSION_TOKEN: ${{ inputs.aws-session-token }}
         AWS_DEFAULT_REGION: ${{ inputs.region }}
       shell: bash
       run: |
+          # Map stage values (prod/stage) to new cluster naming (production/staging)
+          case "${{ inputs.stage }}" in
+            prod)  CLUSTER_STAGE="production" ;;
+            stage) CLUSTER_STAGE="staging" ;;
+            *)     CLUSTER_STAGE="${{ inputs.stage }}" ;;
+          esac
+
           aws eks update-kubeconfig \
-          --name eng-${{ inputs.region }}-${{ inputs.stage }}-application-cluster${{ inputs.cluster-suffix }} \
-          --alias aws-${{ inputs.region }}-${{ inputs.stage }} \
+          --name x-${CLUSTER_STAGE}-${{ inputs.region }} \
+          --alias aws-${{ inputs.region }}-${CLUSTER_STAGE} \
           --kubeconfig ${KUBECONFIG} \
           --region ${{ inputs.region }}
 
@@ -132,6 +144,7 @@ runs:
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
+        AWS_SESSION_TOKEN: ${{ inputs.aws-session-token }}
         AWS_DEFAULT_REGION: ${{ inputs.region }}
       run: |
         cat job.json
@@ -142,6 +155,7 @@ runs:
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
+        AWS_SESSION_TOKEN: ${{ inputs.aws-session-token }}
         AWS_DEFAULT_REGION: ${{ inputs.region }}
       if: ${{ inputs.dry-run == 'false' }}
       run: kubectl apply -f job.json
