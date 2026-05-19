@@ -48,6 +48,9 @@ on:
       aws-secret-access-key:
         description: "An AWS Secret Access Key matching the given AWS Access Key ID"
         required: true
+      aws-session-token:
+        description: "An AWS Session Token (present when credentials come from an OIDC-assumed role)"
+        required: false
       aws-account-id:
         description: "An AWS Account ID to form ECR URLs from"
         required: true
@@ -150,5 +153,6 @@ jobs:
           dry-run: ${{ inputs.dry-run }}
           aws-access-key-id: ${{ secrets.aws-access-key-id }}
           aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
+          aws-session-token: ${{ secrets.aws-session-token }}
           aws-account-id: ${{ secrets.aws-account-id }}
           gh_pat: ${{ secrets.github-automation-token }}
