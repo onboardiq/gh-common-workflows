@@ -49,6 +49,16 @@ const content = {
             image: `${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${PROJECT}:${TAG}`,       command: [ COMMAND ],
             args: JSON.parse(ARGS),
             envFrom: envFrom(PROJECT, DOPPLER),
+            env: [
+              {
+                name: "KUBE_NAMESPACE",
+                value: NAMESPACE
+              },
+              {
+                name: "RACECAR_GROUP_ID_PREFIX",
+                value: `${NAMESPACE}-`
+              }
+            ],
             resources: {
               limits: {
                 cpu: "1",
