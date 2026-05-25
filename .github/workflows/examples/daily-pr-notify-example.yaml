@@ -1,0 +1,22 @@
+# Example: How to set up daily PR assignee notifications for your repository
+# Copy this file to your repository's .github/workflows/ directory and customize
+
+name: 'Daily PR Notification'
+
+on:
+  schedule:
+    # Runs daily at 9:00 AM UTC (2:00 AM PST / 5:00 AM EST)
+    # Adjust the cron expression for your timezone
+    - cron: '0 9 * * 1-5'  # Monday to Friday
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  notify:
+    uses: onboardiq/gh-common-workflows/.github/workflows/daily-pr-assignee-notify.yaml@main
+    with:
+      github-username: 'your-github-username'  # Replace with your GitHub username
+      slack-channel: 'your-slack-channel-id'   # Replace with your Slack channel ID
+      organization: 'onboardiq'
+    secrets:
+      slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+      github-token: ${{ secrets.GITHUB_TOKEN }}

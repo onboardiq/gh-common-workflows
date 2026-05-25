@@ -1,0 +1,90 @@
+name: 'Daily PR Assignee Notification'
+
+on:
+  schedule:
+    # Runs daily at 9:00 AM UTC (adjust timezone as needed)
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+    inputs:
+      github-username:
+        description: 'GitHub username to check for assigned PRs'
+        required: true
+        type: string
+  workflow_call:
+    inputs:
+      github-username:
+        description: 'GitHub username to check for assigned PRs'
+        required: true
+        type: string
+      slack-channel:
+        description: 'Slack channel to post notifications to'
+        required: false
+        type: string
+      organization:
+        description: 'GitHub organization to search PRs in'
+        required: false
+        type: string
+        default: 'onboardiq'
+    secrets:
+      slack-bot-token:
+        description: 'Slack bot token for sending notifications'
+        required: true
+      github-token:
+        description: 'GitHub token for API access'
+        required: true
+
+jobs:
+  notify-assigned-prs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch assigned PRs
+        id: fetch-prs
+        env:
+          GH_TOKEN: ${{ secrets.github-token || secrets.GITHUB_TOKEN }}
+          GITHUB_USERNAME: ${{ inputs.github-username }}
+          ORGANIZATION: ${{ inputs.organization || 'onboardiq' }}
+        run: |
+          # Search for open PRs assigned to the user in the organization
+          PRS=$(gh search prs --assignee "$GITHUB_USERNAME" --state open --owner "$ORGANIZATION" --json title,url,repository,updatedAt,author --limit 50)
+
+          # Count the PRs
+          PR_COUNT=$(echo "$PRS" | jq 'length')
+
+          echo "pr_count=$PR_COUNT" >> $GITHUB_OUTPUT
+
+          if [ "$PR_COUNT" -eq 0 ]; then
+            echo "No PRs found assigned to $GITHUB_USERNAME"
+            echo "message=No open PRs assigned to you today! 🎉" >> $GITHUB_OUTPUT
+          else
+            # Format the PR list for Slack
+            MESSAGE="*You have $PR_COUNT open PR(s) assigned to you:*\n\n"
+
+            while IFS= read -r pr; do
+              TITLE=$(echo "$pr" | jq -r '.title')
+              URL=$(echo "$pr" | jq -r '.url')
+              REPO=$(echo "$pr" | jq -r '.repository.name')
+              AUTHOR=$(echo "$pr" | jq -r '.author.login')
+              UPDATED=$(echo "$pr" | jq -r '.updatedAt')
+
+              MESSAGE="${MESSAGE}• <${URL}|${TITLE}>\n  📁 ${REPO} | 👤 ${AUTHOR} | 🕐 ${UPDATED}\n\n"
+            done < <(echo "$PRS" | jq -c '.[]')
+
+            # Escape for GitHub Actions output
+            MESSAGE="${MESSAGE//'%'/'%25'}"
+            MESSAGE="${MESSAGE//$'\n'/'%0A'}"
+            MESSAGE="${MESSAGE//$'\r'/'%0D'}"
+
+            echo "message=$MESSAGE" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Send Slack notification
+        if: steps.fetch-prs.outputs.pr_count != '0' || github.event_name == 'workflow_dispatch'
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          channel-id: ${{ inputs.slack-channel || 'general' }}
+          slack-message: |
+            📋 *Daily PR Assignee Report for ${{ inputs.github-username }}*
+
+            ${{ steps.fetch-prs.outputs.message }}
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.slack-bot-token }}
