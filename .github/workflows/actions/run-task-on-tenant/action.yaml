@@ -77,11 +77,15 @@ runs:
     - name: 'Set AWS credentials from inputs'
       if: ${{ inputs.aws-access-key-id != '' }}
       shell: bash
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
+        AWS_SESSION_TOKEN: ${{ inputs.aws-session-token }}
       run: |
-        echo "AWS_ACCESS_KEY_ID=${{ inputs.aws-access-key-id }}" >> $GITHUB_ENV
-        echo "AWS_SECRET_ACCESS_KEY=${{ inputs.aws-secret-access-key }}" >> $GITHUB_ENV
-        if [ -n "${{ inputs.aws-session-token }}" ]; then
-          echo "AWS_SESSION_TOKEN=${{ inputs.aws-session-token }}" >> $GITHUB_ENV
+        echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" >> $GITHUB_ENV
+        echo "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" >> $GITHUB_ENV
+        if [ -n "${AWS_SESSION_TOKEN}" ]; then
+          echo "AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}" >> $GITHUB_ENV
         fi
 
     - uses: actions/checkout@v3
