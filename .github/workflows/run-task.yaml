@@ -43,11 +43,11 @@ on:
         type: boolean
     secrets:
       aws-access-key-id:
-        description: "An AWS Access Key ID with sufficient access to read from ECR repos"
-        required: true
+        description: "An AWS Access Key ID with sufficient access to read from ECR repos. Leave empty when using role-to-assume."
+        required: false
       aws-secret-access-key:
-        description: "An AWS Secret Access Key matching the given AWS Access Key ID"
-        required: true
+        description: "An AWS Secret Access Key matching the given AWS Access Key ID. Leave empty when using role-to-assume."
+        required: false
       aws-session-token:
         description: "An AWS Session Token (present when credentials come from an OIDC-assumed role)"
         required: false
@@ -57,6 +57,9 @@ on:
       github-automation-token:
         description: "A github user token with sufficent permissions to create, approve, and merge PRs"
         required: true
+      role-to-assume:
+        description: "IAM role ARN to assume via OIDC for EKS and ECR access"
+        required: false
 
 env:
   # kubernetes has deprecated "client.authentication.k8s.io/v1alpha1" api versions
@@ -122,6 +125,9 @@ jobs:
 
   run_job:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     needs:
       - check-inputs
     strategy:
@@ -134,6 +140,14 @@ jobs:
           repository: onboardiq/gh-common-workflows
           path: ./common-workflows
           fetch-depth: 1
+      
+      - name: Configure AWS credentials
+        if: ${{ secrets.role-to-assume != '' }}
+        uses: aws-actions/configure-aws-credentials@v4.0.1
+        with:
+          role-to-assume: ${{ secrets.role-to-assume }}
+          role-session-name: ${{ inputs.name }}
+          aws-region: ${{ matrix.cluster.region }}
 
       - name: Run job
         uses: ./common-workflows/.github/workflows/actions/run-task-on-tenant
