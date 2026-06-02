@@ -41,6 +41,11 @@ on:
         required: true
         default: false
         type: boolean
+      role-to-assume:
+        description: "IAM role ARN to assume via OIDC for EKS and ECR access"
+        required: false
+        type: string
+        default: ''
     secrets:
       aws-access-key-id:
         description: "An AWS Access Key ID with sufficient access to read from ECR repos. Leave empty when using role-to-assume."
@@ -57,8 +62,8 @@ on:
       github-automation-token:
         description: "A github user token with sufficent permissions to create, approve, and merge PRs"
         required: true
-      role-to-assume:
-        description: "IAM role ARN to assume via OIDC for EKS and ECR access"
+      role-to-assume-secret:
+        description: "Deprecated: use the role-to-assume input instead. Kept for backward compatibility only."
         required: false
 
 env:
@@ -142,10 +147,10 @@ jobs:
           fetch-depth: 1
       
       - name: Configure AWS credentials
-        if: ${{ secrets.role-to-assume != '' }}
+        if: inputs.role-to-assume != ''
         uses: aws-actions/configure-aws-credentials@v4.0.1
         with:
-          role-to-assume: ${{ secrets.role-to-assume }}
+          role-to-assume: ${{ inputs.role-to-assume }}
           role-session-name: ${{ inputs.name }}
           aws-region: ${{ matrix.cluster.region }}
 
