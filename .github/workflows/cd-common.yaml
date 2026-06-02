@@ -160,6 +160,7 @@ jobs:
           helm_repo_username: ${{ secrets.helm-repo-username }}
           helm_repo_password: ${{ secrets.helm-repo-password }}
           project-name: ${{ inputs.project-name }}
+          github-repo: ${{ inputs.github-repo }}
           helm-makefile-location: ${{ inputs.helm-makefile-location }}
           doppler-project-name: ${{ inputs.doppler-project-name || inputs.project-name }}
 

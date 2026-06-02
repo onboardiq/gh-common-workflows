@@ -61,6 +61,10 @@ inputs:
     description: "The name of the project"
     required: true
     type: string
+  github-repo:
+    description: "The GitHub repository name to check out. Defaults to project-name when not set."
+    required: false
+    default: ''
   doppler-token:
     description: "The token required to intract with the doppler API"
     type: string
@@ -93,7 +97,7 @@ runs:
 
     - uses: actions/checkout@v3
       with:
-        repository: onboardiq/${{ inputs.project-name }}
+        repository: onboardiq/${{ inputs.github-repo || inputs.project-name }}
         token: ${{ inputs.gh_pat }}
 
     - uses: actions/checkout@v3
