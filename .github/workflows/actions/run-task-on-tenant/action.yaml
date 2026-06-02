@@ -1,4 +1,4 @@
-zname: 'Run task on tenant'
+name: 'Run task on tenant'
 description: 'Run a task in a given tenant'
 inputs:
   name:
@@ -44,14 +44,17 @@ inputs:
     description: "When true, only does a dry run of the deployment"
     required: true
   aws-access-key-id:
-    description: "An AWS Access Key ID with sufficient permissions to read from EKS clusters"
-    required: true
+    description: "An AWS Access Key ID with sufficient permissions to read from EKS clusters. Leave empty when using role-to-assume."
+    required: false
+    default: ''
   aws-secret-access-key:
-    description: "An AWS Secret Access Key matching the given access key id"
-    required: true
+    description: "An AWS Secret Access Key matching the given access key id. Leave empty when using role-to-assume."
+    required: false
+    default: ''
   aws-session-token:
     description: "An AWS Session Token (present when credentials come from an OIDC-assumed role)"
     required: false
+    default: ''
   aws-account-id:
     description: "An AWS Account ID to form ECR URLs from"
     required: true
@@ -70,6 +73,16 @@ runs:
         echo "::add-mask::${{ inputs.aws-session-token }}"
         echo "::add-mask::${{ inputs.aws-account-id }}"
         echo "::add-mask::${{ inputs.gh_pat }}"
+
+    - name: 'Set AWS credentials from inputs'
+      if: ${{ inputs.aws-access-key-id != '' }}
+      shell: bash
+      run: |
+        echo "AWS_ACCESS_KEY_ID=${{ inputs.aws-access-key-id }}" >> $GITHUB_ENV
+        echo "AWS_SECRET_ACCESS_KEY=${{ inputs.aws-secret-access-key }}" >> $GITHUB_ENV
+        if [ -n "${{ inputs.aws-session-token }}" ]; then
+          echo "AWS_SESSION_TOKEN=${{ inputs.aws-session-token }}" >> $GITHUB_ENV
+        fi
 
     - uses: actions/checkout@v3
       with:
@@ -106,9 +119,6 @@ runs:
 
     - name: 'Get the kubeconfig'
       env:
-        AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
-        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
-        AWS_SESSION_TOKEN: ${{ inputs.aws-session-token }}
         AWS_DEFAULT_REGION: ${{ inputs.region }}
       shell: bash
       run: |
@@ -142,9 +152,6 @@ runs:
     - name: Test job
       shell: bash
       env:
-        AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
-        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
-        AWS_SESSION_TOKEN: ${{ inputs.aws-session-token }}
         AWS_DEFAULT_REGION: ${{ inputs.region }}
       run: |
         cat job.json
@@ -153,9 +160,6 @@ runs:
     - name: Apply job
       shell: bash
       env:
-        AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
-        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
-        AWS_SESSION_TOKEN: ${{ inputs.aws-session-token }}
         AWS_DEFAULT_REGION: ${{ inputs.region }}
       if: ${{ inputs.dry-run == 'false' }}
       run: kubectl apply -f job.json
