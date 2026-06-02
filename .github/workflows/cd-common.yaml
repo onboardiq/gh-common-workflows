@@ -65,7 +65,12 @@ on:
         description: "Name of the doppler project. Its often same as 'project-name'"
         type: string
         required: false
-        default:
+        default: ''
+      github-repo:
+        description: "The GitHub repository name to use for deployment tracking. Defaults to project-name when not set (for repos where project-name matches the repo name)."
+        type: string
+        required: false
+        default: ''
     secrets:
       aws-access-key-id:
         description: "An AWS Access Key ID with sufficient access to push to ECR repos"
@@ -155,6 +160,7 @@ jobs:
           helm_repo_username: ${{ secrets.helm-repo-username }}
           helm_repo_password: ${{ secrets.helm-repo-password }}
           project-name: ${{ inputs.project-name }}
+          github-repo: ${{ inputs.github-repo }}
           helm-makefile-location: ${{ inputs.helm-makefile-location }}
           doppler-project-name: ${{ inputs.doppler-project-name || inputs.project-name }}
 
@@ -174,7 +180,7 @@ jobs:
         with:
           github-automation-token: ${{ secrets.github-automation-token }}
           ref: ${{ inputs.ref }}
-          repo: ${{ inputs.project-name }}
+          repo: ${{ inputs.github-repo || inputs.project-name }}
           owner: 'onboardiq'
           env: ${{ inputs.env }}
 
@@ -182,7 +188,7 @@ jobs:
         with:
           project-name: ${{ inputs.project-name }}
           sha: ${{ needs.deploy-env.outputs.commit-sha }}
-          full-repo-name: onboardiq/${{ inputs.project-name }}
+          full-repo-name: onboardiq/${{ inputs.github-repo || inputs.project-name }}
           env: ${{ inputs.env }}
           swarmia-deployments-authorization: ${{ secrets.swarmia-deployments-authorization }}
 
