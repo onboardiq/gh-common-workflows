@@ -65,6 +65,10 @@ inputs:
     description: "Subdirectory path within a monorepo to scope image tag SHA derivation (e.g. apps/hire)."
     required: false
     default: ''
+  repo-name:
+    description: "GitHub repository name override for checkout. Defaults to project-name. Set for monorepo services."
+    required: false
+    default: ''
 
 runs:
   using: 'composite'
@@ -94,7 +98,7 @@ runs:
 
     - uses: actions/checkout@v4
       with:
-        repository: onboardiq/${{ inputs.project-name }}
+        repository: onboardiq/${{ inputs.repo-name || inputs.project-name }}
         ref: ${{ inputs.branch }}
         fetch-depth: 0
         filter: blob:none
