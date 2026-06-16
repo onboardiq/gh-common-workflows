@@ -46,6 +46,16 @@ on:
         required: false
         type: string
         default: ''
+      subdir:
+        description: "Subdirectory path within a monorepo to scope image tag SHA derivation (e.g. apps/hire). Leave empty for single-repo projects."
+        required: false
+        type: string
+        default: ''
+      repo-name:
+        description: "GitHub repository name override for checkout. Defaults to project-name. Set for monorepo services."
+        required: false
+        type: string
+        default: ''
     secrets:
       aws-access-key-id:
         description: "An AWS Access Key ID with sufficient access to read from ECR repos. Leave empty when using role-to-assume."
@@ -112,10 +122,10 @@ jobs:
           script: |
             const { DEPLOY_ENVIRONMENT, BRANCH } = process.env;
 
-            // only allow prod to deploy from stable, also allow release/* and hotfix/* (with stable) for uat, and any branch for dev
+            // only allow prod to deploy from stable/production, also allow release/* and hotfix/* for uat, and any branch for dev
             const allowed_branches_regex = {
-              prod: '^stable$',
-              uat: '^(stable|release/.*|hotfix/.*)$',
+              prod: '^(stable|production)$',
+              uat: '^(stable|production|release/.*|hotfix/.*)$',
               dev: '.*',
             };
 
@@ -163,6 +173,8 @@ jobs:
           command: ${{ inputs.command }}
           args: ${{ inputs.args }}
           branch: ${{ inputs.branch }}
+          subdir: ${{ inputs.subdir }}
+          repo-name: ${{ inputs.repo-name }}
           region: ${{ matrix.cluster.region }}
           cluster-suffix: ${{ matrix.cluster.cluster-suffix }}
           tenant-name: ${{ matrix.name }}

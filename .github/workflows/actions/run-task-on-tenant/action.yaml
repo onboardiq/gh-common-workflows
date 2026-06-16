@@ -61,6 +61,14 @@ inputs:
   gh_pat:
     description: "A GitHub personal access token"
     required: true
+  subdir:
+    description: "Subdirectory path within a monorepo to scope image tag SHA derivation (e.g. apps/hire)."
+    required: false
+    default: ''
+  repo-name:
+    description: "GitHub repository name override for checkout. Defaults to project-name. Set for monorepo services."
+    required: false
+    default: ''
 
 runs:
   using: 'composite'
@@ -88,11 +96,12 @@ runs:
           echo "AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}" >> $GITHUB_ENV
         fi
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
-        repository: onboardiq/${{ inputs.project-name }}
+        repository: onboardiq/${{ inputs.repo-name || inputs.project-name }}
         ref: ${{ inputs.branch }}
-        fetch-depth: 1
+        fetch-depth: 0
+        filter: blob:none
 
     - uses: actions/checkout@v3
       with:
@@ -105,8 +114,17 @@ runs:
       shell: bash
       env:
         BRANCH: ${{ inputs.branch }}
+        SUBDIR: ${{ inputs.subdir }}
       run: |
-        sha=$(git rev-parse HEAD)
+        if [ -n "$SUBDIR" ]; then
+          sha=$(git log -n 1 --first-parent --format=%H -- "$SUBDIR")
+          if [ -z "$sha" ]; then
+            echo "Could not find any commit touching $SUBDIR on $BRANCH"
+            exit 1
+          fi
+        else
+          sha=$(git rev-parse HEAD)
+        fi
         echo "result=${BRANCH##*/}-${sha::7}" >> $GITHUB_OUTPUT
 
     - name: 'Install Kubectl'
