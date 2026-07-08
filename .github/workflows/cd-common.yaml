@@ -23,6 +23,11 @@ on:
         description: "The branch or tag name or SHA to check out"
         required: true
         type: string
+      sha:
+        description: "Exact commit SHA to deploy (e.g. the commit the prepare workflow built). When set, it is checked out instead of resolving ref, so image tags and chart versions match the built artifacts even if the branch has moved on. ref is still used for tag/version naming."
+        required: false
+        type: string
+        default: ''
       dry-run:
         description: "When true, only does a dry run of deployment"
         required: true
@@ -115,7 +120,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ inputs.ref }}
+          ref: ${{ inputs.sha || inputs.ref }}
           fetch-depth: 1
       - name: 'Get the commit sha'
         id: commit-sha
