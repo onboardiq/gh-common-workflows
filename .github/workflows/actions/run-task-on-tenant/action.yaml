@@ -69,6 +69,10 @@ inputs:
     description: "GitHub repository name override for checkout. Defaults to project-name. Set for monorepo services."
     required: false
     default: ''
+  ecr-region:
+    description: "AWS region to pull the ECR image from. Defaults to the tenant cluster region."
+    required: false
+    default: ''
 
 runs:
   using: 'composite'
@@ -160,6 +164,7 @@ runs:
     - name: Write job manifest
       env:
         REGION: ${{ inputs.region }}
+        ECR_REGION: ${{ inputs.ecr-region || inputs.region }}
         NAMESPACE: ${{ inputs.namespace }}
         PROJECT: ${{ inputs.project-name }}
         COMMAND: ${{ inputs.command }}

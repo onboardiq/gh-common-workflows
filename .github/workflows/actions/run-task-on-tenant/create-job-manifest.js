@@ -2,6 +2,7 @@ const fs = require('fs/promises');
 
 const {
   REGION,
+  ECR_REGION,
   NAMESPACE,
   PROJECT,
   COMMAND,
@@ -46,7 +47,7 @@ const content = {
           {
             name: NAME,
             imagePullPolicy: "Always",
-            image: `${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${PROJECT}:${TAG}`,       command: [ COMMAND ],
+            image: `${AWS_ACCOUNT_ID}.dkr.ecr.${ECR_REGION || REGION}.amazonaws.com/${PROJECT}:${TAG}`,       command: [ COMMAND ],
             args: JSON.parse(ARGS),
             envFrom: envFrom(PROJECT, DOPPLER),
             env: [

@@ -56,6 +56,11 @@ on:
         required: false
         type: string
         default: ''
+      ecr-region:
+        description: "AWS region to pull the ECR image from. Defaults to each tenant's cluster region."
+        required: false
+        type: string
+        default: ''
     secrets:
       aws-access-key-id:
         description: "An AWS Access Key ID with sufficient access to read from ECR repos. Leave empty when using role-to-assume."
@@ -182,6 +187,7 @@ jobs:
           stage: ${{ matrix.cluster.stage }}
           doppler: ${{ inputs.doppler }}
           dry-run: ${{ inputs.dry-run }}
+          ecr-region: ${{ inputs.ecr-region }}
           aws-access-key-id: ${{ secrets.aws-access-key-id }}
           aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
           aws-session-token: ${{ secrets.aws-session-token }}
