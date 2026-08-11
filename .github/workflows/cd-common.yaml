@@ -58,9 +58,10 @@ on:
         required: true
         type: string
       message_for_slack:
-        description: "The message to post on successful deployment"
+        description: "Optional Slack message on successful deployment. Leave empty to skip the legacy webhook notify (prefer app-owned slack-prod-deploy-thread)."
         type: string
-        required: true
+        required: false
+        default: ''
       helm-makefile-location:
         description: "Path to directory from the repo root where the helm Makefile is present"
         type: string
@@ -96,8 +97,8 @@ on:
         description: "A github user token with sufficent permissions to create, approve, and merge PRs"
         required: true
       slack-webhook-url:
-        description: 'The URL of the Slack Webhook to post the message to'
-        required: true
+        description: 'Optional Slack webhook URL. Required only when message_for_slack is set.'
+        required: false
       notion-database-id:
         description: 'The ID of the notion database to post update to'
         required: false
@@ -211,6 +212,7 @@ jobs:
           path: ./common-workflows
           fetch-depth: 1
       - name: "Post message to Slack"
+        if: ${{ inputs.message_for_slack != '' }}
         uses: ./common-workflows/.github/workflows/actions/notify-slack-pipeline-status
         with:
           slack_webhook_url: ${{ secrets.slack-webhook-url }}
