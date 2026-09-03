@@ -42,7 +42,26 @@ const content = {
     completions: 1,
     parallelism: 1,
     template: {
+      metadata: {
+        // Karpenter evicts this pod when it consolidates an underutilized node,
+        // which kills the task mid-run: the Job carries backoffLimit 0, so one
+        // eviction ends it. A task that takes longer than a consolidation
+        // interval therefore cannot finish. The annotation blocks voluntary
+        // disruption for the life of the run and the node is reclaimable again
+        // after it. Safe here because a Job is finite -- the same reason
+        // dagster-v2 sets it on run pods and not on its long-lived ones.
+        annotations: {
+          "karpenter.sh/do-not-disrupt": "true"
+        }
+      },
       spec: {
+        // The images this action runs are amd64-only, and the cluster has a few
+        // arm64 nodes outside the default pool. Without this the pod lands on
+        // one occasionally and dies before the entrypoint with
+        // "exec format error".
+        nodeSelector: {
+          "kubernetes.io/arch": "amd64"
+        },
         containers: [
           {
             name: NAME,
