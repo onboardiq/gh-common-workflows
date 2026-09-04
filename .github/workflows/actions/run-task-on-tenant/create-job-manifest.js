@@ -42,7 +42,21 @@ const content = {
     completions: 1,
     parallelism: 1,
     template: {
+      metadata: {
+        annotations: {
+          // Blocks Karpenter *voluntary* disruption (consolidation, drift,
+          // expiration) for the life of this run. The Job has backoffLimit: 0,
+          // so an evicted pod does not retry — the caller has to re-dispatch
+          // the task from wherever it left off. Safe here because every pod
+          // built from this manifest is a bounded one-shot task, never a
+          // long-lived service pod that would need its node pinned forever.
+          "karpenter.sh/do-not-disrupt": "true"
+        }
+      },
       spec: {
+        nodeSelector: {
+          "kubernetes.io/arch": "amd64"
+        },
         containers: [
           {
             name: NAME,
