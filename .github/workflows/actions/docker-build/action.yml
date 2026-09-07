@@ -78,7 +78,7 @@ runs:
           type=raw,value=${{ steps.version.outputs.image-tag }}
 
     - name: 'Build Docker Image - buildenv'
-      uses: docker/build-push-action@v3
+      uses: docker/build-push-action@v4
       with:
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
@@ -112,7 +112,7 @@ runs:
           type=raw,value=${{ steps.version.outputs.image-tag }}
 
     - name: 'Build Docker Image - production'
-      uses: docker/build-push-action@v3
+      uses: docker/build-push-action@v4
       with:
         build-args: |
           "BUILD_ENV_IMAGE=${{ steps.meta-build-env.outputs.tags }}"
@@ -132,7 +132,7 @@ runs:
           type=raw,value=${{ steps.version.outputs.image-tag }}-web-exec
 
     - name: 'Build Docker Image - web-exec'
-      uses: docker/build-push-action@v3
+      uses: docker/build-push-action@v4
       with:
         build-args: |
           "BUILD_ENV_IMAGE=${{ steps.meta-build-env.outputs.tags }}"
