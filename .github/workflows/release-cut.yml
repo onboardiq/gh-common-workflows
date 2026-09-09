@@ -149,12 +149,12 @@ jobs:
         uses: repo-sync/pull-request@v2
         with:
           destination_branch: ${{ inputs.release-branch }}
-          source_branch: "release/${{ steps.date.outputs.now }}"
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_title: "Release ${{ steps.date.outputs.now }}"
+          source_branch: "release/${{ inputs.branch-name || steps.date.outputs.now }}"
+          github_token: ${{ secrets.github-automation-token }}
+          pr_title: "Release ${{ inputs.branch-name || steps.date.outputs.now }}"
       - name: Add to summary
         env:
-          BRANCH: release/${{ steps.date.outputs.now }}
+          BRANCH: release/${{ inputs.branch-name || steps.date.outputs.now }}
         shell: bash
         run: echo "### Cut release branch $BRANCH" >> $GITHUB_STEP_SUMMARY
 
